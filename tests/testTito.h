@@ -1,4 +1,5 @@
 #pragma once
+#include <qt/QtCore/qstring.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 class TestTito : public CppUnit::TestCase {
@@ -8,4 +9,6 @@ class TestTito : public CppUnit::TestCase {
     public:
         TestTito(void);
         void testConstructor();
+    private:
+        QString getToken();
 };
