@@ -6,7 +6,14 @@ set(REPO_URL "https://github.com/rhul-compsoc/tito-integegration-hackaway")
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# qt5
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 # compiler flags
 set(COMPILER_FLAGS "-Wall -Wextra -Wpedantic")
@@ -37,6 +44,7 @@ endif()
 # src
 set(MAIN
     src/main.cpp
+    resources.qrc
     )
 set(SRC_FILES
     src/tito.cpp
@@ -44,6 +52,7 @@ set(SRC_FILES
     
 add_executable(tito-integegration-hackaway ${SRC_FILES} ${MAIN})
 
+target_link_libraries(tito-integegration-hackaway Qt::Core Qt5::Widgets)
 target_include_directories(tito-integegration-hackaway PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -59,7 +68,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
         )
     add_executable(tito-integegration-hackaway-tests ${TEST_FILES})
     target_link_libraries(tito-integegration-hackaway-tests
-        cppunit)
+        cppunit Qt::Core Qt5::Widgets)
     target_include_directories(tito-integegration-hackaway-tests PUBLIC 
         ${CMAKE_CURRENT_BINARY_DIR})
     add_test(NAME tito-integegration-hackaway-tests COMMAND tito-integegration-hackaway-tests)
