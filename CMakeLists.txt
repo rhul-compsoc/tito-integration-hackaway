@@ -9,9 +9,10 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # compiler flags
-set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -Wextra -Wno-unused-parameter -Wno-writable-strings -DDEBUG=1 -fsanitize=address,undefined")
+set(COMPILER_FLAGS "-Wall -Wextra -Wpedantic")
+set(CMAKE_C_FLAGS_DEBUG "-g -O0 ${COMPILER_FLAGS} -DDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
-set(CMAKE_C_FLAGS_RELEASE "-O2 -Wno-unused-parameter -Wno-writable-strings -fsanitize=address,undefined")
+set(CMAKE_C_FLAGS_RELEASE "-O2 ${COMPILER_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake)
@@ -27,7 +28,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
     
     append_coverage_compiler_flags()
-    #setup_target_for_coverage_gcovr_html
     setup_target_for_coverage_gcovr_xml(NAME coverage
         EXECUTABLE tito-integegration-hackaway-tests
         EXCLUDE "build/*" "tests/*" "src/main.cpp")

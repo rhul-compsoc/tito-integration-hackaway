@@ -14,8 +14,6 @@
 
 #define XMLOUT
 
-CPPUNIT_TEST_SUITE_NAMED_REGISTRATION(TestTito, "test tito.h");
-
 // register test suite
 CppUnit::Test *suite() {
     CppUnit::TestFactoryRegistry &registry =
