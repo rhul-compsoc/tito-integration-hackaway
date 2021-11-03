@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+#ignore build folder
+build/
+
+#ignore ide files
+*.kdev4
+.kdev4/
