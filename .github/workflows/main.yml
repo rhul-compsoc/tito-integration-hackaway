@@ -47,7 +47,7 @@ jobs:
         
     - name: Run Tests and Coverage
       shell: bash
-      env: |
+      env:
         TITO_TOKEN: ${{ secrets.TITO_TOKEN }}
       run: |        
         mkdir -p build
