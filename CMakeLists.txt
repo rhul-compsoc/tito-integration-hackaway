@@ -1,8 +1,28 @@
 cmake_minimum_required(VERSION 3.12)
 
 # set the project name
-project(tito-integegration-hackaway)
+project(tito-integegration-hackaway VERSION 1.0.0 LANGUAGES CXX)
 set(REPO_URL "https://github.com/rhul-compsoc/tito-integegration-hackaway")
+
+message(STATUS "Building ${CMAKE_PROJECT_NAME}")
+message(STATUS "Git repo: ${REPO_URL}")
+message(STATUS "Build type is ${CMAKE_BUILD_TYPE} for version ${CMAKE_PROJECT_VERSION}")
+
+# Detect OS
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  message (STATUS "Operating system detected: Linux")
+  set (LINUX TRUE)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  message (STATUS "Operating system detected: OSX")
+  set (OSX TRUE)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  message (STATUS "Operating system detected: Windows")
+  set (WINDOWS TRUE)
+else ()
+  message (ERROR "Operating system not recognised. Expected Windows, Linux or Darwin, but found ${CMAKE_SYSTEM_NAME}")
+endif ()
+
+#TODO: OS independent and portable builds
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
@@ -13,7 +33,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Gui Core Widgets REQUIRED)
 
 # compiler flags
 set(COMPILER_FLAGS "-Wall -Wextra -Wpedantic")
@@ -22,6 +42,7 @@ set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
 set(CMAKE_C_FLAGS_RELEASE "-O2 ${COMPILER_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
 
+set_target_properties(Qt5::Core PROPERTIES MAP_IMPORTED_CONFIG_COVERAGE "RELEASE")
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake)
 
 if (CMAKE_BUILD_TYPE STREQUAL "TEST")
@@ -37,7 +58,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
     append_coverage_compiler_flags()
     setup_target_for_coverage_gcovr_xml(NAME coverage
         EXECUTABLE tito-integegration-hackaway-tests
-        EXCLUDE "build/*" "tests/*" "src/main.cpp")
+        EXCLUDE "build/*" "tests/*" "src/main.cpp" "*.hpp")
 
 endif()
 
@@ -49,10 +70,12 @@ set(MAIN
 set(SRC_FILES
     src/tito.cpp
     )
-    
+
+set(LIBS curl Qt5::Core Qt5::Widgets Qt5::Gui)
+
 add_executable(tito-integegration-hackaway ${SRC_FILES} ${MAIN})
 
-target_link_libraries(tito-integegration-hackaway Qt::Core Qt5::Widgets)
+target_link_libraries(tito-integegration-hackaway ${LIBS})
 target_include_directories(tito-integegration-hackaway PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -68,9 +91,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
         )
     add_executable(tito-integegration-hackaway-tests ${TEST_FILES})
     target_link_libraries(tito-integegration-hackaway-tests
-        cppunit Qt::Core Qt5::Widgets)
+        cppunit ${LIBS})
     target_include_directories(tito-integegration-hackaway-tests PUBLIC 
         ${CMAKE_CURRENT_BINARY_DIR})
+    
+    enable_testing ()
     add_test(NAME tito-integegration-hackaway-tests COMMAND tito-integegration-hackaway-tests)
 endif()
 

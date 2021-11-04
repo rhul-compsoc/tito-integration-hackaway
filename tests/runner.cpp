@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
     
     try {
         std::cout << std::endl;
-        std::cout << "test trice bot classes with cppunit" << std::endl;
+        std::cout << "test tito integration with cppunit" << std::endl;
         std::cout << "========================="  << std::endl;
         runner.run(controller, testPath);
         std::cout << "=========================" << std::endl;
