@@ -35,7 +35,7 @@ jobs:
         
     - name: Check libraries are up to date
       shell: bash
-      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential cmake libcppunit-dev curl gcovr qtbase5-dev
+      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential cmake libcppunit-dev curl libcurl4-openssl-dev gcovr qtbase5-dev
         
     - name: Make Release
       shell: bash
