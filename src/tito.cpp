@@ -11,11 +11,6 @@ TitoApi::TitoApi(std::string token_str)
     this->token = std::string(token_str);
 }
 
-TitoApi::~TitoApi()
-{
-    // Do nothing
-}
-
 struct CurlResponse {
     char *ptr;
     size_t len;
