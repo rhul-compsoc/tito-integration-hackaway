@@ -3,9 +3,15 @@
 
 class TestTito : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE(TestTito);
-        CPPUNIT_TEST(testConstructor);
-        CPPUNIT_TEST_SUITE_END();
-    public:
-        TestTito(void);
-        void testConstructor();
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testCorrectToken);
+    CPPUNIT_TEST(testWrongToken);
+    CPPUNIT_TEST_SUITE_END();
+public:
+    TestTito(void);
+    void testConstructor();
+    void testCorrectToken();
+    void testWrongToken();
+private:
+    char *getToken();
 };
