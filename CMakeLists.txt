@@ -58,7 +58,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
     append_coverage_compiler_flags()
     setup_target_for_coverage_gcovr_xml(NAME coverage
         EXECUTABLE tito-integegration-hackaway-tests
-        EXCLUDE "build/*" "tests/*" "src/main.cpp" "*.hpp")
+        EXCLUDE "build/*" "tests/*" "src/main.cpp" "src/json.hpp")
 
 endif()
 
