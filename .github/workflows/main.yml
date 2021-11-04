@@ -11,6 +11,7 @@ on:
 
 jobs:
   analyze:
+    environment: TITO_TOKEN
     name: Analyse, Compile. Unit Tests and Coverage.
     runs-on: ubuntu-latest
 
@@ -47,7 +48,6 @@ jobs:
         
     - name: Run Tests and Coverage
       shell: bash
-      environment: TITO_TOKEN
       env:
         TITO_TOKEN: ${{ secrets.TITO_TOKEN }}
       run: |        
