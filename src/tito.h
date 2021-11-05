@@ -46,7 +46,8 @@ public:
                 bool deleted,
                 struct tm checkinTime,
                 struct tm deletedTime,
-                struct tm lastUpdateTime) {
+                struct tm lastUpdateTime)
+    {
         this->checkedin = checkedin;
         this->deleted = deleted;
         this->checkinTime = checkinTime;
@@ -68,7 +69,8 @@ public:
     TitoTicket(std::string ticketName,
                std::string ticketRelease,
                int quanitity,
-               TitoCheckin checkin) {
+               TitoCheckin checkin)
+    {
         this->ticketName = ticketName;
         this->ticketRelease = ticketRelease;
         this->quanitity = quanitity;
@@ -89,16 +91,17 @@ public:
     TitoAttendee(std::string name,
                  std::string email,
                  std::string phoneNumber,
-                 std::list<TitoAttendee> tickets) {        
+                 std::list<TitoAttendee> tickets)
+    {
         this->name = name;
         this->email = email;
         this->phoneNumber = phoneNumber;
         this->tickets = tickets;
-                 }
-                 std::string getName() { return this->name; }
-                 std::string getEmail() { return this->email; }
-                 std::string getPhoneNumber() { return this->phoneNumber; }
-                 std::list<TitoAttendee> getTickets() { return this->tickets; }
+    }
+    std::string getName() { return this->name; }
+    std::string getEmail() { return this->email; }
+    std::string getPhoneNumber() { return this->phoneNumber; }
+    std::list<TitoAttendee> getTickets() { return this->tickets; }
 private:
     // Don't tell Dave Cohen of my primitive obsession
     // Alexa git-blame-someone-else
