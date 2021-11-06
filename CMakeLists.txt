@@ -22,18 +22,9 @@ else ()
   message (ERROR "Operating system not recognised. Expected Windows, Linux or Darwin, but found ${CMAKE_SYSTEM_NAME}")
 endif ()
 
-#TODO: OS independent and portable builds
-
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# qt5
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
-find_package(Qt5 COMPONENTS Gui Core Widgets REQUIRED)
 
 # compiler flags
 set(COMPILER_FLAGS "-Wall -Wextra -Wpedantic")
@@ -42,7 +33,6 @@ set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
 set(CMAKE_C_FLAGS_RELEASE "-O2 ${COMPILER_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
 
-set_target_properties(Qt5::Core PROPERTIES MAP_IMPORTED_CONFIG_COVERAGE "RELEASE")
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake)
 
 if (CMAKE_BUILD_TYPE STREQUAL "TEST")
@@ -65,13 +55,12 @@ endif()
 # src
 set(MAIN
     src/main.cpp
-    resources.qrc
     )
 set(SRC_FILES
     src/tito.cpp
     )
 
-set(LIBS curl Qt5::Core Qt5::Widgets Qt5::Gui)
+set(LIBS curl ncurses)
 
 add_executable(tito-integegration-hackaway ${SRC_FILES} ${MAIN})
 
@@ -82,7 +71,7 @@ target_include_directories(tito-integegration-hackaway PUBLIC
 if (CMAKE_BUILD_TYPE STREQUAL "TEST")
     # tests, set the flags manually
     set(CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_DEBUG})
-    set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_DEBUG})
+    set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_DEBUG})
 
     set (TEST_FILES
         ${SRC_FILES}

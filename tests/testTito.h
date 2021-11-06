@@ -13,5 +13,7 @@ public:
     void testCorrectToken();
     void testWrongToken();
 private:
-    char *getToken();
+    std::string getToken();
+    std::string getAccountSlug();
+    std::string getEventSlug();
 };
