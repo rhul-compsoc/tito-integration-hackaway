@@ -35,7 +35,7 @@ public:
         this->ticketName = ticketName;
         this->ticketRelease = ticketRelease;
         this->quanitity = quanitity;
-        this->checkin;
+        this->checkin = checkin;
     }
     std::string getTicketName() { return this->ticketRelease; }
     std::string getTicketRelease() { return this->ticketName; }
