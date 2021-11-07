@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
 #include "testTito.h"
 #include "../src/tito.h"
 
@@ -35,5 +37,18 @@ void TestTito::testWrongToken()
         e = err;
     }
     CPPUNIT_ASSERT(e == TITO_ACCESS_TOKEN_ERROR);
+}
+
+void TestTito::testDateParser()
+{
+    struct tm t;
+    strptime("2018-06-18T09:35:39.000Z", TITO_DATE_FORMAT, &t);
+    
+    CPPUNIT_ASSERT(t.tm_mday == 18);
+    CPPUNIT_ASSERT(t.tm_mon == 6 - 1); // zero bound lmao
+    CPPUNIT_ASSERT(t.tm_year == 2018 - 1900); // see tm_struct.h
+    CPPUNIT_ASSERT(t.tm_hour == 9);
+    CPPUNIT_ASSERT(t.tm_min == 35);
+    CPPUNIT_ASSERT(t.tm_sec == 39);
 }
 

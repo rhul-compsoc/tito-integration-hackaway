@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include <iostream>
 #include <string.h>
+#include <time.h>
 #include "tito.h"
 #include "json.hpp"
 
@@ -144,7 +145,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         std::string name;
         std::string email;
         std::string phoneNumber;
-        std::list<TitoAttendee> tickets;
+        std::list<TitoTicket> tickets;
         
         if (attendee.contains("tickets")) {
             nlohmann::json ticketsJson = attendee.at("tickets");
@@ -160,9 +161,8 @@ std::list<TitoAttendee> TitoApi::getAttendees()
                 ticketJson.at("release_title").get_to(ticketRelease);
                 
                 // The API is poor, so I have to ask for the check ins later
-                TitoCheckin checkin;
-            
-                TitoTicket ticket(ticketID, ticketSlug, ticketRelease, checkin);
+                TitoTicket ticket(ticketID, ticketSlug, ticketRelease);
+                tickets.push_back(ticket);
             }
         }
         
@@ -172,8 +172,50 @@ std::list<TitoAttendee> TitoApi::getAttendees()
     // Parse the checkins
     url = "https://checkin.tito.io/checkin_lists/" 
         + this->accessToken + "/checkins";
-    resp = getRequest(url);    
-    rootJson = nlohmann::json::parse(resp);
+    resp = getRequest(url);
+    
+    // Parse checkins
+    rootJson = nlohmann::json::parse(resp);    
+    for (nlohmann::json::iterator it = rootJson.begin()
+        ;it != rootJson.end(); ++it) {
+        nlohmann::json checkinJson = it.value();
+        
+        int ticketID;
+        checkinJson.at("ticket_id").get_to(ticketID);
+        
+        std::string createdAt, updatedAt, deletedAt;
+        checkinJson.at("created_at").get_to(createdAt);
+        checkinJson.at("updated_at").get_to(updatedAt);            
+        bool deleted = checkinJson.at("deleted_at").is_null();
+        
+        // Turn these strings to dates (struct tm)
+        struct tm createdTime, updateTime, deletedTime;
+        
+        if (!deleted) {
+            checkinJson.at("deleted_at").get_to(deletedAt);
+            strptime(deletedAt.c_str(), TITO_DATE_FORMAT, &deletedTime);
+        }
+        
+        strptime(createdAt.c_str(), TITO_DATE_FORMAT, &createdTime);
+        strptime(updatedAt.c_str(), TITO_DATE_FORMAT, &updateTime);
+        
+        TitoCheckin checkin(deleted, createdTime, deletedTime, updateTime);
+        
+        // Find the attendee to give the checkin
+        bool flag = false;
+        for (TitoAttendee attendee : out) {
+            for (TitoTicket ticket : attendee.getTickets()) {
+                if (ticket.getTicketID() == ticketID) {
+                    ticket.setCheckin(checkin);
+                    flag = true;
+                    break;
+                }
+            }
+            
+            if (flag)
+                break;
+        }
+    }
     
     return out;
 }

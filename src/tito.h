@@ -16,6 +16,10 @@
 #define TITO_ACCOUNT_SLUG_ENV_VAR "TITO_ACCOUNT_SLUG"
 #define TITO_EVENT_SLUG_ENV_VAR "TITO_EVENT_SLUG"
 
+// 2018-06-18T09:35:39.000Z
+// %Y  -%m-%dT%T
+#define TITO_DATE_FORMAT "%Y-%m-%dT%T"
+
 /**
  * The internal networking is purely GET requests over HTTPS, as such I chose to
  * use curl to make these requests because curl is well known to simply just 
