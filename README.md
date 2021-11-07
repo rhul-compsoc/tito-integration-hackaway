@@ -14,6 +14,7 @@ of think centre computers that run Ubuntu.
 | TITO_TOKEN | The live API token for the TiTo event. |
 | TITO_ACCOUNT_SLUG | The account slug for the TiTo event, i.e: `royal-hackaway` |
 | TITO_EVENT_SLUG | The event slug for the TiTo event, i.e: `v5` |
+| TITO_CHECKIN_SLUG | The checkin slug (generated for web applications) |
 
 You should redirect `stderr` to a log file so that you do not get random (caught)
 error messages in the middle of the GUI.
