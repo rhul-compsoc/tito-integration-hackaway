@@ -26,9 +26,14 @@ void TestTito::testCorrectToken()
 
 void TestTito::testWrongToken()
 {    
-    TitoApi api = TitoApi("wrong token",
-                          getAccountSlug(),
-                          getEventSlug());
-    CPPUNIT_ASSERT(!api.checkAuthToken());
+    int e = TITO_ACCESS_TOKEN_ERROR + 1;
+    try {
+        TitoApi api = TitoApi("wrong token",
+                              getAccountSlug(),
+                              getEventSlug());
+    } catch (int err) {
+        e = err;
+    }
+    CPPUNIT_ASSERT(e == TITO_ACCESS_TOKEN_ERROR);
 }
 

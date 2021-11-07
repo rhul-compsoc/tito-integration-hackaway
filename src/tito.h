@@ -10,6 +10,7 @@
 #define TITO_NET_ERROR 0x0001
 #define TITO_AUTH_ERROR 0x0002
 #define TITO_INTERNAL_ERROR 0x0003
+#define TITO_ACCESS_TOKEN_ERROR 0x0004
 
 #define TITO_TOKEN_ENV_VAR "TITO_TOKEN"
 #define TITO_ACCOUNT_SLUG_ENV_VAR "TITO_ACCOUNT_SLUG"
@@ -23,12 +24,14 @@
 class TitoApi {
 public:
     /**
-     * Init the Tito API with the token.
+     * Inits the TiTo API token and then gets the check in slug using another
+     * API call.
      * 
      * @param token The Tito authentication token. is copied in the constructor.
      * @param accountSlug The Tito account name (i.e: royal-hackaway)
      * @param eventSlug The Tito event name (i.e: v5)
-     * The memory of the input string should be handled by the caller.
+     * @throws TITO_NET_ERROR if checkAuthToken() fails
+     * @throws TITO_UNABLE_TO_GET_CHECKIN_SLUG if the checkin slug was not found
      */ 
     TitoApi(std::string /*token*/,
             std::string /* accountSlug */, 
@@ -45,7 +48,9 @@ public:
     bool checkAuthToken();
     
     /**
-     * Gets all the registered attendees to the event.
+     * Gets all the registered attendees to the event. It also gets all the
+     * checkins for the tickets, this requires two api calls so it is twice as 
+     * likely to error I guess.
      * 
      * @return all attendees to the event
      * @throws TITO_NET_ERROR if there was a network error whilst connecting to
@@ -63,7 +68,10 @@ private:
      * @throws TITO_NET_ERROR When making the curl request fails.
      */ 
     std::string getRequest(std::string /* url */);
-    std::string token, accountSlug, eventSlug;
+    std::string token,
+                accountSlug,
+                eventSlug,
+                accessToken; // This slug is obtained on authentication.
 };
 
 std::string getToken();

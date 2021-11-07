@@ -27,23 +27,24 @@ private:
 
 class TitoTicket {
 public:
-    TitoTicket(std::string ticketName,
+    TitoTicket(int ticketID,
+               std::string ticketSlug,
                std::string ticketRelease,
-               int quanitity,
                TitoCheckin checkin)
     {
-        this->ticketName = ticketName;
+        this->ticketID = ticketID;
+        this->ticketSlug = ticketSlug;
         this->ticketRelease = ticketRelease;
-        this->quanitity = quanitity;
         this->checkin = checkin;
     }
-    std::string getTicketName() { return this->ticketRelease; }
-    std::string getTicketRelease() { return this->ticketName; }
-    int getQuantity() { return this-> quanitity; }
+    int getTicketID() { return this->ticketID; }
+    std::string getTicketSlug() { return this->ticketSlug; }
+    std::string getTicketRelease() { return this->ticketRelease; }
     TitoCheckin getCheckin() { return this->checkin; }
 private:
-    std::string ticketName, ticketRelease;
-    int quanitity;
+    int ticketID;
+    std::string ticketSlug,
+                ticketRelease;
     TitoCheckin checkin;
 };
 

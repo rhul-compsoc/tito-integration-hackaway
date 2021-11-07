@@ -5,6 +5,7 @@
 #include "json.hpp"
 
 #define TITO_AUTH_JSON_KEY "authenticated"
+#define TITO_ACCESS_TOKEN_JSON_KEY "access_token"
 
 TitoApi::TitoApi(std::string token_str,
                  std::string accountSlug,
@@ -13,6 +14,9 @@ TitoApi::TitoApi(std::string token_str,
     this->token = std::string(token_str);
     this->accountSlug = std::string(accountSlug);
     this->eventSlug = std::string(eventSlug);
+    if (!this->checkAuthToken()) { // This gets the checkin slug
+        throw TITO_ACCESS_TOKEN_ERROR;
+    }
 }
 
 struct CurlResponse {
@@ -117,7 +121,6 @@ std::list<TitoAttendee> TitoApi::getAttendees()
     std::string url = "https://api.tito.io/v3/" + this->accountSlug + "/" +
         this->eventSlug + "/registrations";
     std::string resp = getRequest(url);
-    
     nlohmann::json rootJson = nlohmann::json::parse(resp);
     
     // Check for errors
@@ -132,7 +135,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         throw TITO_INTERNAL_ERROR;
     }
     
-    // Start parsing
+    // Parse the registrations
     std::list<TitoAttendee> out;
     nlohmann::json registrationJson = rootJson.at("registrations");
     for (nlohmann::json::iterator it = registrationJson.begin()
@@ -148,11 +151,29 @@ std::list<TitoAttendee> TitoApi::getAttendees()
             for (nlohmann::json::iterator itt = registrationJson.begin()
                 ;itt != registrationJson.end(); ++itt) {
                 nlohmann::json ticketJson = itt.value();
+                
+                int ticketID;
+                ticketJson.at("ticket_id").get_to(ticketID);
+                std::string ticketSlug;
+                ticketJson.at("ticket_slug").get_to(ticketSlug);
+                std::string ticketRelease;
+                ticketJson.at("release_title").get_to(ticketRelease);
+                
+                // The API is poor, so I have to ask for the check ins later
+                TitoCheckin checkin;
+            
+                TitoTicket ticket(ticketID, ticketSlug, ticketRelease, checkin);
             }
         }
         
         out.push_back(TitoAttendee(name, email, phoneNumber, tickets));
     }
+    
+    // Parse the checkins
+    url = "https://checkin.tito.io/checkin_lists/" 
+        + this->accessToken + "/checkins";
+    resp = getRequest(url);    
+    rootJson = nlohmann::json::parse(resp);
     
     return out;
 }
@@ -170,6 +191,17 @@ bool TitoApi::checkAuthToken()
     }
     
     j.at(TITO_AUTH_JSON_KEY).get_to(ret);
+    if (ret) {
+        std::string accessTokenRaw;
+        j.at(TITO_ACCESS_TOKEN_JSON_KEY).get_to(accessTokenRaw);
+        // Remove the * from the access token
+        this->accessToken = std::string(accessTokenRaw.c_str() + 1);
+        
+#ifdef DEBUG
+      std::cerr << "Debug TitoApi::checkAuthToken() : Access token is "
+                << this->accessToken << std::endl;
+#endif
+    }
     
     return ret;
 }
@@ -222,7 +254,7 @@ std::string getTitoErrorMessage(int e)
             " is not defined in the environment variables.";
         case TITO_ACCOUNT_SLUG_NOT_FOUND:
             return TITO_ACCOUNT_SLUG_ENV_VAR 
-            " is not defined in the environment variables.";    
+            " is not defined in the environment variables.";
         case TITO_EVENT_SLUG_NOT_FOUND:
             return TITO_EVENT_SLUG_ENV_VAR 
             " is not defined in the environment variables.";
@@ -233,6 +265,10 @@ std::string getTitoErrorMessage(int e)
             return "An authentication error occurred when contacting the TiTo API.";
         case TITO_INTERNAL_ERROR:
             return "A internal error occurred when contacting the TiTo API. (See stderr for details)";
+        case TITO_ACCESS_TOKEN_ERROR:
+            return "The checkin slug could not be found as there was an authentication error.";
+        default:
+            return "An unknown error has occurred.";
     }
 }
 
