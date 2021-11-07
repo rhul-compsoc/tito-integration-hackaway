@@ -18,6 +18,6 @@
 #define COLOUR_ORANGE_AND_BLACK 4
 #define COLOUR_PAIR_ORANGE_AND_BLACK COLOR_PAIR(COLOUR_ORANGE_AND_BLACK)
 
-void print_logo_centre(int /*x_offset*/, int /*y_offset*/, int /*force_small*/);
-void print_centre(int /*x_offset*/, int /*y_offset*/, std::string /*str*/);
+int print_logo_centre(int /*x_offset*/, int /*y_offset*/, int /*force_small*/);
+int print_centre(int /*x_offset*/, int /*y_offset*/, std::string /*str*/);
 void setup_colours();

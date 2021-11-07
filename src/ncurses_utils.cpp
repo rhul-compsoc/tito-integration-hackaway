@@ -52,31 +52,33 @@ std::string logo_twenty_five =
 "    _{Wq{_     _iqW},    \n"
 "        !tWKhKWj~        \n";
 
-void print_logo_centre(int x_offset, int y_offset, int force_small)
+int print_logo_centre(int x_offset, int y_offset, int force_small)
 {
+    int lines;
     int width = getmaxx(stdscr);
     if (width >= 55 && !force_small) {
-        print_centre(x_offset, y_offset, logo_fifty_five);
+        lines = print_centre(x_offset, y_offset, logo_fifty_five);
     } else {
-        int offset = (width - 25) / 2;
-        print_centre(x_offset, y_offset, logo_twenty_five);
+        lines = print_centre(x_offset, y_offset, logo_twenty_five);
     }
+    return lines;
 }
 
-void print_centre(int x_offset, int y_offset, std::string str)
+int print_centre(int x_offset, int y_offset, std::string str)
 {
     int width = 0;
     width = getmaxx(stdscr);
     
-    int i = 0;        
+    int lines = 0;        
     std::string line;
     std::stringstream streamData(str);
     while (std::getline(streamData, line, '\n')) {
         int offset = (width - line.size()) / 2;
-        mvaddstr(y_offset + i, x_offset + offset, line.c_str());
-        i++;
+        mvaddstr(y_offset + lines, x_offset + offset, line.c_str());
+        lines++;
     }
     addstr("\n");
+    return lines;
 }
 
 

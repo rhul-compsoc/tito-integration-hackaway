@@ -173,3 +173,66 @@ bool TitoApi::checkAuthToken()
     
     return ret;
 }
+
+std::string getToken()
+{    
+    char* token;
+    token = getenv(TITO_TOKEN_ENV_VAR);
+    
+    if (token != NULL) {
+        return std::string(token);
+    }
+    
+    std::cerr << "Error TestTito::getToken() : No authentication token in environment variables." << std::endl;
+    throw TITO_TOKEN_NOT_FOUND;
+}
+
+std::string getAccountSlug()
+{
+    char* token;
+    token = getenv(TITO_ACCOUNT_SLUG_ENV_VAR);
+    
+    if (token != NULL) {
+        return std::string(token);
+    }
+    
+    std::cerr << "Error TestTito::getAccountSlug() : No account slug in environment variables." << std::endl;
+    throw TITO_ACCOUNT_SLUG_NOT_FOUND;
+}
+
+std::string getEventSlug()
+{
+    char* token;
+    token = getenv(TITO_EVENT_SLUG_ENV_VAR);
+    
+    if (token != NULL) {
+        return std::string(token);
+    }
+    
+    std::cerr << "Error TestTito::getEventSlug() : No event slug in environment variables." << std::endl;
+    throw TITO_EVENT_SLUG_NOT_FOUND;
+}
+
+std::string getTitoErrorMessage(int e)
+{    
+    switch(e) {
+        // Environment varuable errors
+        case TITO_TOKEN_NOT_FOUND:
+            return TITO_TOKEN_ENV_VAR 
+            " is not defined in the environment variables.";
+        case TITO_ACCOUNT_SLUG_NOT_FOUND:
+            return TITO_ACCOUNT_SLUG_ENV_VAR 
+            " is not defined in the environment variables.";    
+        case TITO_EVENT_SLUG_NOT_FOUND:
+            return TITO_EVENT_SLUG_ENV_VAR 
+            " is not defined in the environment variables.";
+        // TiTo API Errors
+        case TITO_NET_ERROR:
+            return "A network error occurred when contacting the TiTo API.";
+        case TITO_AUTH_ERROR:
+            return "An authentication error occurred when contacting the TiTo API.";
+        case TITO_INTERNAL_ERROR:
+            return "A internal error occurred when contacting the TiTo API. (See stderr for details)";
+    }
+}
+

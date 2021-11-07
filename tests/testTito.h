@@ -12,8 +12,4 @@ public:
     void testConstructor();
     void testCorrectToken();
     void testWrongToken();
-private:
-    std::string getToken();
-    std::string getAccountSlug();
-    std::string getEventSlug();
 };
