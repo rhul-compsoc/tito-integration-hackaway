@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <ncurses.h>
-#include "ncurses_colours.h"
+#include "ncurses_utils.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     initscr();
     
     // Get all input in real time
@@ -17,8 +18,12 @@ int main(int argc, char **argv) {
         exit(1);
     }
     
-    start_color();    
+    start_color();
     setup_colours();
+    
+    attron(COLOUR_PAIR_ORANGE_AND_BLACK);
+    print_logo_centre(0, 0, 0);
+    attroff(COLOUR_PAIR_ORANGE_AND_BLACK);
     
     attron(COLOUR_PAIR_GREEN_AND_BLACK);
     addstr("Royal hackaway tito integration.");

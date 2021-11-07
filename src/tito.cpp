@@ -130,31 +130,30 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         std::cerr << "Error : TitoApi::getAttendees() : interneal errors "
                   << std::endl;
         throw TITO_INTERNAL_ERROR;
-    }   
-        
+    }
+    
     // Start parsing
     std::list<TitoAttendee> out;
     nlohmann::json registrationJson = rootJson.at("registrations");
     for (nlohmann::json::iterator it = registrationJson.begin()
         ;it != registrationJson.end(); ++it) {
-        nlohmann::json attendee = it.value();       
+        nlohmann::json attendee = it.value();
         std::string name;
         std::string email;
         std::string phoneNumber;
         std::list<TitoAttendee> tickets;
         
         if (attendee.contains("tickets")) {
-            nlohmann::json ticketsJson = attendee.at("tickets");   
+            nlohmann::json ticketsJson = attendee.at("tickets");
             for (nlohmann::json::iterator itt = registrationJson.begin()
                 ;itt != registrationJson.end(); ++itt) {
                 nlohmann::json ticketJson = itt.value();
-                
             }
         }
         
         out.push_back(TitoAttendee(name, email, phoneNumber, tickets));
     }
-        
+    
     return out;
 }
 

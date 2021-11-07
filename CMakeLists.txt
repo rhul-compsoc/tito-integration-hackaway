@@ -58,7 +58,7 @@ set(MAIN
     )
 set(SRC_FILES
     src/tito.cpp
-    src/ncurses_colours.cpp
+    src/ncurses_utils.cpp
     )
 
 set(LIBS curl ncurses)
