@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     refresh();
     
     try {
-        TitoApi api(getToken(), getAccountSlug(), getEventSlug());
+        TitoApi api(getToken(), getAccountSlug(), getEventSlug(), getCheckinSlug());
         std::list<TitoAttendee> attendees = api.getAttendees();
     } catch (int e) {
         attron(COLOUR_PAIR_RED_AND_BLACK);

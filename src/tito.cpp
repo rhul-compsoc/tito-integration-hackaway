@@ -10,11 +10,13 @@
 
 TitoApi::TitoApi(std::string token_str,
                  std::string accountSlug,
-                 std::string eventSlug)
+                 std::string eventSlug,
+                 std::string checkinSlug)
 {
     this->token = std::string(token_str);
     this->accountSlug = std::string(accountSlug);
     this->eventSlug = std::string(eventSlug);
+    this->checkinSlug = std::string(checkinSlug);
     if (!this->checkAuthToken()) { // This gets the checkin slug
         throw TITO_ACCESS_TOKEN_ERROR;
     }
@@ -73,6 +75,10 @@ static void freeCurlResponse(struct CurlResponse *resp)
 
 std::string TitoApi::getRequest(std::string url)
 {
+#ifdef DEBUG
+    std::cerr << "Debug TitoApi::getRequest() : The URL is " << url<< std::endl;
+#endif
+    
     CURL *curl = curl_easy_init();
     if(curl) {
         CURLcode res;
@@ -146,7 +152,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         throw TITO_AUTH_ERROR; // Probably an auth error lmao
     }
     if (!rootJson.contains("registrations")) {
-        std::cerr << "Error : TitoApi::getAttendees() : interneal errors "
+        std::cerr << "Error : TitoApi::getAttendees() : internal errors, maybe the slugs are wrong "
                   << std::endl;
         throw TITO_INTERNAL_ERROR;
     }
@@ -186,13 +192,13 @@ std::list<TitoAttendee> TitoApi::getAttendees()
     
     // Parse the checkins
     url = "https://checkin.tito.io/checkin_lists/" 
-        + this->accessToken + "/checkins";
+        + this->checkinSlug + "/checkins";
     resp = getRequest(url);
     
     // Parse checkins
     rootJson = nlohmann::json::parse(resp);
     if (rootJson.contains("message")) {
-        std::cerr << "Error TitoApi:getAttendees() : Unable to find checkins on the TiTo server" 
+        std::cerr << "Error TitoApi::getAttendees() : Unable to find checkins on the TiTo server" 
                   << std::endl;
         throw TITO_CHECKINS_NOT_FOUND_ERROR;
     }
@@ -314,6 +320,19 @@ std::string getEventSlug()
     throw TITO_EVENT_SLUG_NOT_FOUND;
 }
 
+std::string getCheckinSlug()
+{    
+    char* token;
+    token = getenv(TITO_CHECKIN_SLUG_ENV_VAR);
+    
+    if (token != NULL) {
+        return std::string(token);
+    }
+    
+    std::cerr << "Error TestTito::getCheckinSlug() : No event slug in environment variables." << std::endl;
+    throw TITO_CHECKIN_SLUG_NOT_FOUND;
+}
+
 std::string getTitoErrorMessage(int e)
 {    
     switch(e) {
@@ -326,6 +345,9 @@ std::string getTitoErrorMessage(int e)
             " is not defined in the environment variables.";
         case TITO_EVENT_SLUG_NOT_FOUND:
             return TITO_EVENT_SLUG_ENV_VAR 
+            " is not defined in the environment variables.";
+        case TITO_CHECKIN_SLUG_NOT_FOUND:
+            return TITO_CHECKIN_SLUG_ENV_VAR 
             " is not defined in the environment variables.";
         // TiTo API Errors
         case TITO_NET_ERROR:

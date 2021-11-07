@@ -3,9 +3,10 @@
 #include <list>
 #include "tito_classes.hpp"
 
-#define TITO_TOKEN_NOT_FOUND 0x0101
-#define TITO_ACCOUNT_SLUG_NOT_FOUND 0x0102
-#define TITO_EVENT_SLUG_NOT_FOUND 0x0103
+#define TITO_TOKEN_NOT_FOUND 0x01001
+#define TITO_ACCOUNT_SLUG_NOT_FOUND 0x01002
+#define TITO_EVENT_SLUG_NOT_FOUND 0x01003
+#define TITO_CHECKIN_SLUG_NOT_FOUND 0x01004
 
 #define TITO_NET_ERROR 0x0001
 #define TITO_AUTH_ERROR 0x0002
@@ -16,6 +17,7 @@
 #define TITO_TOKEN_ENV_VAR "TITO_TOKEN"
 #define TITO_ACCOUNT_SLUG_ENV_VAR "TITO_ACCOUNT_SLUG"
 #define TITO_EVENT_SLUG_ENV_VAR "TITO_EVENT_SLUG"
+#define TITO_CHECKIN_SLUG_ENV_VAR "TITO_CHECKIN_SLUG"
 
 // 2018-06-18T09:35:39.000Z
 // %Y  -%m-%dT%T
@@ -40,7 +42,8 @@ public:
      */ 
     TitoApi(std::string /*token*/,
             std::string /* accountSlug */, 
-            std::string /* eventSlug */);
+            std::string /* eventSlug */,
+            std::string /* checkinSlug */);
     
     /**
      * Checks whether the authentication token passed in the constructor is
@@ -76,10 +79,12 @@ private:
     std::string token,
                 accountSlug,
                 eventSlug,
+                checkinSlug,
                 accessToken; // This slug is obtained on authentication.
 };
 
 std::string getToken();
 std::string getAccountSlug();
 std::string getEventSlug();
+std::string getCheckinSlug();
 std::string getTitoErrorMessage(int);

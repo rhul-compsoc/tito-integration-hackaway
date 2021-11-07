@@ -16,14 +16,16 @@ void TestTito::testConstructor()
 {
     TitoApi api = TitoApi(getToken(),
                           getAccountSlug(),
-                          getEventSlug());
+                          getEventSlug(),
+                          getCheckinSlug());
 }
 
 void TestTito::testCheckAuth()
 {
     TitoApi api = TitoApi(getToken(),
                           getAccountSlug(),
-                          getEventSlug());
+                          getEventSlug(),
+                          getCheckinSlug());
     CPPUNIT_ASSERT(api.checkAuthToken());
 }
 
@@ -31,7 +33,8 @@ void TestTito::testGetAttendees()
 {
     TitoApi api = TitoApi(getToken(),
                           getAccountSlug(),
-                          getEventSlug());
+                          getEventSlug(),
+                          getCheckinSlug());
     std::list<TitoAttendee> attendees = api.getAttendees();
     CPPUNIT_ASSERT(attendees.size() > 0);
 }
@@ -43,7 +46,8 @@ void TestTito::testWrongToken()
     try {
         TitoApi api = TitoApi("wrong token",
                               getAccountSlug(),
-                              getEventSlug());
+                              getEventSlug(),
+                              getCheckinSlug());
     } catch (int err) {
         e = err;
     }

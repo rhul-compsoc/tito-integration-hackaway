@@ -52,6 +52,7 @@ jobs:
         TITO_TOKEN: ${{ secrets.TITO_TOKEN }}
         TITO_EVENT_SLUG: ${{ secrets.TITO_EVENT_SLUG }}
         TITO_ACCOUNT_SLUG: ${{ secrets.TITO_ACCOUNT_SLUG }}
+        TITO_CHECKIN_SLUG: ${{ secrets.TITO_CHECKIN_SLUG }}
       run: |        
         mkdir -p build
         cd build
