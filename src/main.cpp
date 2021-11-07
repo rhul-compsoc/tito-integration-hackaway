@@ -61,7 +61,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
     
-    y += print_centre(0, y, "Loaded attendees.");
+    y += print_centre(0, y, "Loaded attendees and checkins.");
     y += print_centre(0, y, "Loading id cache.");
     
     warn_exit();

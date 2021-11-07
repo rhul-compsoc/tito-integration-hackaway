@@ -25,21 +25,36 @@ struct CurlResponse {
     size_t len;
 };
 
-static size_t write_callback(char *ptr,
+static size_t write_callback(char *ptr_in,
                              size_t size,
                              size_t nmemb,
                              void *userdata)
 {
     struct CurlResponse *response = (struct CurlResponse *) userdata;
-    response->ptr = (char *) malloc((size * nmemb) + 1);
     if (response->ptr == NULL) {
-        std::cerr << "Error TitoApi::write_callback() : malloc failed." << std::endl;
-        return 0;
-    }
-    
-    response->ptr[size * nmemb] = '\0';
-    response->len = size * nmemb;
-    memcpy(response->ptr, ptr, size * nmemb);
+        response->ptr = (char *) malloc((size * nmemb) + 1);
+        if (response->ptr == NULL) {
+            std::cerr << "Error TitoApi::write_callback() : malloc failed." 
+                      << std::endl;
+            return 0;
+        }
+        
+        response->ptr[size * nmemb] = '\0';
+        response->len = size * nmemb;
+        memcpy(response->ptr, ptr_in, size * nmemb);
+    } else {
+        // We have to sellotape the chunks together
+        response->ptr = (char *) realloc(response->ptr, response->len + (size * nmemb) + 1);        
+        if (response->ptr == NULL) {
+            std::cerr << "Error TitoApi::write_callback() : realloc failed." 
+                      << std::endl;
+            return 0;
+        }
+        
+        response->ptr[response->len + (size * nmemb)] = '\0';
+        memcpy(response->ptr + response->len, ptr_in, size * nmemb);
+        response->len += size * nmemb;
+    }    
     
 #ifdef DEBUG
     std::cerr << "Debug TitoApi::write_callback() : " << response->ptr << std::endl;
@@ -175,7 +190,13 @@ std::list<TitoAttendee> TitoApi::getAttendees()
     resp = getRequest(url);
     
     // Parse checkins
-    rootJson = nlohmann::json::parse(resp);    
+    rootJson = nlohmann::json::parse(resp);
+    if (rootJson.contains("message")) {
+        std::cerr << "Error TitoApi:getAttendees() : Unable to find checkins on the TiTo server" 
+                  << std::endl;
+        throw TITO_CHECKINS_NOT_FOUND_ERROR;
+    }
+    
     for (nlohmann::json::iterator it = rootJson.begin()
         ;it != rootJson.end(); ++it) {
         nlohmann::json checkinJson = it.value();
@@ -214,6 +235,12 @@ std::list<TitoAttendee> TitoApi::getAttendees()
             
             if (flag)
                 break;
+        }
+        
+        if (!flag) {
+            std::cerr << "Error TitoApi:getAttendees() : Unable to find ticket for check in "
+                      << ticketID << " (checked in at " << asctime(&createdTime) << ")" 
+                      << std::endl;
         }
     }
     
@@ -308,7 +335,9 @@ std::string getTitoErrorMessage(int e)
         case TITO_INTERNAL_ERROR:
             return "A internal error occurred when contacting the TiTo API. (See stderr for details)";
         case TITO_ACCESS_TOKEN_ERROR:
-            return "The checkin slug could not be found as there was an authentication error.";
+            return "The check-in slug could not be found as there was an authentication error.";
+        case TITO_CHECKINS_NOT_FOUND_ERROR:
+            return "Check-ins could not be found, TiTo returned an error message.";
         default:
             return "An unknown error has occurred.";
     }

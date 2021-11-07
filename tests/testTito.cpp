@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
+#include <list>
 #include "testTito.h"
 #include "../src/tito.h"
 
@@ -18,13 +19,23 @@ void TestTito::testConstructor()
                           getEventSlug());
 }
 
-void TestTito::testCorrectToken()
+void TestTito::testCheckAuth()
 {
     TitoApi api = TitoApi(getToken(),
                           getAccountSlug(),
                           getEventSlug());
     CPPUNIT_ASSERT(api.checkAuthToken());
 }
+
+void TestTito::testGetAttendees()
+{
+    TitoApi api = TitoApi(getToken(),
+                          getAccountSlug(),
+                          getEventSlug());
+    std::list<TitoAttendee> attendees = api.getAttendees();
+    CPPUNIT_ASSERT(attendees.size() > 0);
+}
+
 
 void TestTito::testWrongToken()
 {    
