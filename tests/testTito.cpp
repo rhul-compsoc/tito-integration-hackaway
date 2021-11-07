@@ -1,9 +1,11 @@
+#include <list>
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
-#include <list>
+#include <unistd.h>
 #include "testTito.h"
 #include "../src/tito.h"
+#include "../src/tito_classes.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestTito);
 
@@ -67,3 +69,35 @@ void TestTito::testDateParser()
     CPPUNIT_ASSERT(t.tm_sec == 39);
 }
 
+void TestTito::testIDCache()
+{
+    // Delete the old file if it is present
+    if (access(ID_CACHE_FILE, F_OK) != -1) {
+        CPPUNIT_ASSERT(remove(ID_CACHE_FILE) == 0);
+    }
+    
+    TitoApi *api = new TitoApi(getToken(),
+                               getAccountSlug(),
+                               getEventSlug(),
+                               getCheckinSlug());
+    
+    CPPUNIT_ASSERT(access(ID_CACHE_FILE, F_OK) != -1);
+    TitoAttendee attendee = TitoAttendee("name",
+                                         "email",
+                                         "phone number",
+                                         std::list<TitoTicket>());
+    
+    CPPUNIT_ASSERT(!api->hasIDBeenGiven(attendee));
+    api->addIDToCache(attendee);
+    CPPUNIT_ASSERT(api->hasIDBeenGiven(attendee));
+    
+    delete api;
+        
+    CPPUNIT_ASSERT(access(ID_CACHE_FILE, F_OK) != -1);    
+    api = new TitoApi(getToken(),
+                      getAccountSlug(),
+                      getEventSlug(),
+                      getCheckinSlug());
+    
+    CPPUNIT_ASSERT(api->hasIDBeenGiven(attendee));    
+}

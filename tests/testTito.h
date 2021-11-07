@@ -8,6 +8,7 @@ class TestTito : public CppUnit::TestCase {
     CPPUNIT_TEST(testWrongToken);
     CPPUNIT_TEST(testGetAttendees);
     CPPUNIT_TEST(testDateParser);
+    CPPUNIT_TEST(testIDCache);
     CPPUNIT_TEST_SUITE_END();
 public:
     TestTito(void);
@@ -16,4 +17,5 @@ public:
     void testWrongToken();
     void testGetAttendees();
     void testDateParser(); // Tests the date format
+    void testIDCache();
 };

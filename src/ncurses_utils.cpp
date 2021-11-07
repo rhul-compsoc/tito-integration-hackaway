@@ -69,7 +69,7 @@ int print_centre(int x_offset, int y_offset, std::string str)
     int width = 0;
     width = getmaxx(stdscr);
     
-    int lines = 0;        
+    int lines = 0;
     std::string line;
     std::stringstream streamData(str);
     while (std::getline(streamData, line, '\n')) {

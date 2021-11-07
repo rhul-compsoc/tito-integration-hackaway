@@ -1,7 +1,13 @@
 #include <curl/curl.h>
 #include <iostream>
+#include <ios>
+#include <sstream>
+#include <vector>
+#include <fstream>
 #include <string.h>
+#include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 #include "tito.h"
 #include "json.hpp"
 
@@ -17,8 +23,73 @@ TitoApi::TitoApi(std::string token_str,
     this->accountSlug = std::string(accountSlug);
     this->eventSlug = std::string(eventSlug);
     this->checkinSlug = std::string(checkinSlug);
+    this->readIDCache();
     if (!this->checkAuthToken()) { // This gets the checkin slug
         throw TITO_ACCESS_TOKEN_ERROR;
+    }
+}
+
+bool TitoApi::hasIDBeenGiven(TitoAttendee attendee)
+{
+    std::string name = attendee.getName();
+    for (std::string idGiven : this->idsGiven) {
+        if (name == idGiven) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void TitoApi::addIDToCache(TitoAttendee attendee)
+{
+    std::string name = attendee.getName();
+    
+    FILE *f = fopen(ID_CACHE_FILE, "a");
+    if (f == NULL) {
+        std::cerr << "Error TitoApi::addIDToCache() : ID cache file cannot be made." 
+                  << std::endl;
+        throw TITO_ID_CACHE_ERROR;
+    }
+    fprintf(f, "%s\n", name.c_str());
+    fclose(f);
+    
+    this->idsGiven.push_back(name);
+}
+
+void TitoApi::readIDCache()
+{
+    this->idsGiven = std::list<std::string>();
+    if (access(ID_CACHE_FILE, F_OK) == -1) {
+        std::cerr << "Error TitoApi::readIDCache() : ID cache file does note exist." 
+                  << std::endl;
+        FILE *f = fopen(ID_CACHE_FILE, "w");
+        if (f == NULL) {
+            std::cerr << "Error TitoApi::readIDCache() : ID cache file cannot be made." 
+                      << std::endl;
+            throw TITO_ID_CACHE_ERROR;
+        }
+        fclose(f);
+    } else {
+        std::ifstream file;
+        file.open(ID_CACHE_FILE, std::ios::in);
+        if (!file.good()) {
+            std::cerr << "Error TitoApi::readIDCache() : Cannot read the id cache file." 
+                      << std::endl;
+            throw TITO_ID_CACHE_ERROR;
+        }
+        
+        std::string str;
+        file >> str;
+        
+        std::string line;
+        std::stringstream streamData(str);
+        while (std::getline(streamData, line, '\n')) {
+            if (line != "") {
+                this->idsGiven.push_back(line);
+            }
+        }
+        
+        file.close();
     }
 }
 
@@ -349,6 +420,8 @@ std::string getTitoErrorMessage(int e)
         case TITO_CHECKIN_SLUG_NOT_FOUND:
             return TITO_CHECKIN_SLUG_ENV_VAR 
             " is not defined in the environment variables.";
+        case TITO_ID_CACHE_ERROR:
+            return "An error whilst reading or writing " ID_CACHE_FILE " has occurred.";
         // TiTo API Errors
         case TITO_NET_ERROR:
             return "A network error occurred when contacting the TiTo API.";

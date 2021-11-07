@@ -3,10 +3,13 @@
 #include <list>
 #include "tito_classes.hpp"
 
+#define ID_CACHE_FILE "ids_given.txt"
+
 #define TITO_TOKEN_NOT_FOUND 0x01001
 #define TITO_ACCOUNT_SLUG_NOT_FOUND 0x01002
 #define TITO_EVENT_SLUG_NOT_FOUND 0x01003
 #define TITO_CHECKIN_SLUG_NOT_FOUND 0x01004
+#define TITO_ID_CACHE_ERROR 0x01005
 
 #define TITO_NET_ERROR 0x0001
 #define TITO_AUTH_ERROR 0x0002
@@ -67,6 +70,21 @@ public:
      * the Tito system
      */ 
     std::list<TitoAttendee> getAttendees();
+    /**
+     * Returns whether a TitoATttendee ha been give their ID card.
+     * 
+     * @param TitoAttendee the attendee to check
+     * @return whether they have been given their ID card
+     */ 
+    bool hasIDBeenGiven(TitoAttendee);
+    /**
+     * Marks an attendee as having their ID card given out.
+     * 
+     * @param TitoAttendee the attendee to mark as having their ID card given out
+     * @throws TITO_ID_CACHE_ERROR if they could not be marked as having their ID
+     * cache given out
+     */ 
+    void addIDToCache(TitoAttendee);
 private:
     /**
      * Makes a GET request to an endpoint with the tito API headers and returns 
@@ -81,6 +99,8 @@ private:
                 eventSlug,
                 checkinSlug,
                 accessToken; // This slug is obtained on authentication.
+    std::list<std::string> idsGiven;
+    void readIDCache();
 };
 
 std::string getToken();
