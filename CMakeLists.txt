@@ -78,6 +78,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
         ${SRC_FILES}
         tests/runner.cpp
         tests/testTito.cpp
+        tests/testNcursesUtils.cpp
         )
     add_executable(tito-integegration-hackaway-tests ${TEST_FILES})
     target_link_libraries(tito-integegration-hackaway-tests
