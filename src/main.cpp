@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     start_color();
     setup_colours();
     
-    int y = 0;
+    int y = 2;
     
     attron(COLOUR_PAIR_ORANGE_AND_BLACK);
     y += print_logo_centre(0, y, 0);

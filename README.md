@@ -25,3 +25,11 @@ Use cmake to compile, the `DEBUG` to print extra information to stderr and, the
 `TEST` flag to create compile the tests. 
 With the tests you can run the 
 `tito-integration-hackaway-tests` executable or `make coverage` to execute them.
+
+## Tests
+To run the tests it is recommended to not use the live tokens, and in fact use
+another event which has no consequences if things go wrong.
+
+## Future Maintainers
+I am not sorry for using C++, I was told by someone that it is far more readable
+than ANSI C so I took their advice and ++'ed my C.

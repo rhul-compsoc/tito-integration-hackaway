@@ -193,18 +193,21 @@ std::string TitoApi::getRequest(std::string url)
         
         if (!getSuccess) {
             if (res != CURLE_OK) {
-                std::cerr << "Error TitoApi::getRequest() : curl perform failed." << std::endl;
+                std::cerr << "Error TitoApi::getRequest() : curl perform failed."
+                          << std::endl;
                 fprintf(stderr, "curl_easy_perform() failed: %s\n",
                         curl_easy_strerror(res));
             } else {
-                std::cerr << "Error TitoApi::getRequest() : no response was read." << std::endl;
+                std::cerr << "Error TitoApi::getRequest() : no response was read." 
+                          << std::endl;
             }
             throw TITO_NET_ERROR;
         }
         
         return resp;
     } else {
-        std::cerr << "Error TitoApi::getRequest() : curl init failed." << std::endl;
+        std::cerr << "Error TitoApi::getRequest() : curl init failed." 
+                  << std::endl;
         throw TITO_NET_ERROR;
     }
 }
@@ -361,7 +364,8 @@ std::string getToken()
         return std::string(token);
     }
     
-    std::cerr << "Error TestTito::getToken() : No authentication token in environment variables." << std::endl;
+    std::cerr << "Error TestTito::getToken() : No authentication token in environment variables."
+              << std::endl;
     throw TITO_TOKEN_NOT_FOUND;
 }
 
@@ -387,7 +391,8 @@ std::string getEventSlug()
         return std::string(token);
     }
     
-    std::cerr << "Error TestTito::getEventSlug() : No event slug in environment variables." << std::endl;
+    std::cerr << "Error TestTito::getEventSlug() : No event slug in environment variables."
+              << std::endl;
     throw TITO_EVENT_SLUG_NOT_FOUND;
 }
 
@@ -400,14 +405,15 @@ std::string getCheckinSlug()
         return std::string(token);
     }
     
-    std::cerr << "Error TestTito::getCheckinSlug() : No event slug in environment variables." << std::endl;
+    std::cerr << "Error TestTito::getCheckinSlug() : No event slug in environment variables."
+              << std::endl;
     throw TITO_CHECKIN_SLUG_NOT_FOUND;
 }
 
 std::string getTitoErrorMessage(int e)
 {    
     switch(e) {
-        // Environment varuable errors
+        // Environment variable errors
         case TITO_TOKEN_NOT_FOUND:
             return TITO_TOKEN_ENV_VAR 
             " is not defined in the environment variables.";
@@ -437,4 +443,3 @@ std::string getTitoErrorMessage(int e)
             return "An unknown error has occurred.";
     }
 }
-
