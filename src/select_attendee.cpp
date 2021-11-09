@@ -142,10 +142,12 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
 
         // Print attendees
         int i = 0;
+        int yOfSelected = 0;
         for (TitoAttendee attendee : attendees) {
             if (i - scrollOffset >= 0
                 && y < getmaxy(stdscr) - SELECTION_Y_PADDING) {
                 if (i == currentlySelected) {
+                    yOfSelected = i;
                     attron(COLOUR_PAIR_BLACK_AND_GREEN);
                 }
 
@@ -166,6 +168,23 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
         refresh();
         int input = getch();
         switch (input) {
+            // Navigation
+            case KEY_UP:
+                if (currentlySelected > 0) {
+                    currentlySelected--;
+                    if (currentlySelected - scrollOffset < 0) {
+                        scrollOffset--;
+                    }
+                }
+                break;
+            case KEY_DOWN:
+                if (currentlySelected < ((int) attendees.size()) - 1) {
+                    currentlySelected++;
+                    if (yOfSelected >= getmaxy(stdscr) - SELECTION_Y_PADDING) {
+                        scrollOffset++;
+                    }
+                }
+                break;
             // Make selection
             case '\n':
             case KEY_ENTER:
