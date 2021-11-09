@@ -150,11 +150,9 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
                 }
 
                 // Print the selected attendee and their tickets
-                for (TitoTicket ticket : attendee.getTickets()) {
-                    std::string attendeeRow = getAttendeeTableEntry(attendee, ticket);
-                    PAD_STR_TO_TABLE(attendeeRow);
-                    y += print_left(SELECTION_X_PADDING, y, attendeeRow);
-                }
+                std::string attendeeRow = getAttendeeTableEntry(attendee, attendee.getTicket());
+                PAD_STR_TO_TABLE(attendeeRow);
+                y += print_left(SELECTION_X_PADDING, y, attendeeRow);
 
                 if (i == currentlySelected) {
                     attroff(COLOUR_PAIR_BLACK_AND_GREEN);

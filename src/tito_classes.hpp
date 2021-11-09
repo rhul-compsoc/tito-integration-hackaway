@@ -35,6 +35,7 @@ public:
         this->ticketRelease = ticketRelease;
         this->checkedIn = false;
     }
+    TitoTicket() {} // Do not use this constructor please
     int getTicketID() { return this->ticketID; }
     std::string getTicketSlug() { return this->ticketSlug; }
     std::string getTicketRelease() { return this->ticketRelease; }
@@ -54,21 +55,21 @@ public:
     TitoAttendee(std::string name,
                  std::string email,
                  std::string phoneNumber,
-                 std::list<TitoTicket> tickets)
+                 TitoTicket ticket)
     {
         this->name = name;
         this->email = email;
         this->phoneNumber = phoneNumber;
-        this->tickets = tickets;
+        this->ticket = ticket;
     }
     TitoAttendee() {}; // Do not use this constructor please
     std::string getName() { return this->name; }
     std::string getEmail() { return this->email; }
     std::string getPhoneNumber() { return this->phoneNumber; }
-    std::list<TitoTicket> getTickets() { return this->tickets; }
+    TitoTicket getTicket() { return this->ticket; }
 private:
     // Don't tell Dave Cohen of my primitive obsession
     // Alexa git-blame-someone-else
     std::string name, email, phoneNumber;
-    std::list<TitoTicket> tickets;
+    TitoTicket ticket;
 };

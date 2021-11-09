@@ -215,7 +215,7 @@ std::string TitoApi::getRequest(std::string url)
 std::list<TitoAttendee> TitoApi::getAttendees()
 {
     std::string url = "https://api.tito.io/v3/" + this->accountSlug + "/" +
-        this->eventSlug + "/registrations";
+        this->eventSlug + "/tickets";
     std::string resp = getRequest(url);
     nlohmann::json rootJson = nlohmann::json::parse(resp);
     
@@ -225,7 +225,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
                   << "or errors " << std::endl;
         throw TITO_AUTH_ERROR; // Probably an auth error lmao
     }
-    if (!rootJson.contains("registrations")) {
+    if (!rootJson.contains("tickets")) {
         std::cerr << "Error : TitoApi::getAttendees() : internal errors, maybe the slugs are wrong "
                   << std::endl;
         throw TITO_INTERNAL_ERROR;
@@ -233,7 +233,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
     
     // Parse the registrations
     std::list<TitoAttendee> out;
-    nlohmann::json registrationJson = rootJson.at("registrations");
+    nlohmann::json registrationJson = rootJson.at("tickets");
     for (nlohmann::json::iterator it = registrationJson.begin()
         ;it != registrationJson.end(); ++it) {
         nlohmann::json attendee = it.value();
@@ -243,33 +243,23 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         attendee.at("email").get_to(email);
         std::string phoneNumber;
         attendee.at("phone_number").get_to(phoneNumber);
-        
-        std::list<TitoTicket> tickets;        
-        if (attendee.contains("tickets")) {
-            nlohmann::json ticketsJson = attendee.at("tickets");
-            for (nlohmann::json::iterator itt = registrationJson.begin()
-                ;itt != registrationJson.end(); ++itt) {
-                nlohmann::json ticketJson = itt.value();
-                
-                int ticketID;
-                ticketJson.at("ticket_id").get_to(ticketID);
-                std::string ticketSlug;
-                ticketJson.at("ticket_slug").get_to(ticketSlug);
-                std::string ticketRelease;
-                ticketJson.at("release_title").get_to(ticketRelease);
-                
-                // The API is poor, so I have to ask for the check ins later
-                TitoTicket ticket(ticketID, ticketSlug, ticketRelease);
-                tickets.push_back(ticket);
-            }
-        }
-        
+
+        int ticketID;
+        attendee.at("id").get_to(ticketID);
+        std::string ticketSlug;
+        attendee.at("slug").get_to(ticketSlug);
+        std::string ticketRelease;
+        attendee.at("release_title").get_to(ticketRelease);
+
+        // The API is poor, so I have to ask for the check ins later
+        TitoTicket ticket(ticketID, ticketSlug, ticketRelease);
+
 #ifdef DEBUG
         std::cerr << "Debug TitoApi::getAttendees() : Found an attendee with name " 
                   << name << std::endl;
 #endif
                   
-        out.push_back(TitoAttendee(name, email, phoneNumber, tickets));
+        out.push_back(TitoAttendee(name, email, phoneNumber, ticket));
     }
     
     // Parse the checkins
@@ -285,9 +275,9 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         throw TITO_CHECKINS_NOT_FOUND_ERROR;
     }
     
-    for (nlohmann::json::iterator it = rootJson.begin()
-        ;it != rootJson.end(); ++it) {
-        nlohmann::json checkinJson = it.value();
+    for (nlohmann::json::iterator it = rootJson.begin();
+         it != rootJson.end(); ++it) {
+         nlohmann::json checkinJson = it.value();
         
         int ticketID;
         checkinJson.at("ticket_id").get_to(ticketID);
@@ -313,16 +303,11 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         // Find the attendee to give the checkin
         bool flag = false;
         for (TitoAttendee attendee : out) {
-            for (TitoTicket ticket : attendee.getTickets()) {
-                if (ticket.getTicketID() == ticketID) {
-                    ticket.setCheckin(checkin);
-                    flag = true;
-                    break;
-                }
-            }
-            
-            if (flag)
+            TitoTicket ticket = attendee.getTicket();
+            if (ticket.getTicketID() == ticketID) {
+                ticket.setCheckin(checkin);
                 break;
+            }
         }
         
         if (!flag) {
