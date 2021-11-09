@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include <string>
 #include "ncurses_utils.h"
+#include "select_attendee.h"
 #include "tito.h"
 
 static void warn_exit()
