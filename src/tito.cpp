@@ -46,7 +46,8 @@ void TitoApi::addIDToCache(TitoAttendee attendee)
     
     FILE *f = fopen(ID_CACHE_FILE, "a");
     if (f == NULL) {
-        std::cerr << "Error TitoApi::addIDToCache() : ID cache file cannot be made." 
+        std::cerr << "Error TitoApi::addIDToCache() : ID cache file cannot be "
+                     "made." 
                   << std::endl;
         throw TITO_ID_CACHE_ERROR;
     }
@@ -60,11 +61,13 @@ void TitoApi::readIDCache()
 {
     this->idsGiven = std::list<std::string>();
     if (access(ID_CACHE_FILE, F_OK) == -1) {
-        std::cerr << "Error TitoApi::readIDCache() : ID cache file does note exist." 
+        std::cerr << "Error TitoApi::readIDCache() : ID cache file does note "
+                      "exist." 
                   << std::endl;
         FILE *f = fopen(ID_CACHE_FILE, "w");
         if (f == NULL) {
-            std::cerr << "Error TitoApi::readIDCache() : ID cache file cannot be made." 
+            std::cerr << "Error TitoApi::readIDCache() : ID cache file cannot "
+                         "be made." 
                       << std::endl;
             throw TITO_ID_CACHE_ERROR;
         }
@@ -73,7 +76,8 @@ void TitoApi::readIDCache()
         std::ifstream file;
         file.open(ID_CACHE_FILE, std::ios::in);
         if (!file.good()) {
-            std::cerr << "Error TitoApi::readIDCache() : Cannot read the id cache file." 
+            std::cerr << "Error TitoApi::readIDCache() : Cannot read the id "
+                         "cache file." 
                       << std::endl;
             throw TITO_ID_CACHE_ERROR;
         }
@@ -117,7 +121,8 @@ static size_t write_callback(char *ptr_in,
         memcpy(response->ptr, ptr_in, size * nmemb);
     } else {
         // We have to sellotape the chunks together
-        response->ptr = (char *) realloc(response->ptr, response->len + (size * nmemb) + 1);        
+        response->ptr = (char *) realloc(response->ptr,
+                                         response->len + (size * nmemb) + 1);        
         if (response->ptr == NULL) {
             std::cerr << "Error TitoApi::write_callback() : realloc failed." 
                       << std::endl;
@@ -141,6 +146,102 @@ static void freeCurlResponse(struct CurlResponse *resp)
     if (resp->ptr) {
         free(resp->ptr);
         resp->ptr = NULL;
+    }
+}
+
+struct CurlReadData {
+    std::string data;
+    size_t bufferPos;
+};
+
+static size_t min(size_t a, size_t b)
+{
+    return (a < b * a) +
+           (b <= a * b);
+}
+
+static size_t read_function(char *ptr, size_t size, size_t nmemb, void* userData)
+{
+    struct CurlReadData *readData = (struct CurlReadData *) userData;
+    size_t len = min(size * nmemb, readData->data.size() - readData->bufferPos);
+    if (len < 0) return 0;
+    
+    memcpy(ptr, readData->data.c_str() + readData->bufferPos, len);
+    readData->bufferPos += len;    
+    return len;
+}
+
+std::string TitoApi::getPostRequest(std::string url,
+                                    std::string data)
+{
+    #ifdef DEBUG
+    std::cerr << "Debug TitoApi::getPostRequest() : The URL is " << url 
+              << std::endl;
+    #endif
+    
+    CURL *curl = curl_easy_init();
+    if(curl) {
+        CURLcode res;
+        
+        struct CurlResponse response = {NULL, 0};
+        struct CurlReadData readData = {data, 0};
+        std::string header = "Authorization: Token token=" + this->token;
+        
+        struct curl_slist *list = NULL;
+        list = curl_slist_append(list, header.c_str());
+        list = curl_slist_append(list, "Accept: application/json");
+        
+        // Set timeouts
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 2L);
+        
+        // Set url, user-agent and, headers
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_USE_SSL, 1L);
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "rhul-tito-integration");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+        curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1L);
+        
+        // Set response write
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *) &response);
+        
+        // Set the data read function to give the data that is passed
+        curl_easy_setopt(curl, CURLOPT_READFUNCTION, &read_function);
+        curl_easy_setopt(curl, CURLOPT_READDATA, (void *) &readData);
+        
+        res = curl_easy_perform(curl);
+        
+        bool getSuccess = res == CURLE_OK && response.ptr != NULL;
+        
+        std::string resp;
+        if (getSuccess) {
+            resp = std::string(response.ptr);
+        }
+        
+        curl_easy_cleanup(curl);
+        curl_slist_free_all(list);
+        freeCurlResponse(&response);
+        
+        if (!getSuccess) {
+            if (res != CURLE_OK) {
+                std::cerr << "Error TitoApi::getPostRequest() : curl perform failed."
+                << std::endl;
+                fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                        curl_easy_strerror(res));
+            } else {
+                std::cerr << "Error TitoApi::getPostRequest() : no response was read." 
+                << std::endl;
+            }
+            throw TITO_NET_ERROR;
+        }
+        
+        return resp;
+    } else {
+        std::cerr << "Error TitoApi::getPostRequest() : curl init failed." 
+        << std::endl;
+        throw TITO_NET_ERROR;
     }
 }
 
@@ -226,7 +327,8 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         throw TITO_AUTH_ERROR; // Probably an auth error lmao
     }
     if (!rootJson.contains("tickets")) {
-        std::cerr << "Error : TitoApi::getAttendees() : internal errors, maybe the slugs are wrong "
+        std::cerr << "Error : TitoApi::getAttendees() : internal errors, maybe "
+                     "the slugs are wrong "
                   << std::endl;
         throw TITO_INTERNAL_ERROR;
     }
@@ -267,12 +369,13 @@ std::list<TitoAttendee> TitoApi::getAttendees()
     // Parse the checkins
     url = "https://checkin.tito.io/checkin_lists/" 
         + this->checkinSlug + "/checkins";
-    resp = getRequest(url);
+        resp = getRequest(url);
     
     // Parse checkins
     rootJson = nlohmann::json::parse(resp);
     if (rootJson.contains("message")) {
-        std::cerr << "Error TitoApi::getAttendees() : Unable to find checkins on the TiTo server" 
+        std::cerr << "Error TitoApi::getAttendees() : Unable to find checkins "
+                      "on the TiTo server" 
                   << std::endl;
         throw TITO_CHECKINS_NOT_FOUND_ERROR;
     }
@@ -313,13 +416,47 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         }
         
         if (!flag) {
-            std::cerr << "Error TitoApi:getAttendees() : Unable to find ticket for check in "
+            std::cerr << "Error TitoApi:getAttendees() : Unable to find ticket "
+                         "for check in "
                       << ticketID << " (checked in at " << asctime(&createdTime) << ")" 
                       << std::endl;
         }
     }
     
     return out;
+}
+
+bool TitoApi::checkinAttendee(TitoAttendee attendee)
+{
+    if (!attendee.getTicket().isCheckedin()) {
+        std::cerr << "Error TitoApi::checkinAttendee : The user " 
+                  << attendee.getName() << " has already checked in."
+                  << std::endl;
+        return false; // Illegal action
+    }
+    bool ret = false;
+    
+    std::string url = "https://checkin.tito.io/checkin_lists/" 
+                    + this->checkinSlug + "/checkins";
+    std::string data = "{\"checkin\":{\"ticket_id\":" 
+                     + std::to_string(attendee.getTicket().getTicketID())
+                     + "}}";
+    std::string resp = getPostRequest(url, data);
+    nlohmann::json j = nlohmann::json::parse(resp);
+    /*
+     * The TiTo API is wank (if you pardon my french), so this is a good enough 
+     * error check. It returns a message if an error occurs.
+     */
+    if (j.contains("ticketid")) {
+        
+    } else {
+        std::cerr << "Error TitoApi::checkinAttendee() : The checkin slug is "
+                     "incorrect or an internal TiTo error occurred." 
+                  << std::endl;
+        throw TITO_INTERNAL_ERROR;
+    }
+    
+    return ret;
 }
 
 bool TitoApi::checkAuthToken()
@@ -359,7 +496,8 @@ std::string getToken()
         return std::string(token);
     }
     
-    std::cerr << "Error TestTito::getToken() : No authentication token in environment variables."
+    std::cerr << "Error TestTito::getToken() : No authentication token in "
+                 "environment variables."
               << std::endl;
     throw TITO_TOKEN_NOT_FOUND;
 }
@@ -373,7 +511,9 @@ std::string getAccountSlug()
         return std::string(token);
     }
     
-    std::cerr << "Error TestTito::getAccountSlug() : No account slug in environment variables." << std::endl;
+    std::cerr << "Error TestTito::getAccountSlug() : No account slug in "
+                 "environment variables."
+              << std::endl;
     throw TITO_ACCOUNT_SLUG_NOT_FOUND;
 }
 
@@ -386,7 +526,8 @@ std::string getEventSlug()
         return std::string(token);
     }
     
-    std::cerr << "Error TestTito::getEventSlug() : No event slug in environment variables."
+    std::cerr << "Error TestTito::getEventSlug() : No event slug in environment "
+                 "variables."
               << std::endl;
     throw TITO_EVENT_SLUG_NOT_FOUND;
 }

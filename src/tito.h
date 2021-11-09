@@ -47,8 +47,7 @@ public:
             std::string /* accountSlug */, 
             std::string /* eventSlug */,
             std::string /* checkinSlug */);
-    TitoApi() {}; // Do not use this constructor please
-    
+    TitoApi() {}; // Do not use this constructor please    
     /**
      * Checks whether the authentication token passed in the constructor is
      * still valid.
@@ -57,8 +56,7 @@ public:
      * @throws TITO_NET_ERROR if there was a network error whilst connecting to
      * the Tito system.
      */
-    bool checkAuthToken();
-    
+    bool checkAuthToken();    
     /**
      * Gets all the registered attendees to the event. It also gets all the
      * checkins for the tickets, this requires two api calls so it is twice as 
@@ -71,6 +69,17 @@ public:
      * the Tito system
      */ 
     std::list<TitoAttendee> getAttendees();
+    /**
+     * Checks a user into the system.
+     * 
+     * @param TitoAttendee the attendee to checkin to the system
+     * @return whether the operation was a success
+     * @throws TITO_NET_ERROR if there was a network error whilst connecting to
+     * @throws TITO_AUTH_ERROR if authentication failed due to an invalid 
+     * checkin slug
+     * @throws TITO_INTERNAL_ERROR if there is an internal error
+     */
+    bool checkinAttendee(TitoAttendee);
     /**
      * Returns whether a TitoATttendee ha been give their ID card.
      * 
@@ -95,6 +104,16 @@ private:
      * @throws TITO_NET_ERROR When making the curl request fails.
      */ 
     std::string getRequest(std::string /* url */);
+    /**
+     * Makes a POST request to an endpoint with the tito API headers, the data 
+     * that is passed and, returns the data received.
+     * 
+     * @param url The URL to GET from.
+     * @param data The data that should be sent with the POST request
+     * @throws TITO_NET_ERROR When making the curl request fails.
+     */ 
+    std::string getPostRequest(std::string /* url */,
+                               std::string /* data */);
     std::string token,
                 accountSlug,
                 eventSlug,
