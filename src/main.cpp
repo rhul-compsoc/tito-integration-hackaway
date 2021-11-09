@@ -3,6 +3,7 @@
 #include <string>
 #include "ncurses_utils.h"
 #include "select_attendee.h"
+#include "error_screen.h"
 #include "tito.h"
 
 static void warn_exit()
@@ -43,31 +44,39 @@ int main(int argc, char **argv)
     start_color();
     setup_colours();
     
-    int y = 2;
-    print_logo(&y);
-    
-    attron(COLOUR_PAIR_GREEN_AND_BLACK);
-    y += 3;
-    y += print_centre(0, y, "Loading Royal Hackaway TiTo integration...");
-    attroff(COLOUR_PAIR_GREEN_AND_BLACK);
-    refresh();
+    int y;
     
     TitoApi api;
     std::list<TitoAttendee> attendees;
-    
-    try {
-        api = TitoApi(getToken(), getAccountSlug(), getEventSlug(), getCheckinSlug());
-        attendees = api.getAttendees();
-    } catch (int e) {
-        attron(COLOUR_PAIR_RED_AND_BLACK);
-        std::string msg = "An error with code " + std::to_string(e) + " has occurred.";
-        y += print_centre(0, y, msg);
-        y += print_centre(0, y, "(" + getTitoErrorMessage(e) + ")");
-        
-        warn_exit();
-        attroff(COLOUR_PAIR_RED_AND_BLACK);
-        return EXIT_FAILURE;
+    bool flag = true;
+    while (flag) {
+        y = 2;
+        print_logo(&y);
+
+        attron(COLOUR_PAIR_GREEN_AND_BLACK);
+        y += 3;
+        y += print_centre(0, y, "Loading Royal Hackaway TiTo integration...");
+        attroff(COLOUR_PAIR_GREEN_AND_BLACK);
+        refresh();
+
+        try {
+            api = TitoApi(getToken(), getAccountSlug(), getEventSlug(), getCheckinSlug());
+            attendees = api.getAttendees();
+            flag = false;
+        } catch (int e) {
+            struct ErrorAction act;
+            act = showErrorMessage("An error occurred during initialisation",
+                                   e);
+
+            if (act.action == ERROR_ACTION_IGNORE) {
+                print_centre(0, getmaxy(stdscr) / 2,
+                             "Initialisation failed, see error log.");
+                warn_exit();
+                return EXIT_FAILURE;
+            }
+        }
     }
+
     
     y += print_centre(0, y, "Loaded ID cache, attendees and, checkins.");
     select_attendee(attendees, "Select an attendee.");

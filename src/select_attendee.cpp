@@ -269,5 +269,8 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
         }
     }
 
+    clear();
+    refresh();
+
     return ret;
 }

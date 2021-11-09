@@ -49,7 +49,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
     setup_target_for_coverage_gcovr_xml(NAME coverage
         EXECUTABLE tito-integration-hackaway-tests
         EXCLUDE "build/*" "tests/*" "src/main.cpp" "src/json.hpp"
-                "src/ncurses_utils.cpp" "src/select_attendee.cpp")
+                "src/ncurses_utils.cpp" "src/select_attendee.cpp"
+                "src/error_screen.cpp")
 
 endif()
 
@@ -62,6 +63,7 @@ set(SRC_FILES
     src/ncurses_utils.cpp
     src/select_attendee.cpp
     src/tito_classes.cpp
+    src/error_screen.cpp
     )
 
 set(LIBS curl ncurses)
