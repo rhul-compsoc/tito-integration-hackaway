@@ -47,8 +47,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
     
     append_coverage_compiler_flags()
     setup_target_for_coverage_gcovr_xml(NAME coverage
-        EXECUTABLE tito-integegration-hackaway-tests
-        EXCLUDE "build/*" "tests/*" "src/main.cpp" "src/json.hpp")
+        EXECUTABLE tito-integration-hackaway-tests
+        EXCLUDE "build/*" "tests/*" "src/main.cpp" "src/json.hpp" "src/ncurses_utils.cpp")
 
 endif()
 
@@ -88,5 +88,5 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
         ${CMAKE_CURRENT_BINARY_DIR})
     
     enable_testing ()
-    add_test(NAME tito-integration-hackaway-tests COMMAND tito-integegration-hackaway-tests)
+    add_test(NAME tito-integration-hackaway-tests COMMAND tito-integration-hackaway-tests)
 endif()
