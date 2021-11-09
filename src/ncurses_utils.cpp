@@ -137,7 +137,8 @@ void setup_colours()
 #define SELECTION_X_PADDING 5
 #define SELECTION_Y_PADDING 2
 
-static void selection_screen_heading(std::string message)
+static void selection_screen_heading(std::string message,
+                                     std::string *searchMessage)
 {
     // Print logo
     int y = SELECTION_Y_PADDING;
@@ -155,6 +156,8 @@ static void selection_screen_heading(std::string message)
     y_info += print_left(x, y_info,
                          "Type to search for specific attendees.");
     y_info += print_left(x, y_info,
+                         "Press <F10> to clear the search.");
+    y_info += print_left(x, y_info,
                          "Use <ENTER> to confirm selection.");
     y_info += print_left(x, y_info,
                          "Use <UP> and <DOWN> to change selection.");
@@ -165,12 +168,25 @@ static void selection_screen_heading(std::string message)
     // Print the headings
     attron(COLOUR_PAIR_BLACK_AND_GREEN);
     
-    std::string headers = "  CHECKED IN     TICKET TYPE     NAME     EMAIL ADDRESS";
-    int paddingNeeded = getmaxx(stdscr) - headers.size() - 2 * SELECTION_X_PADDING;
-    for (int i = 0; i < paddingNeeded; i++)
-        headers += " "; // Pad the headers column
+    // Pad the search field
+    std::string search = "  SEARCH: " + *searchMessage;
+    int paddingNeeded = getmaxx(stdscr) - search.size() - 2 * SELECTION_X_PADDING;
+    for (int i = 0; i < paddingNeeded; i++) {
+        search += " "; // Pad the search field
+    }
+    y += print_left(SELECTION_X_PADDING, y, search);
     
-    print_left(SELECTION_X_PADDING, y, headers);
+    // Pad the headers field
+    std::string spaces = "     ";
+    std::string headers = "  CHECKED IN" + spaces + "TICKET TYPE" 
+                        + spaces + "NAME" + spaces + spaces + spaces + spaces
+                        + "EMAIL ADDRESS";
+    paddingNeeded = getmaxx(stdscr) - headers.size() - 2 * SELECTION_X_PADDING;
+    for (int i = 0; i < paddingNeeded; i++) {
+        headers += " "; // Pad the headers column
+    }
+    y += print_left(SELECTION_X_PADDING, y, headers);
+    
     attroff(COLOUR_PAIR_BLACK_AND_GREEN);
     refresh();
 }
@@ -185,17 +201,35 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
         /*.attendee=*/TitoAttendee()
     };
     
+    std::string search = "";
     int running = 1;
     while (running) {
-        selection_screen_heading(message);
+        selection_screen_heading(message, &search);
         
         // Get and parse input.
         int input = getch();
         switch (input) {
             case KEY_EXIT:
-            case 27: // This is what it is on my machine
+            case ESCAPE:
                 running = 0;
+                break;
+            case KEY_BACKSPACE:
+            case KEY_DL:
+            case KEY_DC:
+            case BACKSPACE:
+            case '\b':
+                if (search.size() > 0) {
+                    search.pop_back();
+                }
+                break;
             default:
+                // if the input is text then add it to the search field
+                if (input == ' ' || input == '@' || input == '.'
+                    || (input >= 'a' && input <= 'z')
+                    || (input >= 'A' && input <= 'Z')
+                    || (input >= '0' && input <= '9')) {
+                    search += input;
+                }                
                 continue;
         }
     }
