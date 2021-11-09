@@ -47,6 +47,7 @@ public:
             std::string /* accountSlug */, 
             std::string /* eventSlug */,
             std::string /* checkinSlug */);
+    TitoApi() {}; // Do not use this constructor please
     
     /**
      * Checks whether the authentication token passed in the constructor is

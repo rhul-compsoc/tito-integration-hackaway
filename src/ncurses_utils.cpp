@@ -52,6 +52,18 @@ std::string logo_twenty_five =
 "    _{Wq{_     _iqW},    \n"
 "        !tWKhKWj~        \n";
 
+int print_logo_left(int x_offset, int y_offset, int force_small)
+{    
+    int lines;
+    int width = getmaxx(stdscr);
+    if (width >= 55 && !force_small) {
+        lines = print_left(x_offset, y_offset, logo_fifty_five);
+    } else {
+        lines = print_left(x_offset, y_offset, logo_twenty_five);
+    }
+    return lines; 
+}
+
 int print_logo_centre(int x_offset, int y_offset, int force_small)
 {
     int lines;
@@ -61,6 +73,19 @@ int print_logo_centre(int x_offset, int y_offset, int force_small)
     } else {
         lines = print_centre(x_offset, y_offset, logo_twenty_five);
     }
+    return lines;
+}
+
+int print_left(int x_offset, int y_offset, std::string str)
+{
+    int lines = 0;
+    std::string line;
+    std::stringstream streamData(str);
+    while (std::getline(streamData, line, '\n')) {
+        mvaddstr(y_offset + lines, x_offset, line.c_str());
+        lines++;
+    }
+    addstr("\n");
     return lines;
 }
 
@@ -101,6 +126,80 @@ void setup_colours()
               COLOR_BLACK);
     
     init_pair(COLOUR_ORANGE_AND_BLACK,
-              13,
+              13, /* Find a better orange */
               COLOR_BLACK);
+    
+    init_pair(COLOUR_BLACK_AND_GREEN,
+              COLOR_BLACK,
+              COLOR_GREEN);
 }
+
+#define SELECTION_X_PADDING 5
+#define SELECTION_Y_PADDING 2
+
+static void selection_screen_heading(std::string message)
+{
+    // Print logo
+    int y = SELECTION_Y_PADDING;
+    attron(COLOUR_PAIR_ORANGE_AND_BLACK);
+    y += print_logo_left(SELECTION_X_PADDING, y, 1);
+    y += 2;
+    attroff(COLOUR_PAIR_ORANGE_AND_BLACK);
+    
+    // Print the selection guide
+    attron(COLOUR_PAIR_GREEN_AND_BLACK);    
+    int y_info = SELECTION_Y_PADDING + 3;
+    int x = SELECTION_X_PADDING * 2 + 25;
+    y_info += print_left(x, y_info,
+                         message);
+    y_info += print_left(x, y_info,
+                         "Type to search for specific attendees.");
+    y_info += print_left(x, y_info,
+                         "Use <ENTER> to confirm selection.");
+    y_info += print_left(x, y_info,
+                         "Use <UP> and <DOWN> to change selection.");
+    y_info += print_left(x, y_info,
+                         "Use <ESCAPE> to cancel selection.");
+    attroff(COLOUR_PAIR_GREEN_AND_BLACK);
+    
+    // Print the headings
+    attron(COLOUR_PAIR_BLACK_AND_GREEN);
+    
+    std::string headers = "  CHECKED IN     TICKET TYPE     NAME     EMAIL ADDRESS";
+    int paddingNeeded = getmaxx(stdscr) - headers.size() - 2 * SELECTION_X_PADDING;
+    for (int i = 0; i < paddingNeeded; i++)
+        headers += " "; // Pad the headers column
+    
+    print_left(SELECTION_X_PADDING, y, headers);
+    attroff(COLOUR_PAIR_BLACK_AND_GREEN);
+    refresh();
+}
+
+struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
+                                         std::string message)
+{
+    clear();
+    refresh();
+    struct AttendeeSelection ret = {
+        /*.attendeeSelected=*/0,
+        /*.attendee=*/TitoAttendee()
+    };
+    
+    int running = 1;
+    while (running) {
+        selection_screen_heading(message);
+        
+        // Get and parse input.
+        int input = getch();
+        switch (input) {
+            case KEY_EXIT:
+            case 27: // This is what it is on my machine
+                running = 0;
+            default:
+                continue;
+        }
+    }
+    
+    return ret;
+}
+

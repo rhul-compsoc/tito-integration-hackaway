@@ -60,6 +60,7 @@ public:
         this->phoneNumber = phoneNumber;
         this->tickets = tickets;
     }
+    TitoAttendee() {}; // Do not use this constructor please
     std::string getName() { return this->name; }
     std::string getEmail() { return this->email; }
     std::string getPhoneNumber() { return this->phoneNumber; }

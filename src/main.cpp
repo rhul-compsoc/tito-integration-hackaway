@@ -16,6 +16,13 @@ static void warn_exit()
     endwin();
 }
 
+static void print_logo(int *y)
+{    
+    attron(COLOUR_PAIR_ORANGE_AND_BLACK);
+    *y += print_logo_centre(0, *y, 0);
+    attroff(COLOUR_PAIR_ORANGE_AND_BLACK);
+}
+
 int main(int argc, char **argv)
 {
     initscr();
@@ -36,10 +43,7 @@ int main(int argc, char **argv)
     setup_colours();
     
     int y = 2;
-    
-    attron(COLOUR_PAIR_ORANGE_AND_BLACK);
-    y += print_logo_centre(0, y, 0);
-    attroff(COLOUR_PAIR_ORANGE_AND_BLACK);
+    print_logo(&y);
     
     attron(COLOUR_PAIR_GREEN_AND_BLACK);
     y += 3;
@@ -47,9 +51,12 @@ int main(int argc, char **argv)
     attroff(COLOUR_PAIR_GREEN_AND_BLACK);
     refresh();
     
+    TitoApi api;
+    std::list<TitoAttendee> attendees;
+    
     try {
-        TitoApi api(getToken(), getAccountSlug(), getEventSlug(), getCheckinSlug());
-        std::list<TitoAttendee> attendees = api.getAttendees();
+        api = TitoApi(getToken(), getAccountSlug(), getEventSlug(), getCheckinSlug());
+        attendees = api.getAttendees();
     } catch (int e) {
         attron(COLOUR_PAIR_RED_AND_BLACK);
         std::string msg = "An error with code " + std::to_string(e) + " has occurred.";
@@ -62,6 +69,9 @@ int main(int argc, char **argv)
     }
     
     y += print_centre(0, y, "Loaded ID cache, attendees and, checkins.");
+
+    select_attendee(attendees, "Select an attendee.");
+    refresh();
     
     warn_exit();
     
