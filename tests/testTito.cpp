@@ -39,6 +39,13 @@ void TestTito::testGetAttendees()
                           getCheckinSlug());
     std::list<TitoAttendee> attendees = api.getAttendees();
     CPPUNIT_ASSERT(attendees.size() > 0);
+    
+    // Do note that the test event must not have empty strings for these fields
+    for (TitoAttendee attendee : attendees) {
+        CPPUNIT_ASSERT(attendee.getName() != "");
+        CPPUNIT_ASSERT(attendee.getEmail() != "");
+        CPPUNIT_ASSERT(attendee.getPhoneNumber() != "");
+    }
 }
 
 

@@ -38,6 +38,7 @@ public:
     int getTicketID() { return this->ticketID; }
     std::string getTicketSlug() { return this->ticketSlug; }
     std::string getTicketRelease() { return this->ticketRelease; }
+    bool isCheckedin() { return this->checkedIn; }
     TitoCheckin getCheckin() { return this->checkin; }
     void setCheckin(TitoCheckin checkin) { this->checkin = checkin; }
 private:

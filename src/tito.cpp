@@ -238,10 +238,13 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         ;it != registrationJson.end(); ++it) {
         nlohmann::json attendee = it.value();
         std::string name;
+        attendee.at("name").get_to(name);
         std::string email;
+        attendee.at("email").get_to(email);
         std::string phoneNumber;
-        std::list<TitoTicket> tickets;
+        attendee.at("phone_number").get_to(phoneNumber);
         
+        std::list<TitoTicket> tickets;        
         if (attendee.contains("tickets")) {
             nlohmann::json ticketsJson = attendee.at("tickets");
             for (nlohmann::json::iterator itt = registrationJson.begin()
@@ -261,6 +264,11 @@ std::list<TitoAttendee> TitoApi::getAttendees()
             }
         }
         
+#ifdef DEBUG
+        std::cerr << "Debug TitoApi::getAttendees() : Found an attendee with name " 
+                  << name << std::endl;
+#endif
+                  
         out.push_back(TitoAttendee(name, email, phoneNumber, tickets));
     }
     
