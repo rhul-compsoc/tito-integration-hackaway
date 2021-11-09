@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <vector>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 
@@ -70,12 +72,18 @@ public:
     std::string getEmail() { return this->email; }
     std::string getPhoneNumber() { return this->phoneNumber; }
     TitoTicket getTicket() { return this->ticket; }
-    bool matches(std::string query)
+    bool matches(std::string queryIn)
     {
-        query = stripQueryStr(query);
-        bool ret = stripQueryStr(this->name).find(query) != std::string::npos;
-        ret |= stripQueryStr(this->email).find(query) != std::string::npos;
-        ret |= stripQueryStr(this->phoneNumber).find(query) != std::string::npos;
+        bool ret = false;
+        std::string query;
+        std::stringstream streamData(queryIn);
+        while (std::getline(streamData, query, ' ')) {
+            query = stripQueryStr(query);
+            ret |= stripQueryStr(this->name).find(query) != std::string::npos;
+            ret |= stripQueryStr(this->email).find(query) != std::string::npos;
+            ret |= stripQueryStr(this->phoneNumber).find(query) != std::string::npos;
+            ret |= stripQueryStr(this->ticket.getTicketRelease()).find(query) != std::string::npos;
+        }
         return ret;
     }
 private:
