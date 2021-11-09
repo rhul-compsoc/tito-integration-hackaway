@@ -242,7 +242,9 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         std::string email;
         attendee.at("email").get_to(email);
         std::string phoneNumber;
-        attendee.at("phone_number").get_to(phoneNumber);
+        if (!attendee.at("phone_number").is_null()) {
+            attendee.at("phone_number").get_to(phoneNumber);
+        }
 
         int ticketID;
         attendee.at("id").get_to(ticketID);

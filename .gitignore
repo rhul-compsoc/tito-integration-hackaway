@@ -40,3 +40,4 @@ build/
 
 #Cmake stuff
 src/CMakeFiles
+*tito.sh

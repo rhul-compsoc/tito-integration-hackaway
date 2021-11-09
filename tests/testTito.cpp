@@ -92,7 +92,7 @@ void TestTito::testIDCache()
     TitoAttendee attendee = TitoAttendee("name",
                                          "email",
                                          "phone number",
-                                         std::list<TitoTicket>());
+                                         TitoTicket());
     
     CPPUNIT_ASSERT(!api->hasIDBeenGiven(attendee));
     api->addIDToCache(attendee);
