@@ -228,7 +228,7 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
             sizeof(CHECKED_IN_HEADER TABLE_PADDING) - sizeof(" [   ] "));
     
     // Tick type
-    int maxTicketTypeLength = sizeof(TICKET_TYPE_HEADER TABLE_PADDING) - 2;
+    unsigned int maxTicketTypeLength = sizeof(TICKET_TYPE_HEADER TABLE_PADDING) - 2;
     std::string ticketType = ticket.getTicketRelease();
     while (ticketType.size() > maxTicketTypeLength) ticketType.pop_back();
     
@@ -237,7 +237,7 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
             sizeof(TICKET_TYPE_HEADER TABLE_PADDING) - ticketType.size());
     
     // Name
-    int maxNameLength = sizeof(NAME_HEADER TABLE_PADDING TABLE_PADDING 
+    unsigned int maxNameLength = sizeof(NAME_HEADER TABLE_PADDING TABLE_PADDING 
                                TABLE_PADDING) - 2;    
     std::string ticketName = attendee.getName();
     while (ticketName.size() > maxNameLength) ticketName.pop_back();
@@ -248,7 +248,7 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
             - ticketName.size());
     
     // Email address
-    int maxEmailLength = getmaxx(stdscr) - ret.size() - 2 - SELECTION_X_PADDING;
+    unsigned int maxEmailLength = getmaxx(stdscr) - ret.size() - 2 - SELECTION_X_PADDING;
     std::string ticketEmail = attendee.getEmail();
     while (ticketEmail.size() > maxEmailLength) ticketEmail.pop_back();
     
