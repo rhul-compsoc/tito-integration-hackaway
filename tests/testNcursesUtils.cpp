@@ -2,7 +2,7 @@
 #include "../src/ncurses_utils.h"
 
 // Github actions are crap and this doesnt work
-//CPPUNIT_TEST_SUITE_REGISTRATION(TestNcursesUtils);
+CPPUNIT_TEST_SUITE_REGISTRATION(TestNcursesUtils);
 
 TestNcursesUtils::TestNcursesUtils() : CppUnit::TestCase("ncurses_utils.h tests")
 {    

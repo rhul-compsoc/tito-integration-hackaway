@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include "testTito.h"
 #include "../src/tito.h"
-#include "../src/tito_classes.hpp"
+#include "../src/tito_classes.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestTito);
 
