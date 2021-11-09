@@ -4,6 +4,9 @@
 #include "ncurses_utils.h"
 #include "select_attendee.h"
 
+#define ESCAPE 27
+#define BACKSPACE 127
+
 #define SELECTION_X_PADDING 5
 #define SELECTION_Y_PADDING 2
 
@@ -144,6 +147,7 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
         // Print attendees
         int i = 0;
         int yOfSelected = 0;
+        attendees.sort();
         for (TitoAttendee attendee : attendees) {
             if (i - scrollOffset >= 0
                 && y < getmaxy(stdscr) - SELECTION_Y_PADDING) {

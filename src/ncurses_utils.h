@@ -2,10 +2,7 @@
 #include <ncurses.h>
 #include <string>
 #include <list>
-#include "tito_classes.hpp"
-
-#define ESCAPE 27
-#define BACKSPACE 127
+#include "tito_classes.h"
 
 #define COLOUR_WHITE_BLACK 0
 #define COLOUR_PAIR_WHITE_AND_BLACK COLOR_PAIR(COLOUR_WHITE_BLACK)
@@ -61,7 +58,7 @@ void setup_colours();
  * selected, and a boolean flag to see if a selection was made.
  */
 struct AttendeeSelection select_attendee(std::list<TitoAttendee>,
-                                          std::string /*message*/);
+                                         std::string /*message*/);
 /**
  * Prints an attendee column on the screen, this is used for the
  * select_attendees method and is defined here because I felt like it.

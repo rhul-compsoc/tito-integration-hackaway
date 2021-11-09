@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <list>
-#include "tito_classes.hpp"
+#include "tito_classes.h"
 
 #define ID_CACHE_FILE "ids_given.txt"
 
