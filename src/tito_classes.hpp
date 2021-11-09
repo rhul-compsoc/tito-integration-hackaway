@@ -84,7 +84,7 @@ public:
             ret |= stripQueryStr(this->phoneNumber).find(query) != std::string::npos;
             ret |= stripQueryStr(this->ticket.getTicketRelease()).find(query) != std::string::npos;
         }
-        return ret;
+        return ret || queryIn == "";
     }
 private:
     /**
