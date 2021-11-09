@@ -3,7 +3,7 @@ This is the [ti.to](ti.to) checkin and identity card system.
 
 [![Main](https://github.com/rhul-compsoc/tito-integration-hackaway/actions/workflows/main.yml/badge.svg)](https://github.com/rhul-compsoc/tito-integegration-hackaway/actions/workflows/main.yml) [![codecov](https://codecov.io/gh/rhul-compsoc/tito-integration-hackaway/branch/main/graph/badge.svg?token=MKXK00CZMJ)](https://codecov.io/gh/rhul-compsoc/tito-integration-hackaway)
 
-enjoy the psuedo-javadoc comments
+Enjoy the psuedo-javadoc comments.
 
 ## Setup
 This program is designed to run on linux, because the Hackaway setup has a bunch
@@ -19,6 +19,12 @@ of think centre computers that run Ubuntu.
 You should redirect `stderr` to a log file so that you do not get random (caught)
 error messages in the middle of the GUI.
 (This can be done with `tito-integration-hackaway 2> log`)
+
+## Usage
+Run in a nice and, large terminal which suports colours. pipe stderr to a file
+as debug information and errors are printed to it. Then use put the enviornemnt
+variables are defined. An internet connection is required as well as, the working
+directory has read and write permissions.
 
 ## Compiling
 Use cmake to compile, the `DEBUG` to print extra information to stderr and, the
