@@ -11,7 +11,7 @@
 #include <cppunit/ui/text/TestRunner.h>
 
 #include "testTito.h"
-#include "testNcursesUtils.h"
+//#include "testNcursesUtils.h"
 
 #define XMLOUT
 

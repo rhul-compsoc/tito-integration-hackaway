@@ -59,7 +59,6 @@ static int selection_screen_heading(std::string message,
     std::string headers = "  "  CHECKED_IN_HEADER  TABLE_PADDING
                         TICKET_TYPE_HEADER  TABLE_PADDING
                         NAME_HEADER  TABLE_PADDING  TABLE_PADDING TABLE_PADDING
-                        TABLE_PADDING
                         EMAIL_ADDRESS_HEADER;
 
     PAD_STR_TO_TABLE(headers);
@@ -90,13 +89,13 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
             sizeof(CHECKED_IN_HEADER TABLE_PADDING) - sizeof(" [   ] "));
 
     // Tick type
-    unsigned int maxTicketTypeLength = sizeof(TICKET_TYPE_HEADER TABLE_PADDING) - 2;
+    unsigned int maxTicketTypeLength = sizeof(TICKET_TYPE_HEADER TABLE_PADDING);
     std::string ticketType = ticket.getTicketRelease();
     while (ticketType.size() > maxTicketTypeLength) ticketType.pop_back();
 
     ret += ticketType;
     PAD_STR(ret,
-            sizeof(TICKET_TYPE_HEADER TABLE_PADDING) - ticketType.size());
+            sizeof(TICKET_TYPE_HEADER TABLE_PADDING) - ticketType.size() - 1);
 
     // Name
     unsigned int maxNameLength = sizeof(NAME_HEADER TABLE_PADDING TABLE_PADDING
@@ -107,21 +106,21 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
     ret += ticketName;
     PAD_STR(ret,
             sizeof(NAME_HEADER TABLE_PADDING  TABLE_PADDING TABLE_PADDING)
-            - ticketName.size());
+                  - ticketName.size() - 1);
 
     // Email address
-    unsigned int maxEmailLength = getmaxx(stdscr) - ret.size() - 2 - SELECTION_X_PADDING;
+    unsigned int maxEmailLength = getmaxx(stdscr) - ret.size() - SELECTION_X_PADDING;
     std::string ticketEmail = attendee.getEmail();
     while (ticketEmail.size() > maxEmailLength) ticketEmail.pop_back();
 
     ret += ticketEmail;
     PAD_STR(ret,
-            sizeof(EMAIL_ADDRESS_HEADER TABLE_PADDING) - ticketEmail.size());
+            sizeof(EMAIL_ADDRESS_HEADER TABLE_PADDING) - ticketEmail.size() - 1);
 
     return ret;
 }
 
-struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
+struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
                                          std::string message)
 {
     struct AttendeeSelection ret = {
@@ -129,7 +128,8 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
         /*.attendee=*/TitoAttendee()
     };
 
-    // Search state
+    // Init the search state
+    std::list<TitoAttendee> attendees = std::list<TitoAttendee>(attendeesRaw);
     std::string search = "";
     int currentlySelected = 0,
         scrollOffset = 0;
@@ -137,7 +137,8 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
     int running = 1;
     while (running) {
         clear();
-        int y = selection_screen_heading(message, &search);
+        int y, headersY;
+        y = headersY = selection_screen_heading(message, &search);
         y++;
 
         // Print attendees
@@ -167,6 +168,7 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
         // Get and parse input.
         refresh();
         int input = getch();
+        std::string searchOld = std::string(search);
         switch (input) {
             // Navigation
             case KEY_UP:
@@ -226,9 +228,40 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
                     || (input >= 'a' && input <= 'z')
                     || (input >= 'A' && input <= 'Z')
                     || (input >= '0' && input <= '9')) {
-                    search += input;
+                    search.push_back(input);
                 }
-                continue;
+                break;
+        }
+
+        // Search if query was changed
+        if (searchOld != search) {
+            attendees = std::list<TitoAttendee>();
+            int i = 0, j = 0;
+            bool foundSelected = false;
+            for (TitoAttendee attendee : attendeesRaw) {
+                if (attendee.matches(search)) {
+                    attendees.push_back(attendee);
+
+                    // Fix the scrolling and maintain the selected
+                    if (i == currentlySelected) {
+                        currentlySelected = j;
+                        scrollOffset = j;
+                        foundSelected = true;
+
+                        // Scroll up until the selection is at the bottom of the screen
+                        while (headersY + scrollOffset > getmaxy(stdscr) - SELECTION_Y_PADDING) {
+                            scrollOffset--;
+                        }
+                    }
+                    j++;
+                }
+                i++;
+            }
+
+            if (!foundSelected) {
+                scrollOffset = 0;
+                currentlySelected = 0;
+            }
         }
     }
 

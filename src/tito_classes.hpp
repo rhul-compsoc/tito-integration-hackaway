@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+#include <iostream>
+#include <algorithm>
 
 class TitoCheckin {
 public:
@@ -67,7 +70,33 @@ public:
     std::string getEmail() { return this->email; }
     std::string getPhoneNumber() { return this->phoneNumber; }
     TitoTicket getTicket() { return this->ticket; }
+    bool matches(std::string query)
+    {
+        query = stripQueryStr(query);
+        bool ret = stripQueryStr(this->name).find(query) != std::string::npos;
+        ret |= stripQueryStr(this->email).find(query) != std::string::npos;
+        ret |= stripQueryStr(this->phoneNumber).find(query) != std::string::npos;
+        return ret;
+    }
 private:
+    /**
+     * Strips a string for searching, this removes all non alpha-numerical
+     * characters and converts to lower case.
+     *
+     * @param std::string string to strip
+     * @return the stripped string
+     */
+    std::string stripQueryStr(std::string str)
+    {
+        transform(str.begin(), str.end(), str.begin(), ::tolower);
+        std::string ret = "";
+        for (char c : str) {
+            if ((c >= '0' && c <'9') || (c >= 'a' || c <= 'z')) {
+                ret += c;
+            }
+        }
+        return ret;
+    }
     // Don't tell Dave Cohen of my primitive obsession
     // Alexa git-blame-someone-else
     std::string name, email, phoneNumber;
