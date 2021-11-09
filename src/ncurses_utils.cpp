@@ -114,7 +114,6 @@ int print_centre(int x_offset,
     return lines;
 }
 
-
 void setup_colours()
 {
     init_pair(COLOUR_WHITE_BLACK,
@@ -306,10 +305,26 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
         refresh();
         int input = getch();
         switch (input) {
+            // Make selection
+            case '\n':
+            case KEY_ENTER:
+                ret.attendeeSelected = true;
+                running = 0;
+                i = 0;
+                for (TitoAttendee att : attendees) {
+                    if (i == currentlySelected) {
+                        ret.attendee = att;
+                        break;
+                    }
+                    i++;
+                }
+                break;
+            // Cancel
             case KEY_EXIT:
             case ESCAPE:
                 running = 0;
                 break;
+            // Backspace
             case KEY_BACKSPACE:
             case KEY_DL:
             case KEY_DC:
@@ -319,14 +334,20 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendees,
                     search.pop_back();
                 }
                 break;
+            // Clear search
+            case KEY_F(10):
+                search = "";
+                break;
+            // Add chars to search
             default:
                 // if the input is text then add it to the search field
                 if (input == ' ' || input == '@' || input == '.'
+                    || input == '-' || input == '\''
                     || (input >= 'a' && input <= 'z')
                     || (input >= 'A' && input <= 'Z')
                     || (input >= '0' && input <= '9')) {
                     search += input;
-                }                
+                }
                 continue;
         }
     }

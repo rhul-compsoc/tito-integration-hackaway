@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # set the project name
-project(tito-integegration-hackaway VERSION 1.0.0 LANGUAGES CXX)
+project(tito-integration-hackaway VERSION 1.0.0 LANGUAGES CXX)
 set(REPO_URL "https://github.com/rhul-compsoc/tito-integegration-hackaway")
 
 message(STATUS "Building ${CMAKE_PROJECT_NAME}")
@@ -63,10 +63,10 @@ set(SRC_FILES
 
 set(LIBS curl ncurses)
 
-add_executable(tito-integegration-hackaway ${SRC_FILES} ${MAIN})
+add_executable(tito-integration-hackaway ${SRC_FILES} ${MAIN})
 
-target_link_libraries(tito-integegration-hackaway ${LIBS})
-target_include_directories(tito-integegration-hackaway PUBLIC
+target_link_libraries(tito-integration-hackaway ${LIBS})
+target_include_directories(tito-integration-hackaway PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR})
 
 if (CMAKE_BUILD_TYPE STREQUAL "TEST")
@@ -80,13 +80,12 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
         tests/testTito.cpp
         tests/testNcursesUtils.cpp
         )
-    add_executable(tito-integegration-hackaway-tests ${TEST_FILES})
-    target_link_libraries(tito-integegration-hackaway-tests
+    add_executable(tito-integration-hackaway-tests ${TEST_FILES})
+    target_link_libraries(tito-integration-hackaway-tests
         cppunit ${LIBS})
-    target_include_directories(tito-integegration-hackaway-tests PUBLIC 
+    target_include_directories(tito-integration-hackaway-tests PUBLIC 
         ${CMAKE_CURRENT_BINARY_DIR})
     
     enable_testing ()
-    add_test(NAME tito-integegration-hackaway-tests COMMAND tito-integegration-hackaway-tests)
+    add_test(NAME tito-integration-hackaway-tests COMMAND tito-integegration-hackaway-tests)
 endif()
-
