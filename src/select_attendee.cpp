@@ -112,7 +112,7 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
                   - ticketName.size() - 1);
 
     // Email address
-    unsigned int maxEmailLength = getmaxx(stdscr) - ret.size() - SELECTION_X_PADDING;
+    unsigned int maxEmailLength = getmaxx(stdscr) - ret.size() - SELECTION_X_PADDING - 7;
     std::string ticketEmail = attendee.getEmail();
     while (ticketEmail.size() > maxEmailLength) ticketEmail.pop_back();
 
@@ -194,11 +194,11 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
             // Make selection
             case '\n':
             case KEY_ENTER:
-                ret.attendeeSelected = true;
                 running = 0;
                 i = 0;
                 for (TitoAttendee att : attendees) {
                     if (i == currentlySelected) {
+                        ret.attendeeSelected = true;
                         ret.attendee = att;
                         break;
                     }
