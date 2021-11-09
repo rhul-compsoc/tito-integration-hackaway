@@ -18,7 +18,7 @@ TitoCheckin::TitoCheckin(bool deleted,
     this->lastUpdateTime = lastUpdateTime;
 }
 bool TitoCheckin::isCheckedin() { return this->checkedin; }
-bool TitoCheckin::isDeleted() { return this->deleted; }
+bool TitoCheckin::isDeleted() { return this->deleted && this->deletedTime.tm_year != 0; }
 struct tm TitoCheckin::getCheckInTime() { return this->checkinTime; }
 struct tm TitoCheckin::getDeletedTime() { return this->deletedTime; }
 struct tm TitoCheckin::getLastUpdateTime() { return this->lastUpdateTime; }

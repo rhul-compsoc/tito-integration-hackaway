@@ -64,6 +64,7 @@ set(SRC_FILES
     src/select_attendee.cpp
     src/tito_classes.cpp
     src/error_screen.cpp
+    src/view_attendee.cpp
     )
 
 set(LIBS curl ncurses)

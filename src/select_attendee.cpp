@@ -2,6 +2,7 @@
 #include <sstream>
 #include <vector>
 #include "ncurses_utils.h"
+#include "view_attendee.h"
 #include "select_attendee.h"
 
 #define ESCAPE 27
@@ -41,6 +42,8 @@ static int selection_screen_heading(std::string message,
                          message);
     y_info += print_left(x, y_info,
                          "Type to search for specific attendees.");
+    y_info += print_left(x, y_info,
+                         "Press <F9> to view attendee information.");
     y_info += print_left(x, y_info,
                          "Press <F10> to clear the search.");
     y_info += print_left(x, y_info,
@@ -218,6 +221,17 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
             case '\b':
                 if (search.size() > 0) {
                     search.pop_back();
+                }
+                break;
+            // View attendee information
+            case KEY_F(9):
+                i = 0;
+                for (TitoAttendee att : attendees) {
+                    if (i == currentlySelected) {
+                        view_attendee(att);
+                        break;
+                    }
+                    i++;
                 }
                 break;
             // Clear search
