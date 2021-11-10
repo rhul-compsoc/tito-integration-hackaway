@@ -73,31 +73,31 @@ bool TitoAttendee::matches(std::string queryIn)
     return ret || queryIn == "";
 }
 
-bool TitoAttendee::operator< (TitoAttendee b)
+bool operator <(TitoAttendee &b, TitoAttendee &a)
 {
     // Checkedin
-    if (this->getTicket().getCheckin().isCheckedin()
+    if (a.getTicket().getCheckin().isCheckedin()
         && !b.getTicket().getCheckin().isCheckedin()) {
         return true;
     }
 
-    if (this->getName() < b.getName()) {
+    if (a.getName() < b.getName()) {
         return true;
     }
 
-    if (this->getEmail() < b.getEmail()) {
+    if (a.getEmail() < b.getEmail()) {
         return true;
     }
 
-    if (this->getPhoneNumber() < b.getPhoneNumber()) {
+    if (a.getPhoneNumber() < b.getPhoneNumber()) {
         return true;
     }
 
-    if (this->getTicket().getTicketRelease() < b.getTicket().getTicketRelease()) {
+    if (a.getTicket().getTicketRelease() < b.getTicket().getTicketRelease()) {
         return true;
     }
 
-    return this->getTicket().getTicketID() < b.getTicket().getTicketID();
+    return a.getTicket().getTicketID() < b.getTicket().getTicketID();
 }
 
 bool TitoAttendee::operator==(TitoAttendee other) {

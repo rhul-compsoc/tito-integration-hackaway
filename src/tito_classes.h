@@ -53,7 +53,7 @@ public:
     TitoTicket getTicket();
     TitoTicket *getTicketRef();
     bool matches(std::string queryIn);
-    bool operator <(TitoAttendee);
+    friend bool operator <(TitoAttendee&, TitoAttendee&);
     /**
      * Shallow object equality (does not look at the tickets), this method is
      * for maintinaing the selection in the attendee selection screen.
@@ -76,4 +76,3 @@ private:
     std::string name, email, phoneNumber;
     TitoTicket ticket;
 };
-int cmpAttendee(TitoAttendee, TitoAttendee);

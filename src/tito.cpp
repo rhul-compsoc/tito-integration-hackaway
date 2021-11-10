@@ -149,11 +149,13 @@ static void freeCurlResponse(struct CurlResponse *resp)
     }
 }
 
-std::string TitoApi::getPostRequest(std::string url,
-                                    std::string data)
+std::string TitoApi::sendRequest(std::string url,
+                                 std::string data,
+                                 std::string request)
 {
 #ifdef DEBUG
-    std::cerr << "Debug TitoApi::getPostRequest() : The URL is " << url 
+    std::cerr << "Debug TitoApi::sendRequest() : The URL is " << url
+              << " (" << request << ")"
               << std::endl;
 #endif
     
@@ -177,8 +179,8 @@ std::string TitoApi::getPostRequest(std::string url,
         curl_easy_setopt(curl, CURLOPT_USE_SSL, 1L);
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "rhul-tito-integration");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
-        curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1L);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, request.c_str());
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
         
         // Set response write
@@ -200,14 +202,14 @@ std::string TitoApi::getPostRequest(std::string url,
         
         if (!getSuccess) {
             if (res != CURLE_OK) {
-                std::cerr << "Error TitoApi::getPostRequest() : curl perform "
+                std::cerr << "Error TitoApi::sendRequest() : curl perform "
                              "failed after send."
                           << std::endl;
                 fprintf(stderr,
                         "curl_easy_perform() failed: %s\n",
                         curl_easy_strerror(res));
             } else {
-                std::cerr << "Error TitoApi::getPostRequest() : no response was read." 
+                std::cerr << "Error TitoApi::sendRequest() : no response was read."
                           << std::endl;
             }
             throw TITO_NET_ERROR;
@@ -215,7 +217,7 @@ std::string TitoApi::getPostRequest(std::string url,
         
         return resp;
     } else {
-        std::cerr << "Error TitoApi::getPostRequest() : curl init failed." 
+        std::cerr << "Error TitoApi::sendRequest() : curl init failed."
                   << std::endl;
         throw TITO_NET_ERROR;
     }
@@ -434,7 +436,7 @@ bool TitoApi::checkinAttendee(TitoAttendee attendee)
     std::string data = "{\"checkin\":{\"ticket_id\":" 
                      + std::to_string(attendee.getTicket().getTicketID())
                      + "}}";
-    std::string resp = getPostRequest(url, data);
+    std::string resp = sendRequest(url, data, "POST");
     nlohmann::json j = nlohmann::json::parse(resp);
     /*
      * The TiTo API is wank (if you pardon my french), so this is a good enough 
@@ -449,6 +451,39 @@ bool TitoApi::checkinAttendee(TitoAttendee attendee)
         throw TITO_INTERNAL_ERROR;
     }
     
+    return ret;
+}
+
+bool TitoApi::checkoutAttendee(TitoAttendee attendee)
+{
+    if (attendee.getTicket().getCheckin().isCheckedin()) {
+        std::cerr << "Error TitoApi::checkoutAttendee() : The user "
+                  << attendee.getName() << " has already checked in."
+                  << std::endl;
+        return false; // Illegal action
+    }
+    bool ret = false;
+
+    std::string url = "https://checkin.tito.io/checkin_lists/"
+                    + this->checkinSlug + "/checkins";
+    std::string data = "{\"checkin\":{\"ticket_id\":"
+                     + std::to_string(attendee.getTicket().getTicketID())
+                     + "}}";
+    std::string resp = sendRequest(url, data, "DELETE");
+    nlohmann::json j = nlohmann::json::parse(resp);
+    /*
+     * The TiTo API is wank (if you pardon my french), so this is a good enough
+     * error check. It returns a message if an error occurs.
+     */
+    if (j.contains("ticket_id")) {
+
+    } else {
+        std::cerr << "Error TitoApi::checkoutAttendee() : The checkin slug is "
+                     "incorrect or an internal TiTo error occurred."
+                  << std::endl;
+        throw TITO_INTERNAL_ERROR;
+    }
+
     return ret;
 }
 

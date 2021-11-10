@@ -180,7 +180,8 @@ struct AttendeeSelection select_attendee(TitoApi api,
                 }
 
                 // Print the selected attendee and their tickets
-                std::string attendeeRow = getAttendeeTableEntry(attendee, attendee.getTicket());
+                std::string attendeeRow = getAttendeeTableEntry(attendee,
+                                                                attendee.getTicket());
                 PAD_STR_TO_TABLE(attendeeRow);
                 y += print_left(SELECTION_X_PADDING, y, attendeeRow);
 
@@ -259,6 +260,7 @@ struct AttendeeSelection select_attendee(TitoApi api,
                                 api = TitoApi(getToken(), getAccountSlug(), getEventSlug(), getCheckinSlug());
                                 std::list<TitoAttendee> tmpattendees = api.getAttendees();
                                 attendees = tmpattendees;
+                                attendees.sort();
                                 errorFlag = false;
                             } catch (int e) {
                                 struct ErrorAction act;

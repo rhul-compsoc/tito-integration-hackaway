@@ -81,6 +81,17 @@ public:
      */
     bool checkinAttendee(TitoAttendee);
     /**
+     * Checks a user out of the system.
+     *
+     * @param TitoAttendee the attendee to check out to the system
+     * @return whether the operation was a success
+     * @throws TITO_NET_ERROR if there was a network error whilst connecting to
+     * @throws TITO_AUTH_ERROR if authentication failed due to an invalid
+     * checkin slug
+     * @throws TITO_INTERNAL_ERROR if there is an internal error
+     */
+    bool checkoutAttendee(TitoAttendee);
+    /**
      * Returns whether a TitoATttendee ha been give their ID card.
      * 
      * @param TitoAttendee the attendee to check
@@ -108,12 +119,14 @@ private:
      * Makes a POST request to an endpoint with the tito API headers, the data 
      * that is passed and, returns the data received.
      * 
-     * @param url The URL to GET from.
-     * @param data The data that should be sent with the POST request
+     * @param url The URL to get from.
+     * @param data The data that should be sent with the POST request.
+     * @param request_method The method to use i.e: POST.
      * @throws TITO_NET_ERROR When making the curl request fails.
      */ 
-    std::string getPostRequest(std::string /* url */,
-                               std::string /* data */);
+    std::string sendRequest(std::string /* url */,
+                            std::string /* data */,
+                            std::string /* request method */);
     std::string token,
                 accountSlug,
                 eventSlug,

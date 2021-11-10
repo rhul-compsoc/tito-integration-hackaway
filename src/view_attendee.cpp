@@ -67,27 +67,28 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
                 break;
             case 'C':
             case 'c':
-                if (!ticket.getCheckin().isCheckedin()) {
-                    while (errorFlag) {
-                        try {
-                            print_centre(0,
-                                         getmaxy(stdscr) / 2,
-                                         "Checking user in...");
+                while (errorFlag) {
+                    print_centre(0,
+                                 getmaxy(stdscr) / 2,
+                                 "Checking user in...");
+                    try {
+                        refresh();
+                        if (ticket.getCheckin().isCheckedin()) {
+                            api.checkoutAttendee(attendee);
+                        } else {
                             api.checkinAttendee(attendee);
-                            errorFlag = false;
-                            flag = false;
-                        } catch (int e) {
-                            act = showErrorMessage("An error occurred whilst checking in "
-                                                   + attendee.getName(),
-                                                   e);
+                        }
+                        errorFlag = false;
+                        flag = false;
+                    } catch (int e) {
+                        act = showErrorMessage("An error occurred whilst checking in/out"
+                                               + attendee.getName(),
+                                               e);
 
-                            if (act.action == ERROR_ACTION_IGNORE) {
-                                errorFlag = false;
-                            }
+                        if (act.action == ERROR_ACTION_IGNORE) {
+                            errorFlag = false;
                         }
                     }
-                } else {
-                    //TODO: checkout
                 }
                 break;
         }
