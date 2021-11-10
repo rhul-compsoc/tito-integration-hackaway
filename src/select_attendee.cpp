@@ -143,8 +143,7 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
     int running = 1;
     while (running) {
         clear();
-        int y, headersY;
-        y = headersY = selection_screen_heading(message, &search);
+        int y = selection_screen_heading(message, &search);
         y++;
 
         // Print attendees
@@ -256,8 +255,9 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
         // Search if query was changed
         if (searchOld != search) {
             attendees = std::list<TitoAttendee>();
+            scrollOffset = 0;
+            currentlySelected = 0;
             int i = 0, j = 0;
-            bool foundSelected = false;
             for (TitoAttendee attendee : attendeesRaw) {
                 if (attendee.matches(search)) {
                     attendees.push_back(attendee);
@@ -266,21 +266,10 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
                     if (attendee == currentlySelectedAttendee) {
                         currentlySelected = j;
                         scrollOffset = j;
-                        foundSelected = true;
-
-                        // Scroll up until the selection is at the bottom of the screen
-                        while (headersY + scrollOffset > getmaxy(stdscr) - SELECTION_Y_PADDING) {
-                            scrollOffset--;
-                        }
                     }
                     j++;
                 }
                 i++;
-            }
-
-            if (!foundSelected) {
-                scrollOffset = 0;
-                currentlySelected = 0;
             }
         }
     }
