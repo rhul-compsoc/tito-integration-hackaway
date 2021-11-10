@@ -148,13 +148,12 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
 }
 
 #define UPDATE_CACHE() \
-errorFlag = true;\
-while (errorFlag) {\
+for (errorFlag = true; errorFlag;) {\
     try {\
         clear();\
         print_centre(0,\
-                     getmaxy(stdscr) / 2,\
-                     "Updating attendee cache...");\
+        getmaxy(stdscr) / 2,\
+        "Updating attendee cache...");\
         refresh();\
         std::list<TitoAttendee> tmpattendees = api.getAttendees();\
         attendeesRaw = attendees = tmpattendees;\
@@ -163,7 +162,7 @@ while (errorFlag) {\
     } catch (int e) {\
         struct ErrorAction act;\
         act = showErrorMessage("An error updating the attendee cache.",\
-                               e);\
+        e);\
         \
         if (act.action == ERROR_ACTION_IGNORE) {\
             errorFlag = false;\
@@ -200,6 +199,13 @@ struct AttendeeSelection select_attendee(TitoApi api,
         TitoAttendee currentlySelectedAttendee;
 
         for (TitoAttendee attendee : attendees) {
+            // Draw overflow indicator
+            if (i == 0 && i - scrollOffset < 0) {
+                print_left(2 + SELECTION_X_PADDING,
+                           y - 1,
+                           "^");
+            }
+
             if (i - scrollOffset >= 0
                 && y < getmaxy(stdscr) - SELECTION_Y_PADDING) {
                 if (i == currentlySelected) {
@@ -217,6 +223,13 @@ struct AttendeeSelection select_attendee(TitoApi api,
                 if (i == currentlySelected) {
                     attroff(COLOUR_PAIR_BLACK_AND_GREEN);
                 }
+            }
+
+            // Draw overflow indicator
+            if (y == getmaxy(stdscr) - SELECTION_Y_PADDING) {
+                print_left(2 + SELECTION_X_PADDING,
+                           y,
+                           "v");
             }
 
             i++;
