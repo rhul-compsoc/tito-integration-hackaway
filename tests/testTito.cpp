@@ -112,11 +112,45 @@ void TestTito::testIDCache()
 void TestTito::testSort()
 {
     struct tm t;
-    TitoCheckin checkin = TitoCheckin(true, t, t, t);
-    TitoTicket ticket = TitoTicket(1, "slug", "release");
+    TitoCheckin checkin = TitoCheckin("UUID", true, t, t, t),
+                checkedout = TitoCheckin("UUID", false, t, t, t);
+    TitoTicket ticket = TitoTicket(1, "slug", "release"),
+               ticket2 = TitoTicket(1, "slug", "release");
 
-    CPPUNIT_ASSERT(TitoAttendee("a", "a", "a", ticket) <
-                   TitoAttendee("a", "b", "a", ticket));
-    CPPUNIT_ASSERT(TitoAttendee("a", "a", "a", ticket) <
-                   TitoAttendee("b", "a", "a", ticket));
+    ticket.setCheckin(checkin);
+    ticket2.setCheckin(checkedout);
+
+    TitoAttendee a = TitoAttendee("a", "a", "a", ticket),
+                 b = TitoAttendee("a", "b", "a", ticket),
+                 c = TitoAttendee("b", "a", "a", ticket),
+                 d = TitoAttendee("a", "a", "a", ticket2);
+
+    CPPUNIT_ASSERT(&a < &b);
+    CPPUNIT_ASSERT(&a < &c);
+    CPPUNIT_ASSERT(&a < &d);
+}
+
+void TestTito::testCheckInThenOut()
+{
+    TitoApi api = TitoApi(getToken(),
+                          getAccountSlug(),
+                          getEventSlug(),
+                          getCheckinSlug());
+    std::list<TitoAttendee> attendees = api.getAttendees();
+    CPPUNIT_ASSERT(attendees.size() > 0);
+
+    // Checkout of all the things that are checked in
+    for (TitoAttendee attendee : attendees) {
+        if (attendee.getTicket().getCheckin().isCheckedin()) {
+            CPPUNIT_ASSERT(api.checkoutAttendee(attendee));
+        }
+    }
+
+    // Check in all of the users then check them out
+    for (TitoAttendee attendee : attendees) {
+        if (attendee.getTicket().getCheckin().isCheckedin()) {
+            CPPUNIT_ASSERT(api.checkinAttendee(attendee));
+            CPPUNIT_ASSERT(api.checkoutAttendee(attendee));
+        }
+    }
 }
