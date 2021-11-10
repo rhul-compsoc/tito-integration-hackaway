@@ -155,7 +155,7 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
             if (i - scrollOffset >= 0
                 && y < getmaxy(stdscr) - SELECTION_Y_PADDING) {
                 if (i == currentlySelected) {
-                    yOfSelected = i;
+                    yOfSelected = y;
                     attron(COLOUR_PAIR_BLACK_AND_GREEN);
                 }
 
@@ -189,7 +189,7 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
             case KEY_DOWN:
                 if (currentlySelected < ((int) attendees.size()) - 1) {
                     currentlySelected++;
-                    if (yOfSelected >= getmaxy(stdscr) - SELECTION_Y_PADDING) {
+                    if (yOfSelected + 1 >= getmaxy(stdscr) - SELECTION_Y_PADDING) {
                         scrollOffset++;
                     }
                 }
