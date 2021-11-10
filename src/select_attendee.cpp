@@ -44,15 +44,17 @@ static int selection_screen_heading(std::string message,
     y_info += print_left(x, y_info,
                          "Type to search for specific attendees.");
     y_info += print_left(x, y_info,
+                         "Press <F8> to refresh the attendee information.");
+    y_info += print_left(x, y_info,
                          "Press <F9> to view attendee information.");
     y_info += print_left(x, y_info,
-                         "Press <F10> to clear the search.");
+                         "Press <F10> to clear the search box.");
     y_info += print_left(x, y_info,
-                         "Use <ENTER> to confirm selection.");
+                         "Press <ENTER> to confirm selection.");
     y_info += print_left(x, y_info,
-                         "Use <UP> and <DOWN> to change selection.");
+                         "Press <UP> and <DOWN> to change selection.");
     y_info += print_left(x, y_info,
-                         "Use <ESCAPE> to cancel selection.");
+                         "Press <ESCAPE> to cancel selection.");
     attroff(COLOUR_PAIR_GREEN_AND_BLACK);
 
     // Print the headings
@@ -73,7 +75,7 @@ static int selection_screen_heading(std::string message,
     }
 
     // Pad the search field
-    std::string search = "  SEARCH: " + searchMessage;
+    std::string search = "  SEARCH: " + searchMessage + "<";
     PAD_STR_TO_TABLE(search);
     y += print_left(SELECTION_X_PADDING, y, search);
 
@@ -142,6 +144,30 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
     return ret;
 }
 
+#define UPDATE_CACHE() \
+errorFlag = true;\
+while (errorFlag) {\
+    try {\
+        clear();\
+        print_centre(0,\
+                     getmaxy(stdscr) / 2,\
+                     "Updating attendee cache...");\
+        refresh();\
+        std::list<TitoAttendee> tmpattendees = api.getAttendees();\
+        attendeesRaw = attendees = tmpattendees;\
+        attendees.sort();\
+        errorFlag = false;\
+    } catch (int e) {\
+        struct ErrorAction act;\
+        act = showErrorMessage("An error updating the attendee cache.",\
+                               e);\
+        \
+        if (act.action == ERROR_ACTION_IGNORE) {\
+            errorFlag = false;\
+        }\
+    }\
+}
+
 struct AttendeeSelection select_attendee(TitoApi api,
                                          std::list<TitoAttendee> attendeesRaw,
                                          std::string message)
@@ -158,11 +184,11 @@ struct AttendeeSelection select_attendee(TitoApi api,
     int currentlySelected = 0,
         scrollOffset = 0;
 
-    bool errorFlag = true;
-    int running = 1;
+    bool running = true;
     while (running) {
         clear();
         int y = selection_screen_heading(message, search);
+        bool errorFlag = true;
         y++;
 
         // Print attendees
@@ -244,6 +270,10 @@ struct AttendeeSelection select_attendee(TitoApi api,
                     search.pop_back();
                 }
                 break;
+            // Refresh cache
+            case KEY_F(8):
+                UPDATE_CACHE();
+                break;
             // View attendee information
             case KEY_F(9):
                 i = 0;
@@ -252,27 +282,7 @@ struct AttendeeSelection select_attendee(TitoApi api,
                         view_attendee(api, att);
 
                         // Update cache
-                        while (errorFlag) {
-                            try {
-                                print_centre(0,
-                                             getmaxy(stdscr) / 2,
-                                             "Updating attendee cache...");
-                                api = TitoApi(getToken(), getAccountSlug(), getEventSlug(), getCheckinSlug());
-                                std::list<TitoAttendee> tmpattendees = api.getAttendees();
-                                attendees = tmpattendees;
-                                attendees.sort();
-                                errorFlag = false;
-                            } catch (int e) {
-                                struct ErrorAction act;
-                                act = showErrorMessage("An error updating the attendee cache.",
-                                                       e);
-
-                                if (act.action == ERROR_ACTION_IGNORE) {
-                                    errorFlag = false;
-                                }
-                            }
-                        }
-
+                        UPDATE_CACHE();
                         break;
                     }
                     i++;

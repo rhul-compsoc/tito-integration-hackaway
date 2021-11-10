@@ -59,6 +59,7 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
 
         int c = getch();
         int errorFlag = true;
+        std::string inOut = "in";
         struct ErrorAction act;
         switch (c) {
             case '\n':
@@ -70,18 +71,20 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
                 while (errorFlag) {
                     print_centre(0,
                                  getmaxy(stdscr) / 2,
-                                 "Checking user in...");
+                                 "Checking user " + inOut + "...");
                     try {
                         refresh();
                         if (ticket.getCheckin().isCheckedin()) {
                             api.checkoutAttendee(attendee);
+                            inOut = "out";
                         } else {
                             api.checkinAttendee(attendee);
                         }
                         errorFlag = false;
                         flag = false;
                     } catch (int e) {
-                        act = showErrorMessage("An error occurred whilst checking in/out"
+                        act = showErrorMessage("An error occurred whilst checking "
+                                               + inOut
                                                + attendee.getName(),
                                                e);
 

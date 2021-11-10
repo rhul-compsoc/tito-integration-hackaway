@@ -10,17 +10,20 @@ TitoCheckin::TitoCheckin()
     this->deleted = false;
     this->checkedin = false;
 };
-TitoCheckin::TitoCheckin(bool deleted,
+TitoCheckin::TitoCheckin(std::string UUID,
+                         bool deleted,
                          struct tm checkinTime,
                          struct tm deletedTime,
                          struct tm lastUpdateTime)
 {
+    this->UUID = UUID;
     this->checkedin = !deleted;
     this->deleted = deleted;
     this->checkinTime = checkinTime;
     this->deletedTime = deletedTime;
     this->lastUpdateTime = lastUpdateTime;
 }
+std::string TitoCheckin::getUUID() { return this->UUID; }
 bool TitoCheckin::isCheckedin() { return this->checkedin; }
 bool TitoCheckin::isDeleted() { return this->deleted && this->deletedTime.tm_year != 0; }
 struct tm TitoCheckin::getCheckInTime() { return this->checkinTime; }

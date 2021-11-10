@@ -179,9 +179,10 @@ std::string TitoApi::sendRequest(std::string url,
         curl_easy_setopt(curl, CURLOPT_USE_SSL, 1L);
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "rhul-tito-integration");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+        curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1L);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.size());
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, request.c_str());
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
         
         // Set response write
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_callback);
@@ -369,6 +370,9 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         checkinJson.at("created_at").get_to(createdAt);
         checkinJson.at("updated_at").get_to(updatedAt);            
         bool deleted = !checkinJson.at("deleted_at").is_null();
+
+        std::string UUID;
+        checkinJson.at("uuid").get_to(UUID);
         
         // Turn these strings to dates (struct tm)
         struct tm createdTime, updateTime, deletedTime;
@@ -381,7 +385,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         strptime(createdAt.c_str(), TITO_DATE_FORMAT, &createdTime);
         strptime(updatedAt.c_str(), TITO_DATE_FORMAT, &updateTime);
         
-        TitoCheckin checkin(deleted, createdTime, deletedTime, updateTime);
+        TitoCheckin checkin(UUID, deleted, createdTime, deletedTime, updateTime);
         
         // Find the attendee to give the checkin
         bool flag = false;
@@ -442,9 +446,7 @@ bool TitoApi::checkinAttendee(TitoAttendee attendee)
      * The TiTo API is wank (if you pardon my french), so this is a good enough 
      * error check. It returns a message if an error occurs.
      */
-    if (j.contains("ticket_id")) {
-        
-    } else {
+    if (!j.contains("ticket_id")) {
         std::cerr << "Error TitoApi::checkinAttendee() : The checkin slug is "
                      "incorrect or an internal TiTo error occurred." 
                   << std::endl;
@@ -456,16 +458,17 @@ bool TitoApi::checkinAttendee(TitoAttendee attendee)
 
 bool TitoApi::checkoutAttendee(TitoAttendee attendee)
 {
-    if (attendee.getTicket().getCheckin().isCheckedin()) {
+    if (!attendee.getTicket().getCheckin().isCheckedin()) {
         std::cerr << "Error TitoApi::checkoutAttendee() : The user "
-                  << attendee.getName() << " has already checked in."
+                  << attendee.getName() << " has already checked out."
                   << std::endl;
         return false; // Illegal action
     }
     bool ret = false;
 
     std::string url = "https://checkin.tito.io/checkin_lists/"
-                    + this->checkinSlug + "/checkins";
+                    + this->checkinSlug + "/checkins/"
+                    + attendee.getTicket().getCheckin().getUUID();
     std::string data = "{\"checkin\":{\"ticket_id\":"
                      + std::to_string(attendee.getTicket().getTicketID())
                      + "}}";
@@ -475,9 +478,7 @@ bool TitoApi::checkoutAttendee(TitoAttendee attendee)
      * The TiTo API is wank (if you pardon my french), so this is a good enough
      * error check. It returns a message if an error occurs.
      */
-    if (j.contains("ticket_id")) {
-
-    } else {
+    if (!j.contains("ticket_id")) {
         std::cerr << "Error TitoApi::checkoutAttendee() : The checkin slug is "
                      "incorrect or an internal TiTo error occurred."
                   << std::endl;

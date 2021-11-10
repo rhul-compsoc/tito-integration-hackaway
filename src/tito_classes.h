@@ -8,16 +8,19 @@
 class TitoCheckin {
 public:
     TitoCheckin() ;
-    TitoCheckin(bool /*deleted*/,
+    TitoCheckin(std::string /*UUID*/,
+                bool /*deleted*/,
                 struct tm /*checkinTime*/,
                 struct tm /*deletedTime*/,
                 struct tm /*lastUpdateTime*/);
+    std::string getUUID();
     bool isCheckedin();
     bool isDeleted();
     struct tm getCheckInTime();
     struct tm getDeletedTime();
     struct tm getLastUpdateTime();
 private:
+    std::string UUID;
     bool checkedin, deleted;
     struct tm checkinTime, deletedTime, lastUpdateTime;
 };
