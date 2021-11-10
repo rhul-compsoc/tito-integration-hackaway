@@ -37,10 +37,13 @@ static int selection_screen_heading(std::string message,
 
     // Print the selection guide
     attron(COLOUR_PAIR_GREEN_AND_BLACK);
-    int y_info = SELECTION_Y_PADDING + 3;
+    int y_info = SELECTION_Y_PADDING + 1;
+
     int x = SELECTION_X_PADDING * 2 + 25;
     y_info += print_left(x, y_info,
                          message);
+    y_info++;
+
     y_info += print_left(x, y_info,
                          "Type to search for specific attendees.");
     y_info += print_left(x, y_info,
