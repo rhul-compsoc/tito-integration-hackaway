@@ -111,7 +111,7 @@ static size_t write_callback(char *ptr_in,
     if (response->ptr == NULL) {
         response->ptr = (char *) malloc((size * nmemb) + 1);
         if (response->ptr == NULL) {
-            std::cerr << "Error TitoApi::write_callback() : malloc failed." 
+            std::cerr << "Error TitoApi::write_callback() : malloc failed."
                       << std::endl;
             return 0;
         }
@@ -122,9 +122,9 @@ static size_t write_callback(char *ptr_in,
     } else {
         // We have to sellotape the chunks together
         response->ptr = (char *) realloc(response->ptr,
-                                         response->len + (size * nmemb) + 1);        
+                                         response->len + (size * nmemb) + 1);
         if (response->ptr == NULL) {
-            std::cerr << "Error TitoApi::write_callback() : realloc failed." 
+            std::cerr << "Error TitoApi::write_callback() : realloc failed."
                       << std::endl;
             return 0;
         }
@@ -132,7 +132,7 @@ static size_t write_callback(char *ptr_in,
         response->ptr[response->len + (size * nmemb)] = '\0';
         memcpy(response->ptr + response->len, ptr_in, size * nmemb);
         response->len += size * nmemb;
-    }    
+    }
     
 #ifdef DEBUG
     std::cerr << "Debug TitoApi::write_callback() : " << response->ptr << std::endl;
@@ -167,7 +167,7 @@ static size_t read_function(char *ptr, size_t size, size_t nmemb, void* userData
     if (len < 0) return 0;
     
     memcpy(ptr, readData->data.c_str() + readData->bufferPos, len);
-    readData->bufferPos += len;    
+    readData->bufferPos += len;
     return len;
 }
 
