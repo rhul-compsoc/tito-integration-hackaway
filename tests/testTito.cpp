@@ -150,7 +150,9 @@ void TestTito::testCheckInThenOut()
     for (TitoAttendee attendee : attendees) {
         if (attendee.getTicket().getCheckin().isCheckedin()) {
             CPPUNIT_ASSERT(api.checkinAttendee(attendee));
+            CPPUNIT_ASSERT(!api.checkinAttendee(attendee));
             CPPUNIT_ASSERT(api.checkoutAttendee(attendee));
+            CPPUNIT_ASSERT(!api.checkoutAttendee(attendee));
         }
     }
 }
