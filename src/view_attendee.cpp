@@ -47,7 +47,7 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
 
         y = getmaxy(stdscr) - 5;
 
-        if (ticket.getCheckin().isCheckedin()) {
+        if (!ticket.getCheckin().isCheckedin()) {
             y += print_centre(0, y, "Press <C> to checkin");
         } else {
             y += print_centre(0, y, "Press <C> to checkout");
