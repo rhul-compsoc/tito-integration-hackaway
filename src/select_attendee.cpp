@@ -4,6 +4,7 @@
 #include "ncurses_utils.h"
 #include "view_attendee.h"
 #include "select_attendee.h"
+#include "error_screen.h"
 
 #define ESCAPE 27
 #define BACKSPACE 127
@@ -126,7 +127,8 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
     return ret;
 }
 
-struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
+struct AttendeeSelection select_attendee(TitoApi api,
+                                         std::list<TitoAttendee> attendeesRaw,
                                          std::string message)
 {
     struct AttendeeSelection ret = {
@@ -140,6 +142,7 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
     int currentlySelected = 0,
         scrollOffset = 0;
 
+    bool errorFlag = true;
     int running = 1;
     while (running) {
         clear();
@@ -229,7 +232,29 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
                 i = 0;
                 for (TitoAttendee att : attendees) {
                     if (i == currentlySelected) {
-                        view_attendee(att);
+                        view_attendee(api, att);
+
+                        // Update cache
+                        while (errorFlag) {
+                            try {
+                                print_centre(0,
+                                             getmaxy(stdscr) / 2,
+                                             "Updating attendee cache...");
+                                api = TitoApi(getToken(), getAccountSlug(), getEventSlug(), getCheckinSlug());
+                                std::list<TitoAttendee> tmpattendees = api.getAttendees();
+                                attendees = tmpattendees;
+                                errorFlag = false;
+                            } catch (int e) {
+                                struct ErrorAction act;
+                                act = showErrorMessage("An error updating the attendee cache.",
+                                                       e);
+
+                                if (act.action == ERROR_ACTION_IGNORE) {
+                                    errorFlag = false;
+                                }
+                            }
+                        }
+
                         break;
                     }
                     i++;

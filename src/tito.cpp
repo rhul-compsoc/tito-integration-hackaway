@@ -149,47 +149,23 @@ static void freeCurlResponse(struct CurlResponse *resp)
     }
 }
 
-struct CurlReadData {
-    std::string data;
-    size_t bufferPos;
-};
-
-static size_t min(size_t a, size_t b)
-{
-    return (a < b * a) +
-           (b <= a * b);
-}
-
-static size_t read_function(char *ptr, size_t size, size_t nmemb, void* userData)
-{
-    struct CurlReadData *readData = (struct CurlReadData *) userData;
-    int len = min(size * nmemb, readData->data.size() - readData->bufferPos);
-    if (len < 0) return 0;
-    
-    memcpy(ptr, readData->data.c_str() + readData->bufferPos, len);
-    readData->bufferPos += len;
-    return len;
-}
-
 std::string TitoApi::getPostRequest(std::string url,
                                     std::string data)
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     std::cerr << "Debug TitoApi::getPostRequest() : The URL is " << url 
               << std::endl;
-    #endif
+#endif
     
     CURL *curl = curl_easy_init();
     if(curl) {
         CURLcode res;
         
         struct CurlResponse response = {NULL, 0};
-        struct CurlReadData readData = {data, 0};
-        std::string header = "Authorization: Token token=" + this->token;
         
         struct curl_slist *list = NULL;
-        list = curl_slist_append(list, header.c_str());
         list = curl_slist_append(list, "Accept: application/json");
+        list = curl_slist_append(list, "Content-Type: application/json");
         
         // Set timeouts
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
@@ -202,17 +178,15 @@ std::string TitoApi::getPostRequest(std::string url,
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "rhul-tito-integration");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1L);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
         
         // Set response write
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_callback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *) &response);
         
-        // Set the data read function to give the data that is passed
-        curl_easy_setopt(curl, CURLOPT_READFUNCTION, &read_function);
-        curl_easy_setopt(curl, CURLOPT_READDATA, (void *) &readData);
-        
         res = curl_easy_perform(curl);
-        
+
         bool getSuccess = res == CURLE_OK && response.ptr != NULL;
         
         std::string resp;
@@ -226,13 +200,15 @@ std::string TitoApi::getPostRequest(std::string url,
         
         if (!getSuccess) {
             if (res != CURLE_OK) {
-                std::cerr << "Error TitoApi::getPostRequest() : curl perform failed."
-                << std::endl;
-                fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                std::cerr << "Error TitoApi::getPostRequest() : curl perform "
+                             "failed after send."
+                          << std::endl;
+                fprintf(stderr,
+                        "curl_easy_perform() failed: %s\n",
                         curl_easy_strerror(res));
             } else {
                 std::cerr << "Error TitoApi::getPostRequest() : no response was read." 
-                << std::endl;
+                          << std::endl;
             }
             throw TITO_NET_ERROR;
         }
@@ -240,7 +216,7 @@ std::string TitoApi::getPostRequest(std::string url,
         return resp;
     } else {
         std::cerr << "Error TitoApi::getPostRequest() : curl init failed." 
-        << std::endl;
+                  << std::endl;
         throw TITO_NET_ERROR;
     }
 }
@@ -418,7 +394,9 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         if (!flag) {
             std::cerr << "Error TitoApi:getAttendees() : Unable to find ticket "
                          "for check in "
-                      << ticketID << " (checked in at " << asctime(&createdTime) << ")" 
+                      << ticketID
+                      << " (checked in at " << asctime(&createdTime)
+                      << ")"
                       << std::endl;
         }
     }
@@ -428,8 +406,8 @@ std::list<TitoAttendee> TitoApi::getAttendees()
 
 bool TitoApi::checkinAttendee(TitoAttendee attendee)
 {
-    if (!attendee.getTicket().isCheckedin()) {
-        std::cerr << "Error TitoApi::checkinAttendee : The user " 
+    if (attendee.getTicket().isCheckedin()) {
+        std::cerr << "Error TitoApi::checkinAttendee() : The user "
                   << attendee.getName() << " has already checked in."
                   << std::endl;
         return false; // Illegal action
@@ -447,7 +425,7 @@ bool TitoApi::checkinAttendee(TitoAttendee attendee)
      * The TiTo API is wank (if you pardon my french), so this is a good enough 
      * error check. It returns a message if an error occurs.
      */
-    if (j.contains("ticketid")) {
+    if (j.contains("ticket_id")) {
         
     } else {
         std::cerr << "Error TitoApi::checkinAttendee() : The checkin slug is "

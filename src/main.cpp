@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 
     
     y += print_centre(0, y, "Loaded ID cache, attendees and, checkins.");
-    select_attendee(attendees, "Select an attendee.");
+    select_attendee(api, attendees, "Select an attendee.");
     
     warn_exit();
     

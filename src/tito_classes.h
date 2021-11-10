@@ -8,8 +8,7 @@
 class TitoCheckin {
 public:
     TitoCheckin() ;
-    TitoCheckin(
-                bool /*deleted*/,
+    TitoCheckin(bool /*deleted*/,
                 struct tm /*checkinTime*/,
                 struct tm /*deletedTime*/,
                 struct tm /*lastUpdateTime*/);

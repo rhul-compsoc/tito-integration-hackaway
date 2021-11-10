@@ -1,9 +1,10 @@
 #include <ncurses.h>
 #include <string>
 #include "ncurses_utils.h"
+#include "error_screen.h"
 #include "view_attendee.h"
 
-void view_attendee(TitoAttendee attendee) {
+void view_attendee(TitoApi api, TitoAttendee attendee) {
     bool flag = true;
     while(flag) {
         // Print in the loop to make terminal zooming and resizing work
@@ -45,15 +46,49 @@ void view_attendee(TitoAttendee attendee) {
         attroff(COLOUR_PAIR_YELLOW_AND_BLACK);
 
         y = getmaxy(stdscr) - 5;
+
+        if (ticket.isCheckedin()) {
+            y += print_centre(0, y, "Press <C> to checkin");
+        } else {
+            y += print_centre(0, y, "Press <C> to checkout");
+        }
+
         y += print_centre(0, y, "Press <ENTER> to continue");
 
         refresh();
 
         int c = getch();
+        int errorFlag = true;
+        struct ErrorAction act;
         switch (c) {
             case '\n':
             case KEY_ENTER:
                 flag = false;
+                break;
+            case 'C':
+            case 'c':
+                if (!ticket.isCheckedin()) {
+                    while (errorFlag) {
+                        try {
+                            print_centre(0,
+                                         getmaxy(stdscr) / 2,
+                                         "Checking user in...");
+                            api.checkinAttendee(attendee);
+                            errorFlag = false;
+                            flag = false;
+                        } catch (int e) {
+                            act = showErrorMessage("An error occurred whilst checking in "
+                                                   + attendee.getName(),
+                                                   e);
+
+                            if (act.action == ERROR_ACTION_IGNORE) {
+                                errorFlag = false;
+                            }
+                        }
+                    }
+                } else {
+                    //TODO: checkout
+                }
                 break;
         }
     }
