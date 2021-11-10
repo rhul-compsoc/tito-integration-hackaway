@@ -163,7 +163,7 @@ static size_t min(size_t a, size_t b)
 static size_t read_function(char *ptr, size_t size, size_t nmemb, void* userData)
 {
     struct CurlReadData *readData = (struct CurlReadData *) userData;
-    size_t len = min(size * nmemb, readData->data.size() - readData->bufferPos);
+    int len = min(size * nmemb, readData->data.size() - readData->bufferPos);
     if (len < 0) return 0;
     
     memcpy(ptr, readData->data.c_str() + readData->bufferPos, len);
