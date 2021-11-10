@@ -5,12 +5,17 @@
 #include <algorithm>
 #include "tito_classes.h"
 
-TitoCheckin::TitoCheckin() {};
+TitoCheckin::TitoCheckin()
+{
+    this->deleted = false;
+    this->checkedin = false;
+};
 TitoCheckin::TitoCheckin(bool deleted,
                          struct tm checkinTime,
                          struct tm deletedTime,
                          struct tm lastUpdateTime)
 {
+    this->checkedin = !deleted;
     this->deleted = deleted;
     this->checkinTime = checkinTime;
     this->deletedTime = deletedTime;
@@ -29,13 +34,11 @@ TitoTicket::TitoTicket(int ticketID,
     this->ticketID = ticketID;
     this->ticketSlug = ticketSlug;
     this->ticketRelease = ticketRelease;
-    this->checkedIn = false;
 }
 TitoTicket::TitoTicket() {} // Do not use this constructor please
 int TitoTicket::getTicketID() { return this->ticketID; }
 std::string TitoTicket::getTicketSlug() { return this->ticketSlug; }
 std::string TitoTicket::getTicketRelease() { return this->ticketRelease; }
-bool TitoTicket::isCheckedin() { return this->checkedIn; }
 TitoCheckin TitoTicket::getCheckin() { return this->checkin; }
 void TitoTicket::setCheckin(TitoCheckin checkin) { this->checkin = checkin; }
 TitoAttendee::TitoAttendee(std::string name,
@@ -53,6 +56,7 @@ std::string TitoAttendee::getName() { return this->name; }
 std::string TitoAttendee::getEmail() { return this->email; }
 std::string TitoAttendee::getPhoneNumber() { return this->phoneNumber; }
 TitoTicket TitoAttendee::getTicket() { return this->ticket; }
+TitoTicket *TitoAttendee::getTicketRef() { return &this->ticket; }
 
 bool TitoAttendee::matches(std::string queryIn)
 {
@@ -69,8 +73,31 @@ bool TitoAttendee::matches(std::string queryIn)
     return ret || queryIn == "";
 }
 
-bool TitoAttendee::operator<(TitoAttendee /*other*/) {
-    return this->ticket.isCheckedin();
+bool TitoAttendee::operator< (TitoAttendee b)
+{
+    // Checkedin
+    if (this->getTicket().getCheckin().isCheckedin()
+        && !b.getTicket().getCheckin().isCheckedin()) {
+        return true;
+    }
+
+    if (this->getName() < b.getName()) {
+        return true;
+    }
+
+    if (this->getEmail() < b.getEmail()) {
+        return true;
+    }
+
+    if (this->getPhoneNumber() < b.getPhoneNumber()) {
+        return true;
+    }
+
+    if (this->getTicket().getTicketRelease() < b.getTicket().getTicketRelease()) {
+        return true;
+    }
+
+    return this->getTicket().getTicketID() < b.getTicket().getTicketID();
 }
 
 bool TitoAttendee::operator==(TitoAttendee other) {

@@ -310,7 +310,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
     }
     
     // Parse the registrations
-    std::list<TitoAttendee> out;
+    std::list<TitoAttendee *> tmp;
     nlohmann::json registrationJson = rootJson.at("tickets");
     for (nlohmann::json::iterator it = registrationJson.begin()
         ;it != registrationJson.end(); ++it) {
@@ -339,7 +339,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
                   << name << std::endl;
 #endif
                   
-        out.push_back(TitoAttendee(name, email, phoneNumber, ticket));
+        tmp.push_back(new TitoAttendee(name, email, phoneNumber, ticket));
     }
     
     // Parse the checkins
@@ -366,12 +366,12 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         std::string createdAt, updatedAt, deletedAt;
         checkinJson.at("created_at").get_to(createdAt);
         checkinJson.at("updated_at").get_to(updatedAt);            
-        bool deleted = checkinJson.at("deleted_at").is_null();
+        bool deleted = !checkinJson.at("deleted_at").is_null();
         
         // Turn these strings to dates (struct tm)
         struct tm createdTime, updateTime, deletedTime;
         
-        if (!deleted) {
+        if (deleted) {
             checkinJson.at("deleted_at").get_to(deletedAt);
             strptime(deletedAt.c_str(), TITO_DATE_FORMAT, &deletedTime);
         }
@@ -383,30 +383,45 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         
         // Find the attendee to give the checkin
         bool flag = false;
-        for (TitoAttendee attendee : out) {
-            TitoTicket ticket = attendee.getTicket();
-            if (ticket.getTicketID() == ticketID) {
-                ticket.setCheckin(checkin);
+        for (TitoAttendee *attendee : tmp) {
+            TitoTicket *ticket = attendee->getTicketRef();
+            if (ticket->getTicketID() == ticketID) {
+                ticket->setCheckin(checkin);
+                flag = true;
+#ifdef DEBUG
+                std::cerr << "Debug TitoApi:getAttendees() : Found ticket for "
+                             "checkin "
+                          << ticketID
+                          << " (checked in at " << asctime(&createdTime)
+                          << ") " << attendee->getName()
+                          << std::endl;
+#endif
                 break;
             }
         }
         
         if (!flag) {
             std::cerr << "Error TitoApi:getAttendees() : Unable to find ticket "
-                         "for check in "
+                         "for checkin "
                       << ticketID
                       << " (checked in at " << asctime(&createdTime)
                       << ")"
                       << std::endl;
         }
     }
+
+    std::list<TitoAttendee> output;
+    for (TitoAttendee *attendee : tmp) {
+        output.push_back(TitoAttendee(*attendee));
+        delete attendee;
+    }
     
-    return out;
+    return output;
 }
 
 bool TitoApi::checkinAttendee(TitoAttendee attendee)
 {
-    if (attendee.getTicket().isCheckedin()) {
+    if (attendee.getTicket().getCheckin().isCheckedin()) {
         std::cerr << "Error TitoApi::checkinAttendee() : The user "
                   << attendee.getName() << " has already checked in."
                   << std::endl;

@@ -31,14 +31,12 @@ public:
     int getTicketID();
     std::string getTicketSlug();
     std::string getTicketRelease();
-    bool isCheckedin();
     TitoCheckin getCheckin();
     void setCheckin(TitoCheckin checkin);
 private:
     int ticketID;
     std::string ticketSlug,
                 ticketRelease;
-    bool checkedIn;
     TitoCheckin checkin;
 };
 
@@ -53,14 +51,9 @@ public:
     std::string getEmail();
     std::string getPhoneNumber();
     TitoTicket getTicket();
+    TitoTicket *getTicketRef();
     bool matches(std::string queryIn);
-    /**
-     * Used for sorting to put checkedin members at the top of the list.
-     *
-     * @param TitoAttendee other, not used
-     * @return bool a < b is true if a is checkedin
-     */
-    bool operator<(TitoAttendee /*other*/);
+    bool operator <(TitoAttendee);
     /**
      * Shallow object equality (does not look at the tickets), this method is
      * for maintinaing the selection in the attendee selection screen.
@@ -83,3 +76,4 @@ private:
     std::string name, email, phoneNumber;
     TitoTicket ticket;
 };
+int cmpAttendee(TitoAttendee, TitoAttendee);

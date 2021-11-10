@@ -108,3 +108,15 @@ void TestTito::testIDCache()
     
     CPPUNIT_ASSERT(api->hasIDBeenGiven(attendee));    
 }
+
+void TestTito::testSort()
+{
+    struct tm t;
+    TitoCheckin checkin = TitoCheckin(true, t, t, t);
+    TitoTicket ticket = TitoTicket(1, "slug", "release");
+
+    CPPUNIT_ASSERT(TitoAttendee("a", "a", "a", ticket) <
+                   TitoAttendee("a", "a", "a", ticket));
+    CPPUNIT_ASSERT(TitoAttendee("a", "a", "a", ticket) <
+                   TitoAttendee("b", "a", "a", ticket));
+}

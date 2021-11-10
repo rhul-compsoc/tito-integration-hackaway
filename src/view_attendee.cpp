@@ -31,8 +31,8 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
         TitoTicket ticket = attendee.getTicket();
         y += print_centre(0, y, "Ticket Type: " + ticket.getTicketRelease());
         y += print_centre(0, y, "Checked In: "
-                         + std::string(ticket.isCheckedin() ? "Y" : "N"));
-        if (ticket.isCheckedin()) {
+                          + std::string(ticket.getCheckin().isCheckedin() ? "Y" : "N"));
+        if (ticket.getCheckin().isCheckedin()) {
             struct tm createTime = ticket.getCheckin().getCheckInTime();
             y += print_centre(0, y, "Checked In At: "
                               + std::string(asctime(&createTime)));
@@ -47,7 +47,7 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
 
         y = getmaxy(stdscr) - 5;
 
-        if (ticket.isCheckedin()) {
+        if (ticket.getCheckin().isCheckedin()) {
             y += print_centre(0, y, "Press <C> to checkin");
         } else {
             y += print_centre(0, y, "Press <C> to checkout");
@@ -67,7 +67,7 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
                 break;
             case 'C':
             case 'c':
-                if (!ticket.isCheckedin()) {
+                if (!ticket.getCheckin().isCheckedin()) {
                     while (errorFlag) {
                         try {
                             print_centre(0,

@@ -26,7 +26,7 @@ PAD_STR(str, getmaxx(stdscr) - str.size() - 2 * SELECTION_X_PADDING)
 #define EMAIL_ADDRESS_HEADER "EMAIL ADDRESS"
 
 static int selection_screen_heading(std::string message,
-                                    std::string *searchMessage)
+                                    std::string searchMessage)
 {
     // Print logo
     int y = SELECTION_Y_PADDING;
@@ -57,8 +57,23 @@ static int selection_screen_heading(std::string message,
 
     // Print the headings
     attron(COLOUR_PAIR_BLACK_AND_GREEN);
+
+    // Replace the spaces with underscores so that they can be seen
+    size_t index = 0;
+    while (true) {
+        /* Locate the substring to replace. */
+        index = searchMessage.find(" ", index);
+        if (index == std::string::npos) break;
+
+        /* Make the replacement. */
+        searchMessage.replace(index, 1, "_");
+
+        /* Advance index forward so the next iteration doesn't pick it up as well. */
+        index += 3;
+    }
+
     // Pad the search field
-    std::string search = "  SEARCH: " + *searchMessage;
+    std::string search = "  SEARCH: " + searchMessage;
     PAD_STR_TO_TABLE(search);
     y += print_left(SELECTION_X_PADDING, y, search);
 
@@ -87,7 +102,7 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
 {
     // Checked in status
     std::string ret = "  ";
-    if (ticket.isCheckedin()) {
+    if (ticket.getCheckin().isCheckedin()) {
         ret += " [ x ] ";
     } else {
         ret += " [   ] ";
@@ -138,6 +153,7 @@ struct AttendeeSelection select_attendee(TitoApi api,
 
     // Init the search state
     std::list<TitoAttendee> attendees = std::list<TitoAttendee>(attendeesRaw);
+    attendees.sort();
     std::string search = "";
     int currentlySelected = 0,
         scrollOffset = 0;
@@ -146,14 +162,14 @@ struct AttendeeSelection select_attendee(TitoApi api,
     int running = 1;
     while (running) {
         clear();
-        int y = selection_screen_heading(message, &search);
+        int y = selection_screen_heading(message, search);
         y++;
 
         // Print attendees
         int i = 0;
         int yOfSelected = 0;
         TitoAttendee currentlySelectedAttendee;
-        attendees.sort();
+
         for (TitoAttendee attendee : attendees) {
             if (i - scrollOffset >= 0
                 && y < getmaxy(stdscr) - SELECTION_Y_PADDING) {
