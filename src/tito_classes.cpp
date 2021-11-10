@@ -53,6 +53,7 @@ std::string TitoAttendee::getName() { return this->name; }
 std::string TitoAttendee::getEmail() { return this->email; }
 std::string TitoAttendee::getPhoneNumber() { return this->phoneNumber; }
 TitoTicket TitoAttendee::getTicket() { return this->ticket; }
+
 bool TitoAttendee::matches(std::string queryIn)
 {
     bool ret = false;
@@ -67,9 +68,17 @@ bool TitoAttendee::matches(std::string queryIn)
     }
     return ret || queryIn == "";
 }
+
 bool TitoAttendee::operator<(TitoAttendee /*other*/) {
     return this->ticket.isCheckedin();
 }
+
+bool TitoAttendee::operator==(TitoAttendee other) {
+    return this->name == other.name
+        && this->email == other.email
+        && this->phoneNumber == other.phoneNumber;
+}
+
 std::string TitoAttendee::stripQueryStr(std::string str)
 {
     transform(str.begin(), str.end(), str.begin(), ::tolower);

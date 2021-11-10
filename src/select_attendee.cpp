@@ -150,11 +150,13 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
         // Print attendees
         int i = 0;
         int yOfSelected = 0;
+        TitoAttendee currentlySelectedAttendee;
         attendees.sort();
         for (TitoAttendee attendee : attendees) {
             if (i - scrollOffset >= 0
                 && y < getmaxy(stdscr) - SELECTION_Y_PADDING) {
                 if (i == currentlySelected) {
+                    currentlySelectedAttendee = attendee;
                     yOfSelected = y;
                     attron(COLOUR_PAIR_BLACK_AND_GREEN);
                 }
@@ -261,7 +263,7 @@ struct AttendeeSelection select_attendee(std::list<TitoAttendee> attendeesRaw,
                     attendees.push_back(attendee);
 
                     // Fix the scrolling and maintain the selected
-                    if (i == currentlySelected) {
+                    if (attendee == currentlySelectedAttendee) {
                         currentlySelected = j;
                         scrollOffset = j;
                         foundSelected = true;

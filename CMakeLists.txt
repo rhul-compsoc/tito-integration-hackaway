@@ -50,7 +50,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
         EXECUTABLE tito-integration-hackaway-tests
         EXCLUDE "build/*" "tests/*" "src/main.cpp" "src/json.hpp"
                 "src/ncurses_utils.cpp" "src/select_attendee.cpp"
-                "src/error_screen.cpp")
+                "src/error_screen.cpp" "src/view_attendee.cpp")
 
 endif()
 

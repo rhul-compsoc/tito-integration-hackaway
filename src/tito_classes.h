@@ -62,6 +62,14 @@ public:
      * @return bool a < b is true if a is checkedin
      */
     bool operator<(TitoAttendee /*other*/);
+    /**
+     * Shallow object equality (does not look at the tickets), this method is
+     * for maintinaing the selection in the attendee selection screen.
+     *
+     * @param TitoAttendee the other attendee to compare to
+     * @return whether the name, email and phone number are equal
+     */
+    bool operator==(TitoAttendee);
 private:
     /**
      * Strips a string for searching, this removes all non alpha-numerical
