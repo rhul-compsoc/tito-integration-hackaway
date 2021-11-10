@@ -116,7 +116,7 @@ void TestTito::testSort()
     TitoTicket ticket = TitoTicket(1, "slug", "release");
 
     CPPUNIT_ASSERT(TitoAttendee("a", "a", "a", ticket) <
-                   TitoAttendee("a", "a", "a", ticket));
+                   TitoAttendee("a", "b", "a", ticket));
     CPPUNIT_ASSERT(TitoAttendee("a", "a", "a", ticket) <
                    TitoAttendee("b", "a", "a", ticket));
 }
