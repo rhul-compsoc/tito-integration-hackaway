@@ -1,5 +1,5 @@
 #pragma once
-#include <ncurses.h>
+#include <curses.h>
 #include <string>
 #include <list>
 #include "tito_classes.h"

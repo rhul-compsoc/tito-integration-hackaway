@@ -7,9 +7,32 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include <unistd.h>
 #include "tito.h"
 #include "json.hpp"
+
+#ifdef _WIN32
+#include <windows.h>
+#include <time.h>
+#include <iomanip>
+#include <sstream>
+#include <io.h>
+#define F_OK    0       /* Test for existence.  */
+
+// https://stackoverflow.com/a/33542189
+extern "C" char* strptime(const char* s,
+                          const char* f,
+                          struct tm* tm) {
+    std::istringstream input(s);
+    input.imbue(std::locale(setlocale(LC_ALL, nullptr)));
+    input >> std::get_time(tm, f);
+    if (input.fail()) {
+        return nullptr;
+    }
+    return (char*)(s + input.tellg());
+}
+#else
+#include <unistd.h>
+#endif
 
 #define TITO_AUTH_JSON_KEY "authenticated"
 #define TITO_ACCESS_TOKEN_JSON_KEY "access_token"
@@ -60,7 +83,7 @@ void TitoApi::addIDToCache(TitoAttendee attendee)
 void TitoApi::readIDCache()
 {
     this->idsGiven = std::list<std::string>();
-    if (access(ID_CACHE_FILE, F_OK) == -1) {
+    if (_access(ID_CACHE_FILE, F_OK) == -1) {
         std::cerr << "Error TitoApi::readIDCache() : ID cache file does note "
                       "exist." 
                   << std::endl;

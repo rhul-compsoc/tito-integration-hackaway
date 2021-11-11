@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <ncurses.h>
+#include <curses.h>
 #include <string>
 #include "ncurses_utils.h"
 #include "select_attendee.h"

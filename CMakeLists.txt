@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.12)
 
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+  set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      CACHE STRING "")
+endif()
+
 # set the project name
 project(tito-integration-hackaway VERSION 1.0.0 LANGUAGES CXX)
 set(REPO_URL "https://github.com/rhul-compsoc/tito-integegration-hackaway")
@@ -27,11 +32,20 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # compiler flags
-set(COMPILER_FLAGS "-Wall -Wextra -Wpedantic")
-set(CMAKE_C_FLAGS_DEBUG "-g -O0 ${COMPILER_FLAGS} -DDEBUG -Wno-unused-parameter")
-set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
-set(CMAKE_C_FLAGS_RELEASE "-O2 ${COMPILER_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  set(COMPILER_FLAGS "-Wall")
+  set(CMAKE_C_FLAGS_DEBUG "-g -O0 ${COMPILER_FLAGS} -DDEBUG")
+  set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+  set(CMAKE_C_FLAGS_RELEASE "-O2 ${COMPILER_FLAGS}")
+  set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})  
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set(COMPILER_FLAGS "-Wall -Wextra -Wpedantic")
+  set(CMAKE_C_FLAGS_DEBUG "-g -O0 ${COMPILER_FLAGS} -DDEBUG -Wno-unused-parameter")
+  set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+  set(CMAKE_C_FLAGS_RELEASE "-O2 ${COMPILER_FLAGS}")
+  set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
+endif ()
+
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake)
 
@@ -67,13 +81,16 @@ set(SRC_FILES
     src/view_attendee.cpp
     )
 
-set(LIBS curl ncurses)
+set(LIBS CURL::libcurl)
+
+find_package(CURL CONFIG REQUIRED)
+find_path(PDC_INCLUDES curses.h)
 
 add_executable(tito-integration-hackaway ${SRC_FILES} ${MAIN})
 
-target_link_libraries(tito-integration-hackaway ${LIBS})
+target_link_libraries(tito-integration-hackaway ${LIBS} ${PDC_LIBS})
 target_include_directories(tito-integration-hackaway PUBLIC
-    ${CMAKE_CURRENT_BINARY_DIR})
+    ${CMAKE_CURRENT_BINARY_DIR} ${PDC_INCLUDES})
 
 if (CMAKE_BUILD_TYPE STREQUAL "TEST")
     # tests, set the flags manually
@@ -88,9 +105,9 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
         )
     add_executable(tito-integration-hackaway-tests ${TEST_FILES})
     target_link_libraries(tito-integration-hackaway-tests
-        cppunit ${LIBS})
+        cppunit ${LIBS} ${PDC_LIBS})
     target_include_directories(tito-integration-hackaway-tests PUBLIC 
-        ${CMAKE_CURRENT_BINARY_DIR})
+        ${CMAKE_CURRENT_BINARY_DIR} ${PDC_INCLUDES})
     
     enable_testing ()
     add_test(NAME tito-integration-hackaway-tests COMMAND tito-integration-hackaway-tests)

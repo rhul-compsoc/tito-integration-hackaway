@@ -1,4 +1,4 @@
-#include <ncurses.h>
+#include <curses.h>
 #include <string>
 #include "tito.h"
 #include "ncurses_utils.h"

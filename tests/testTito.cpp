@@ -2,10 +2,15 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
-#include <unistd.h>
 #include "testTito.h"
 #include "../src/tito.h"
 #include "../src/tito_classes.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestTito);
 
