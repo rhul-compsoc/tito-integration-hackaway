@@ -427,6 +427,10 @@ std::list<TitoAttendee> TitoApi::getAttendees()
 
 bool TitoApi::checkinAttendee(TitoAttendee attendee)
 {
+    if (!this>hasIDBeenGiven(attendee)) {
+        this->addIDToCache(attendee);
+    }
+
     if (attendee.getTicket().getCheckin().isCheckedin()) {
         std::cerr << "Error TitoApi::checkinAttendee() : The user "
                   << attendee.getName() << " has already checked in."
