@@ -156,3 +156,58 @@ void TestTito::testCheckInThenOut()
         }
     }
 }
+
+void TestTito::testTitoCheckin()
+{
+    CPPUNIT_ASSERT(!TitoCheckin().isCheckedin());
+    
+    struct tm time1, time2, time3, tmp;
+    std::string UUID = "UUID";
+    bool deleted = false;
+    
+    time_t t = time(NULL);
+    time1 = *localtime(&t);
+    
+    sleep(1);
+    t = time(NULL);
+    time2 = *localtime(&t);
+    
+    sleep(1);
+    t = time(NULL);
+    time3 = *localtime(&t);
+    
+    TitoCheckin c = TitoCheckin(UUID,
+                                deleted,
+                                time1,
+                                time2,
+                                time3);
+    CPPUNIT_ASSERT(c.getUUID() == UUID);
+    CPPUNIT_ASSERT(c.isDeleted() == deleted);
+    tmp = c.getCheckInTime();
+    CPPUNIT_ASSERT(difftime(mktime(&tmp), mktime(&time1)) == 0);
+    
+    tmp = c.getDeletedTime();
+    CPPUNIT_ASSERT(difftime(mktime(&tmp), mktime(&time2)) == 0);
+    
+    tmp = c.getLastUpdateTime();    
+    CPPUNIT_ASSERT(difftime(mktime(&tmp), mktime(&time3)) == 0);
+    
+    
+    c = TitoCheckin(UUID,
+                    !deleted,
+                    time1,
+                    time2,
+                    time3);
+    CPPUNIT_ASSERT(c.isDeleted() == !deleted);
+}
+
+void TestTito::testTitoTicket()
+{
+    
+}
+
+void TestTito::testTitoAttendee()
+{
+    
+}
+

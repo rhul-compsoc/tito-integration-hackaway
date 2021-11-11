@@ -11,6 +11,9 @@ class TestTito : public CppUnit::TestCase {
     CPPUNIT_TEST(testIDCache);
     CPPUNIT_TEST(testSort);
     CPPUNIT_TEST(testCheckInThenOut);
+    CPPUNIT_TEST(testTitoCheckin);
+    CPPUNIT_TEST(testTitoTicket);
+    CPPUNIT_TEST(testTitoAttendee);
     CPPUNIT_TEST_SUITE_END();
 public:
     TestTito(void);
@@ -22,4 +25,7 @@ public:
     void testIDCache();
     void testSort();
     void testCheckInThenOut();
+    void testTitoCheckin();
+    void testTitoTicket();
+    void testTitoAttendee();
 };
