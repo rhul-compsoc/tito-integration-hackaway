@@ -180,26 +180,45 @@ int main(int argc, char **argv)
         y += print_centre(0, y, "Press <ESCAPE> to exit.");
         
         int c = getch();
-        switch (c) {
-            case 'c':
-            case 'C':
-                checkinoutAttendee(attendees, api);
-                break;
-            case 'v':
-            case 'V':
-                viewAttendees(attendees, api);
-                break;
-            // Exit
-            case KEY_EXIT:
-            case ESCAPE:
-                running = 0;
-                break;
-        }
+        try {
+            switch (c) {
+                case 'c':
+                case 'C':
+                    checkinoutAttendee(attendees, api);
+                    break;
+                case 'v':
+                case 'V':
+                    viewAttendees(attendees, api);
+                    break;
+                // Exit
+                case KEY_EXIT:
+                case ESCAPE:
+                    running = 0;
+                    break;
+            }
+        } catch (int e) {
+            clear();
+            attron(COLOUR_PAIR_RED_AND_BLACK);
+            y = getmaxy(stdscr) / 2;
+            y -= 3;
+            if (y < 0) y = 0;
+            
+            y += print_centre(0,
+                              y,
+                              "An unexpected and, uncaught error with code "
+                              + std::to_string(e)
+                              + " has occurred.");
+            y += print_centre(0, y, "Error information:");
+            y += print_centre(0, y, getTitoErrorMessage(e));
+            y += 2;
+            y += print_centre(0, y, "Press any key to return to the main menu.");
+            attroff(COLOUR_PAIR_RED_AND_BLACK);
+            refresh();            
+            getch();
+        }        
         
         refresh();
     }    
-    
-    warn_exit();
-    
+        
     return EXIT_SUCCESS;
 }
