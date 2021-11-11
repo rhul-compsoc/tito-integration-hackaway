@@ -10,13 +10,16 @@
 #include "tito.h"
 #include "json.hpp"
 
+#ifndef F_OK
+#define F_OK 0
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 #include <time.h>
 #include <iomanip>
 #include <sstream>
 #include <io.h>
-#define F_OK    0       /* Test for existence.  */
 
 // https://stackoverflow.com/a/33542189
 extern "C" char* strptime(const char* s,
