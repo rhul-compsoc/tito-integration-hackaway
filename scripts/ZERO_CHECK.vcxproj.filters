@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Leond\Documents\Programming\tito-integration-hackaway\scripts\CMakeFiles\ae57c4a8442061a52e05764ae665e935\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{3344230D-D4E5-3149-9664-41D66064854D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
