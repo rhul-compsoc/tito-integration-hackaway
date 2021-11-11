@@ -32,6 +32,14 @@ Use cmake to compile, the `DEBUG` to print extra information to stderr and, the
 With the tests you can run the 
 `tito-integration-hackaway-tests` executable or `make coverage` to execute them.
 
+For non-Cmake users out there use this script to make the executable (in the
+build/ directory).
+```bash
+mkdir -p build && cd build # Make the build directory and go to it
+cmake .. && cmake --build . -j # Generate the make files then compile the program
+cd .. # Reset the directory for scripts that get bolted on to this
+```
+
 ## Tests
 To run the tests it is recommended to not use the live tokens, and in fact use
 another event which has no consequences if things go wrong.
