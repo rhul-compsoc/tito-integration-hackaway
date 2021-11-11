@@ -224,13 +224,14 @@ struct AttendeeSelection select_attendee(TitoApi api,
                 if (i == currentlySelected) {
                     attroff(COLOUR_PAIR_BLACK_AND_GREEN);
                 }
-            }
+            } else
 
             // Draw overflow indicator
             if (y == getmaxy(stdscr) - SELECTION_Y_PADDING) {
                 print_left(2 + SELECTION_X_PADDING,
                            y,
                            "v");
+                break;
             }
 
             i++;
@@ -337,7 +338,7 @@ struct AttendeeSelection select_attendee(TitoApi api,
                         currentlySelected = j;
                         scrollOffset = j;
                         
-                        int k;
+                        int k = 0;
                         while (headersY + scrollOffset < getmaxy(stdscr) - SELECTION_Y_PADDING && k < 5) {
                             scrollOffset++;
                             k++;
