@@ -65,14 +65,14 @@ static int selection_screen_heading(std::string message,
     // Replace the spaces with underscores so that they can be seen
     size_t index = 0;
     while (true) {
-        /* Locate the substring to replace. */
+        // Locate the substring to replace.
         index = searchMessage.find(" ", index);
         if (index == std::string::npos) break;
 
-        /* Make the replacement. */
+        // Make the replacement.
         searchMessage.replace(index, 1, "_");
 
-        /* Advance index forward so the next iteration doesn't pick it up as well. */
+        // Advance index forward so the next iteration doesn't pick it up as well.
         index += 3;
     }
 

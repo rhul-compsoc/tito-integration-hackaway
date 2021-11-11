@@ -71,6 +71,12 @@ set(LIBS curl ncurses)
 
 add_executable(tito-integration-hackaway ${SRC_FILES} ${MAIN})
 
+# Copy static content (images, favicon, etc.)
+file(GLOB STATIC_IMG
+  "assets/**"
+)
+file(COPY ${STATIC_IMG} DESTINATION "${CMAKE_BINARY_DIR}/assets/")
+
 target_link_libraries(tito-integration-hackaway ${LIBS})
 target_include_directories(tito-integration-hackaway PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR})

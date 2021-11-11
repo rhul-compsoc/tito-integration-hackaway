@@ -218,7 +218,8 @@ int main(int argc, char **argv)
         }        
         
         refresh();
-    }    
-        
+    }
+
+    endwin();
     return EXIT_SUCCESS;
 }
