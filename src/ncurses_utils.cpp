@@ -58,7 +58,7 @@ int print_logo_left(int x_offset,
                     int y_offset,
                     int force_small)
 {
-    force_small |= getmaxy(stdscr) >= (LOGO_FIFTY_HEIGHT - 10);
+    force_small |= getmaxy(stdscr) <= (LOGO_FIFTY_HEIGHT - 10);
     int lines;
     int width = getmaxx(stdscr);
     if (width >= 55 && !force_small) {
@@ -73,7 +73,7 @@ int print_logo_centre(int x_offset,
                       int y_offset,
                       int force_small)
 {
-    force_small |= getmaxy(stdscr) >= (LOGO_FIFTY_HEIGHT - 10);
+    force_small |= getmaxy(stdscr) <= (LOGO_FIFTY_HEIGHT - 10);
     int lines;
     int width = getmaxx(stdscr);
     if (width >= 55 && !force_small) {
