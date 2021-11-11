@@ -203,11 +203,33 @@ void TestTito::testTitoCheckin()
 
 void TestTito::testTitoTicket()
 {
-    
+    srand(time(NULL));
+    int id = rand();
+    std::string slug = "slug" + std::to_string(id),
+                release = "release" + std::to_string(id);
+
+    TitoCheckin checkin;
+    TitoTicket ticket = TitoTicket(id,
+                                   slug,
+                                   release);
+    ticket.setCheckin(checkin);
+    CPPUNIT_ASSERT(id == ticket.getTicketID());
+    CPPUNIT_ASSERT(slug == ticket.getTicketSlug());
+    CPPUNIT_ASSERT(release == ticket.getTicketRelease());
 }
 
 void TestTito::testTitoAttendee()
 {
-    
-}
+    std::string name = "name",
+                email = "email",
+                phone = "phone";
 
+    TitoAttendee attendee = TitoAttendee(name,
+                                         email,
+                                         phone,
+                                         TitoTicket());
+
+    CPPUNIT_ASSERT(attendee.getName() == name);
+    CPPUNIT_ASSERT(attendee.getEmail() == email);
+    CPPUNIT_ASSERT(attendee.getPhoneNumber() == phone);
+}
