@@ -40,15 +40,6 @@ cmake .. && cmake --build . -j # Generate the make files then compile the progra
 cd .. # Reset the directory for scripts that get bolted on to this
 ```
 
-## I Am Using WSL and There Are Bugs
-If you WSL-based bugs are flickering screens or the search bar only working every
-other char then stop using WSL! Those are WSL exclusive bugs to do with the WSL
-terminal being ~~crap~~ bad. If you use a proper OS, such as Arch Linux then it
-will work without these bugs.
-The search bug is to do with windows enforcing the use of wchar (wide char/ 
-unicode) and, the flickering to do with clear() calls being processed immediately
-instead of when refresh is called, which is the wrong way to do it.
-
 ## Tests
 To run the tests it is recommended to not use the live tokens, and in fact use
 another event which has no consequences if things go wrong.
@@ -56,3 +47,30 @@ another event which has no consequences if things go wrong.
 ## Future Maintainers
 I am not sorry for using C++, I was told by someone that it is far more readable
 than ANSI C so I took their advice and ++'ed my C.
+
+## Requirements
+| | |
+|---|---|
+| OS | Linux. The system is made, tested and, designed for the use on linux systems. |
+| Libraries | build-essentials, cmake, gcovr, ncurses, libcurl, |
+| Runtime | tito tokens in environment variables, a terminal that supports ncurses |
+
+ Windows can be used, however is untested and may have a number of faults to do
+ with input/output. 
+ 
+ MacOS can be used however is also untested and is likely to work fairly well.
+
+### Help
+
+
+## Can I Use This On Windows
+
+## I Am Using WSL and There Are Bugs
+If your WSL-based bugs are flickering screens or the search bar only working
+every other char then stop using WSL! Those are WSL exclusive bugs to do with 
+the WSL terminal being ~~crap~~ bad. If you use a proper OS, such as Arch Linux
+then it will work without these bugs.
+The search bug is to do with windows enforcing the use of wchar (wide char/ 
+unicode) and, the flickering to do with clear() calls being processed immediately
+instead of when refresh is called, which is the wrong way to do it.
+
