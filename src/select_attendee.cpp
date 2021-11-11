@@ -189,7 +189,8 @@ struct AttendeeSelection select_attendee(TitoApi api,
     bool running = true;
     while (running) {
         clear();
-        int y = selection_screen_heading(message, search);
+        int y, headersY;
+        y = headersY = selection_screen_heading(message, search);
         bool errorFlag = true;
         y++;
 
@@ -335,6 +336,10 @@ struct AttendeeSelection select_attendee(TitoApi api,
                     if (attendee == currentlySelectedAttendee) {
                         currentlySelected = j;
                         scrollOffset = j;
+                        
+                        while (headersY + scrollOffset < getmaxy(stdscr) - SELECTION_Y_PADDING) {
+                            scrollOffset++;
+                        }
                     }
                     j++;
                 }
