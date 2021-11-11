@@ -40,6 +40,15 @@ cmake .. && cmake --build . -j # Generate the make files then compile the progra
 cd .. # Reset the directory for scripts that get bolted on to this
 ```
 
+## I Am Using WSL and There Are Bugs
+If you WSL-based bugs are flickering screens or the search bar only working every
+other char then stop using WSL! Those are WSL exclusive bugs to do with the WSL
+terminal being ~~crap~~ bad. If you use a proper OS, such as Arch Linux then it
+will work without these bugs.
+The search bug is to do with windows enforcing the use of wchar (wide char/ 
+unicode) and, the flickering to do with clear() calls being processed immediately
+instead of when refresh is called, which is the wrong way to do it.
+
 ## Tests
 To run the tests it is recommended to not use the live tokens, and in fact use
 another event which has no consequences if things go wrong.
