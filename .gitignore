@@ -42,5 +42,4 @@ cmake-build-debug/
 
 #Cmake stuff
 src/CMakeFiles
-scripts/
 *tito.sh
