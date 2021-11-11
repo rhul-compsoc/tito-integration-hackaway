@@ -33,7 +33,7 @@
 
 #ignore build folder
 build/
-cmake-build-debug
+cmake-build-debug/
 
 #ignore ide files
 *.kdev4
