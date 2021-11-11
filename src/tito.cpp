@@ -320,8 +320,11 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         nlohmann::json attendee = it.value();
         std::string name;
         attendee.at("name").get_to(name);
-        std::string email;
-        attendee.at("email").get_to(email);
+
+        std::string email = "no_email";
+        if (!attendee.at("email").is_null()) {
+            attendee.at("email").get_to(email);
+        }
         std::string phoneNumber;
         if (!attendee.at("phone_number").is_null()) {
             attendee.at("phone_number").get_to(phoneNumber);
@@ -427,7 +430,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
 
 bool TitoApi::checkinAttendee(TitoAttendee attendee)
 {
-    if (!this>hasIDBeenGiven(attendee)) {
+    if (!this->hasIDBeenGiven(attendee)) {
         this->addIDToCache(attendee);
     }
 
