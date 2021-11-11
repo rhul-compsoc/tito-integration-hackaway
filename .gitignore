@@ -33,11 +33,14 @@
 
 #ignore build folder
 build/
+cmake-build-debug/
 
 #ignore ide files
 *.kdev4
 .kdev4/
+.idea/
 
 #Cmake stuff
 src/CMakeFiles
+scripts/
 *tito.sh
