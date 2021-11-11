@@ -337,8 +337,10 @@ struct AttendeeSelection select_attendee(TitoApi api,
                         currentlySelected = j;
                         scrollOffset = j;
                         
-                        while (headersY + scrollOffset < getmaxy(stdscr) - SELECTION_Y_PADDING) {
+                        int k;
+                        while (headersY + scrollOffset < getmaxy(stdscr) - SELECTION_Y_PADDING && k < 5) {
                             scrollOffset++;
+                            k++;
                         }
                     }
                     j++;
