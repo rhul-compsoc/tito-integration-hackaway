@@ -240,6 +240,18 @@ struct AttendeeSelection select_attendee(TitoApi api,
         refresh();
         int input = getch();
         std::string searchOld = std::string(search);
+
+        // Fix screen reszing and other strange things
+        if (yOfSelected == 0) {
+            scrollOffset = currentlySelected;
+        } else {
+            int offset = 0;
+            while (yOfSelected + offset>= getmaxy(stdscr) - SELECTION_Y_PADDING) {
+                scrollOffset++;
+                offset++;
+            }
+        }
+
         switch (input) {
             // Navigation
             case KEY_UP:
