@@ -4,6 +4,8 @@
 #include <list>
 #include "tito_classes.h"
 
+#define ESCAPE 27
+
 #define COLOUR_WHITE_BLACK 0
 #define COLOUR_PAIR_WHITE_AND_BLACK COLOR_PAIR(COLOUR_WHITE_BLACK)
 
@@ -22,16 +24,6 @@
 
 #define COLOUR_BLACK_AND_GREEN 5
 #define COLOUR_PAIR_BLACK_AND_GREEN COLOR_PAIR(COLOUR_BLACK_AND_GREEN)
-
-/**
- * Sometimes the user wants to cancel the operation, as such the program should
- * support this. A datatype for the response is needed. It could be a c++ object
- * but a struct does the job you know.
- */ 
-struct AttendeeSelection {
-    bool attendeeSelected;
-    TitoAttendee attendee;
-};
 
 int print_logo_left(int /*x_offset*/, int /*y_offset*/, int /*force_small*/);
 int print_logo_centre(int /*x_offset*/, int /*y_offset*/, int /*force_small*/);

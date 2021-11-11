@@ -6,7 +6,6 @@
 #include "select_attendee.h"
 #include "error_screen.h"
 
-#define ESCAPE 27
 #define BACKSPACE 127
 
 #define SELECTION_X_PADDING 5
@@ -263,15 +262,8 @@ struct AttendeeSelection select_attendee(TitoApi api,
             case '\n':
             case KEY_ENTER:
                 running = 0;
-                i = 0;
-                for (TitoAttendee att : attendees) {
-                    if (i == currentlySelected) {
-                        ret.attendeeSelected = true;
-                        ret.attendee = att;
-                        break;
-                    }
-                    i++;
-                }
+                ret.attendeeSelected = true;
+                ret.attendee = currentlySelectedAttendee;
                 break;
             // Cancel
             case KEY_EXIT:
@@ -336,13 +328,10 @@ struct AttendeeSelection select_attendee(TitoApi api,
                     // Fix the scrolling and maintain the selected
                     if (attendee == currentlySelectedAttendee) {
                         currentlySelected = j;
-                        scrollOffset = j;
-                        
-                        int k = 0;
-                        while (headersY + scrollOffset < getmaxy(stdscr) - SELECTION_Y_PADDING && k < 5) {
-                            scrollOffset++;
-                            k++;
-                        }
+                        scrollOffset = j - getmaxy(stdscr)
+                                     + headersY 
+                                     + SELECTION_Y_PADDING
+                                     + SELECTION_Y_PADDING;
                     }
                     j++;
                 }

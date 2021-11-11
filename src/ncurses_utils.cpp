@@ -5,6 +5,7 @@
 
 // Generated on https://cloudapps.herokuapp.com/imagetoascii/
 // to be of width 55, 29 height
+#define LOGO_FIFTY_HEIGHT 29
 std::string logo_fifty_five = 
 "                     =7ZgB@@@BgS7=                     \n"
 "                 .)SB@@QKc/)\\chg@@BU\\'                 \n"
@@ -37,6 +38,7 @@ std::string logo_fifty_five =
 "                     ,xK8B@@@B8Ki:                     \n";
 
 // ... to be of width 25, 13 height
+#define LOGO_TWENTY_FIVE_HEIGHT 13
 std::string logo_twenty_five =
 "       `<FqKfKqo^`       \n"
 "    ,}WqL_     _iqW},    \n"
@@ -55,7 +57,8 @@ std::string logo_twenty_five =
 int print_logo_left(int x_offset,
                     int y_offset,
                     int force_small)
-{    
+{
+    force_small |= getmaxy(stdscr) >= (LOGO_FIFTY_HEIGHT - 10);
     int lines;
     int width = getmaxx(stdscr);
     if (width >= 55 && !force_small) {
@@ -70,6 +73,7 @@ int print_logo_centre(int x_offset,
                       int y_offset,
                       int force_small)
 {
+    force_small |= getmaxy(stdscr) >= (LOGO_FIFTY_HEIGHT - 10);
     int lines;
     int width = getmaxx(stdscr);
     if (width >= 55 && !force_small) {

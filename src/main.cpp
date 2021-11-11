@@ -25,6 +25,88 @@ static void print_logo(int *y)
     attroff(COLOUR_PAIR_ORANGE_AND_BLACK);
 }
 
+static bool updateAttendees(std::list<TitoAttendee> &list,
+                            TitoApi api)
+{
+    std::list<TitoAttendee> attendees;
+    bool flag = true;
+    while (flag) {
+        try {
+            print_centre(0, getmaxy(stdscr) / 2, "Updating attendee cache.");
+            attendees = api.getAttendees();
+            flag = false;
+        } catch (int e) {
+            struct ErrorAction act;
+            act = showErrorMessage("An error occurred updating the attendee cache",
+                                e);
+            
+            if (act.action == ERROR_ACTION_IGNORE) {
+                return false;
+            }
+        }
+    }
+    
+    // Clear list
+    while (list.size() > 0) {
+        list.pop_back();
+    }
+    
+    // Add the new attendees to the list
+    for (TitoAttendee attendee : attendees) {
+        list.push_back(attendee);
+    }
+    
+    return true;
+}
+
+static void viewAttendees(std::list<TitoAttendee> &list,
+                          TitoApi api)
+{
+    updateAttendees(list, api);
+    struct AttendeeSelection selection = select_attendee(api,
+                                                         list,
+                                                         "Showing all attendees.");
+}
+
+static void checkinoutAttendee(std::list<TitoAttendee> &list,
+                               TitoApi api)
+{
+    updateAttendees(list, api);
+    struct AttendeeSelection selection = select_attendee(api,
+                                                         list,
+                                                         "Select an attendee to check in/out.");
+    
+    bool checkin = selection.attendee.getTicket().getCheckin().isCheckedin();    
+    std::string name = selection.attendee.getName();
+    if (selection.attendeeSelected) {
+        bool flag = true;
+        while (flag) {
+            try {
+                if (!checkin) {
+                    print_centre(0,
+                                 getmaxy(stdscr) / 2,
+                                 "Checking " + name + " in...");
+                    flag = api.checkinAttendee(selection.attendee);
+                } else {                    
+                    print_centre(0,
+                                 getmaxy(stdscr) / 2,
+                                 "Checking " + name + " out...");
+                    flag = api.checkoutAttendee(selection.attendee);
+                }
+            } catch (int e) {                
+                struct ErrorAction act;
+                act = showErrorMessage("An error occurred during checking "
+                                       + name + "in/out.",
+                                       e);
+                
+                if (act.action == ERROR_ACTION_IGNORE) {
+                    flag = false;
+                }
+            }
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     initscr();
@@ -44,8 +126,8 @@ int main(int argc, char **argv)
     start_color();
     setup_colours();
     
+    // Initialise the attendee cache and the api, disallow for failure
     int y;
-    
     TitoApi api;
     std::list<TitoAttendee> attendees;
     bool flag = true;
@@ -76,10 +158,46 @@ int main(int argc, char **argv)
             }
         }
     }
-
     
     y += print_centre(0, y, "Loaded ID cache, attendees and, checkins.");
-    select_attendee(api, attendees, "Select an attendee.");
+    
+    // Splash screen    
+    bool running = true;
+    while (running) {
+        clear();        
+        y = 2;
+        print_logo(&y);
+        y += 3;
+        
+        attron(COLOUR_PAIR_GREEN_AND_BLACK);
+        y += print_centre(0, y, "Choose an Operation.");
+        attroff(COLOUR_PAIR_GREEN_AND_BLACK);
+        y += 1;
+        
+        // Print operations
+        y += print_centre(0, y, "Press <C> to checkin/out an attendee.");
+        y += print_centre(0, y, "Press <V> to view all attendees.");
+        y += print_centre(0, y, "Press <ESCAPE> to exit.");
+        
+        int c = getch();
+        switch (c) {
+            case 'c':
+            case 'C':
+                checkinoutAttendee(attendees, api);
+                break;
+            case 'v':
+            case 'V':
+                viewAttendees(attendees, api);
+                break;
+            // Exit
+            case KEY_EXIT:
+            case ESCAPE:
+                running = 0;
+                break;
+        }
+        
+        refresh();
+    }    
     
     warn_exit();
     
