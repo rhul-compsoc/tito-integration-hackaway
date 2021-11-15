@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include "tito.h"
 #include "json.hpp"
+#include "id_card_gen.h"
 
 #define TITO_AUTH_JSON_KEY "authenticated"
 #define TITO_ACCESS_TOKEN_JSON_KEY "access_token"
@@ -611,6 +612,8 @@ std::string getTitoErrorMessage(int e)
             return "The check-in slug could not be found as there was an authentication error.";
         case TITO_CHECKINS_NOT_FOUND_ERROR:
             return "Check-ins could not be found, TiTo returned an error message.";
+        case ID_CARD_READ_ERROR:
+            return "The ID card template could not be read. See stderr for more details";
         default:
             return "An unknown error has occurred.";
     }

@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <string>
+#include "id_card_gen.h"
 #include "ncurses_utils.h"
 #include "error_screen.h"
 #include "view_attendee.h"
@@ -19,7 +20,7 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
         std::string msg = "Showing information for " + attendee.getName() + ".";
         y += 3;
         y += print_centre(0, y, msg);
-        y += 5;
+        y += 1;
         attroff(COLOUR_PAIR_GREEN_AND_BLACK);
 
         attron(COLOUR_PAIR_YELLOW_AND_BLACK);
@@ -45,14 +46,15 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
         }
         attroff(COLOUR_PAIR_YELLOW_AND_BLACK);
 
-        y = getmaxy(stdscr) - 5;
+        y = getmaxy(stdscr) - 10;
 
         if (!ticket.getCheckin().isCheckedin()) {
             y += print_centre(0, y, "Press <C> to checkin");
         } else {
             y += print_centre(0, y, "Press <C> to checkout");
         }
-
+        
+        y += print_centre(0, y, "Press <P> to print a new id card");
         y += print_centre(0, y, "Press <ENTER> to continue");
 
         refresh();
@@ -61,10 +63,16 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
         int errorFlag = true;
         std::string inOut = "in";
         struct ErrorAction act;
+        IdCard idCard;
         switch (c) {
             case '\n':
             case KEY_ENTER:
                 flag = false;
+                break;
+            case 'P':
+            case 'p':
+                idCard = IdCard(attendee);
+                idCard.print();
                 break;
             case 'C':
             case 'c':
