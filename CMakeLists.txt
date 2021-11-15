@@ -65,9 +65,10 @@ set(SRC_FILES
     src/tito_classes.cpp
     src/error_screen.cpp
     src/view_attendee.cpp
+    src/id_card_gen.cpp
     )
 
-set(LIBS curl ncurses)
+set(LIBS curl ncurses pthread X11)
 
 add_executable(tito-integration-hackaway ${SRC_FILES} ${MAIN})
 
