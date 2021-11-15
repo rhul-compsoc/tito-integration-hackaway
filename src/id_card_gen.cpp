@@ -17,12 +17,12 @@
 #define ID_CARD_HEIGHT 3173
 // Enjoy tuning the text size, turn on DEBUG mode to make it easier for you
 #define TEXT_OPACITY 1
-#define TEXT_SIZE 300
+#define TEXT_SIZE_HEIGHT 300
 #define TEXT_Y 2600
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
 // Enjoy playing with fonts, they are rather crap
-#define TEXT_X 20
+#define TEXT_X 80
 #define MAX_NAME_LEN 11
 
 IdCard::IdCard(TitoAttendee attendee)
@@ -129,7 +129,7 @@ void IdCard::printName()
                           TEXT_COLOUR,
                           0,
                           TEXT_OPACITY,
-                          TEXT_SIZE);
+                          TEXT_SIZE_HEIGHT);
 }
 
 std::string IdCard::stripAttendeeName(std::string str)

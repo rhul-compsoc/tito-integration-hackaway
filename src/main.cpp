@@ -88,7 +88,7 @@ static void printAttendeeIdCard(std::list<TitoAttendee> &list,
                           y,
                           "Printing id card for " + name + "...");
         
-        if (!selection.attendee.getTicket().getCheckin().isCheckedin()) {            
+        if (!selection.attendee.getTicket().getCheckin().isCheckedin()) {
             print_centre(0,
                          y,
                          "Do note: " + name + " is not checked in yet...");
