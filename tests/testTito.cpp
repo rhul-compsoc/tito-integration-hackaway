@@ -46,8 +46,9 @@ void TestTito::testGetAttendees()
         CPPUNIT_ASSERT(attendee.getEmail() != "");
         CPPUNIT_ASSERT(attendee.getPhoneNumber() != "");
     }
+    
+    attendees.sort();
 }
-
 
 void TestTito::testWrongToken()
 {    
@@ -232,6 +233,12 @@ void TestTito::testTitoAttendee()
     CPPUNIT_ASSERT(attendee.getName() == name);
     CPPUNIT_ASSERT(attendee.getEmail() == email);
     CPPUNIT_ASSERT(attendee.getPhoneNumber() == phone);
+    
+    CPPUNIT_ASSERT(attendee == attendee);
+    CPPUNIT_ASSERT(attendee == TitoAttendee(name,
+                                            email,
+                                            phone,
+                                            TitoTicket()));
 }
 
 void TestTito::testSearch()
