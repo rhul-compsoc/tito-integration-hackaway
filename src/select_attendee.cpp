@@ -301,10 +301,12 @@ struct AttendeeSelection select_attendee(TitoApi api,
                 i = 0;
                 for (TitoAttendee att : attendees) {
                     if (i == currentlySelected) {
-                        view_attendee(api, att);
+                        bool cacheUpdateNeeded = view_attendee(api, att);
 
                         // Update cache
-                        UPDATE_CACHE();
+                        if (cacheUpdateNeeded) {
+                            UPDATE_CACHE();
+                        }
                         break;
                     }
                     i++;

@@ -5,8 +5,9 @@
 #include "error_screen.h"
 #include "view_attendee.h"
 
-void view_attendee(TitoApi api, TitoAttendee attendee) {
-    bool flag = true;
+bool view_attendee(TitoApi api, TitoAttendee attendee) {
+    bool flag = true,
+         cacheChanged = false;
     while(flag) {
         // Print in the loop to make terminal zooming and resizing work
         clear();
@@ -96,6 +97,7 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
                         }
                         errorFlag = false;
                         flag = false;
+                        cacheChanged = true;
                     } catch (int e) {
                         act = showErrorMessage("An error occurred whilst checking "
                                                + inOut
@@ -113,4 +115,6 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
 
     clear();
     refresh();
+    
+    return cacheChanged;
 }
