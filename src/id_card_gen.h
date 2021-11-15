@@ -34,7 +34,8 @@ private:
      * 
      * @return the return code, 0 is failure and, 1 is success.
      */
-    int copyTemplateImage();    
+    int copyTemplateImage();
+    std::string stripAttendeeName(std::string);
     CImg<unsigned char> image;
     TitoAttendee attendee;
 };
