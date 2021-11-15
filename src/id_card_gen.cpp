@@ -1,9 +1,15 @@
 #include "id_card_gen.h"
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifdef DEBUG
+#ifndef TEST
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
+#endif
+#endif
 
 #define ASSETS_FOLDER "assets"
 // NOTE: Dear users, please make your templates the same size and change these numbers
@@ -17,7 +23,7 @@ unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
 // Enjoy playing with fonts, they are rather crap
 #define TEXT_X 20
-#define MAX_NAME_LEN 10
+#define MAX_NAME_LEN 11
 
 IdCard::IdCard(TitoAttendee attendee)
 {
@@ -170,17 +176,32 @@ std::string IdCard::stripAttendeeName(std::string str)
     return retOut;
 }
 
+static void *print_image_thread(void *name)
+{    
+    std::string *fileName = (std::string *) name;
+    std::string command = "lp \"" + *fileName + "\"";
+    int status = system(command.c_str());
+    if (!status) {
+        std::cerr << "Error IdCard::print_image_thread : lp returned non-zero value "
+                  << std::to_string(status)
+                  << std::endl;
+    }
+    delete fileName;
+    pthread_exit(0);    
+}
+
 void IdCard::print()
 {
-    int pid = fork();
-    if (pid != 0) {
-        std::string fileName = getFileName();
-        std::string command = "lp \"" + fileName + "\"";
-        int status = system(command.c_str());
-        if (!status) {
-            std::cerr << "" << std::endl;
-        }
-        
-        kill(pid, SIGSEGV); // I can explain this one I promise.
+    std::string *name = new std::string(this->getFileName());
+    pthread_t thread;
+    pthread_attr_t *attr = NULL;
+    int r = pthread_create(&thread, attr, &print_image_thread, (void *) name);
+    
+    if (r != 0) {
+        delete name;
+        std::cerr << "Critical Failure: ";
+        std::cerr << "Error IdCard::print() : Cannot start a thread to print the id card."
+                  << std::endl;
+        exit(13);
     }
 }
