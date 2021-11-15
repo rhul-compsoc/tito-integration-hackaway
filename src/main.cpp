@@ -5,6 +5,7 @@
 #include "select_attendee.h"
 #include "error_screen.h"
 #include "tito.h"
+#include "id_card_gen.h"
 
 static void warn_exit()
 {    
@@ -32,7 +33,9 @@ static bool updateAttendees(std::list<TitoAttendee> &list,
     bool flag = true;
     while (flag) {
         try {
-            print_centre(0, getmaxy(stdscr) / 2, "Updating attendee cache.");
+            clear();
+            print_centre(0, getmaxy(stdscr) / 2, "Updating attendee cache...");
+            refresh();
             attendees = api.getAttendees();
             flag = false;
         } catch (int e) {
@@ -68,13 +71,43 @@ static void viewAttendees(std::list<TitoAttendee> &list,
                                                          "Showing all attendees.");
 }
 
+static void printAttendeeIdCard(std::list<TitoAttendee> &list,
+                                TitoApi api)
+{    
+    updateAttendees(list, api);
+    struct AttendeeSelection selection = 
+        select_attendee(api,
+                        list,
+                        "Select an attendee to print an id card for.");
+    
+    if (selection.attendeeSelected) {
+        std::string name = selection.attendee.getName();
+        clear();
+        int y = getmaxy(stdscr) / 2;
+        y += print_centre(0,
+                          y,
+                          "Printing id card for " + name + "...");
+        
+        if (!selection.attendee.getTicket().getCheckin().isCheckedin()) {            
+            print_centre(0,
+                         y,
+                         "Do note: " + name + " is not checked in yet...");
+        }
+        refresh();
+        
+        IdCard idCard = IdCard(selection.attendee);
+        idCard.print();
+    }
+}
+
 static void checkinoutAttendee(std::list<TitoAttendee> &list,
                                TitoApi api)
 {
     updateAttendees(list, api);
-    struct AttendeeSelection selection = select_attendee(api,
-                                                         list,
-                                                         "Select an attendee to check in/out.");
+    struct AttendeeSelection selection = 
+        select_attendee(api,
+                        list,
+                        "Select an attendee to check in/out.");
     
     bool checkin = selection.attendee.getTicket().getCheckin().isCheckedin();    
     std::string name = selection.attendee.getName();
@@ -82,15 +115,18 @@ static void checkinoutAttendee(std::list<TitoAttendee> &list,
         bool flag = true;
         while (flag) {
             try {
+                clear();
                 if (!checkin) {
                     print_centre(0,
                                  getmaxy(stdscr) / 2,
                                  "Checking " + name + " in...");
+                    refresh();
                     flag = api.checkinAttendee(selection.attendee);
                 } else {                    
                     print_centre(0,
                                  getmaxy(stdscr) / 2,
                                  "Checking " + name + " out...");
+                    refresh();
                     flag = api.checkoutAttendee(selection.attendee);
                 }
             } catch (int e) {                
@@ -177,6 +213,7 @@ int main(int argc, char **argv)
         // Print operations
         y += print_centre(0, y, "Press <C> to checkin/out an attendee.");
         y += print_centre(0, y, "Press <V> to view all attendees.");
+        y += print_centre(0, y, "Press <P> to print an id card.");
         y += print_centre(0, y, "Press <ESCAPE> to exit.");
         
         int c = getch();
@@ -185,6 +222,10 @@ int main(int argc, char **argv)
                 case 'c':
                 case 'C':
                     checkinoutAttendee(attendees, api);
+                    break;
+                case 'p':
+                case 'P':
+                    printAttendeeIdCard(attendees, api);
                     break;
                 case 'v':
                 case 'V':
