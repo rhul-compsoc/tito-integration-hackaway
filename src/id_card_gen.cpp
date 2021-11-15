@@ -1,14 +1,9 @@
 #include "id_card_gen.h"
 #include <stdio.h>
-
-// libs for debug
-#ifdef DEBUG
-#ifndef TEST
+#include <stdlib.h>
+#include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
-#include <unistd.h>
-#endif
-#endif
 
 #define ASSETS_FOLDER "assets"
 // NOTE: Dear users, please make your templates the same size and change these numbers
@@ -23,20 +18,10 @@ unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 // Enjoy playing with fonts, they are rather crap
 #define TEXT_X 20
 
-/**
- * The image is copied before it is modified so that it can be saved to the death
- * NOTE: If you @ me on discord or something I will make the tickets not hard
- * coded.
- * 
- * @param TitoAttendee the attendee to create the id card for.
- * @param std::string the filename for the new id card to be saved as.
- * 
- * @return the return code, 0 is failure and, 1 is success.
- */
-static int copyTemplateImage(TitoAttendee attendee,
-                              std::string newFileName)
+int IdCard::copyTemplateImage()
 {
-    std::string ticketRelease = attendee.getTicket().getTicketRelease();    
+    std::string newFileName = this->getFileName();
+    std::string ticketRelease = this->attendee.getTicket().getTicketRelease();    
     std::string releaseTag = "hacker.png";   
     if (ticketRelease == "Mentor") releaseTag = "mentor.png";
     else if (ticketRelease == "Staff") releaseTag = "staff.png";
@@ -92,37 +77,32 @@ static int copyTemplateImage(TitoAttendee attendee,
     return 1;
 }
 
-/**
- * Generates the file name for the image for the id card to be saved as.
- * 
- * Concatenate the ticket id to id_card, this will be fine as there are no
- * duplicate ticket ids. The name of the file is derived from the ticket id to
- * make sure that there are no bad characters in the filename.
- * 
- * @param TitoAttendee the attendee to generate the ticket for.
- * @return the filename for the generated id card to be saved as.
- */
-static std::string getFileName(TitoAttendee attendee)
+std::string IdCard::getFileName()
 {
-    return "id_card_" + std::to_string(attendee.getTicket().getTicketID()) + ".png";
+    return "id_card_" + std::to_string(this->attendee.getTicket().getTicketID()) + ".png";
 }
 
-IdCard::IdCard(TitoAttendee attendee)
-{
-    std::string fileName = getFileName(attendee);
-    if (!copyTemplateImage(attendee, fileName)) {
-        throw ID_CARD_READ_ERROR;
-    }
-    this->image = CImg<unsigned char> (fileName.c_str());
-    
+void IdCard::printName()
+{ 
     // Draw text - I hate text centreing so I gave up
     this->image.draw_text(TEXT_X,
                           TEXT_Y,
-                          attendee.getName().c_str(),
+                          this->attendee.getName().c_str(),
                           TEXT_COLOUR,
                           0,
                           TEXT_OPACITY,
                           TEXT_SIZE);
+}
+
+IdCard::IdCard(TitoAttendee attendee)
+{
+    this->attendee = attendee;
+    std::string fileName = getFileName();
+    if (!this->copyTemplateImage()) {
+        throw ID_CARD_READ_ERROR;
+    }
+    this->image = CImg<unsigned char> (fileName.c_str());
+    this->printName();
     
     this->image.save(fileName.c_str());
     
@@ -143,7 +123,17 @@ IdCard::IdCard(TitoAttendee attendee)
 #endif
 }
 
-int IdCard::print()
+void IdCard::print()
 {
-    return 1;
+    int pid = fork();
+    if (pid != 0) {
+        std::string fileName = getFileName();
+        std::string command = "lp \"" + fileName + "\"";
+        int status = system(command.c_str());
+        if (!status) {
+            std::cerr << "" << std::endl;
+        }
+        
+        kill(pid, SIGSEGV); // I can explain this one I promise.
+    }
 }

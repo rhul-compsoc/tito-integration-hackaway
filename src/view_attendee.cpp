@@ -71,12 +71,18 @@ void view_attendee(TitoApi api, TitoAttendee attendee) {
                 break;
             case 'P':
             case 'p':
+                clear();
+                print_centre(0,
+                             getmaxy(stdscr) / 2,
+                             "Printing id card for " + attendee.getName() + "...");
+                refresh();
                 idCard = IdCard(attendee);
                 idCard.print();
                 break;
             case 'C':
             case 'c':
                 while (errorFlag) {
+                    clear();
                     print_centre(0,
                                  getmaxy(stdscr) / 2,
                                  "Checking user " + inOut + "...");
