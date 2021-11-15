@@ -10,8 +10,12 @@
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 
+#include "testIdCardGen.h"
 #include "testTito.h"
-//#include "testNcursesUtils.h"
+
+#ifndef TEST
+#include "testNcursesUtils.h" // is broken on github actions as they have bad tty
+#endif
 
 #define XMLOUT
 

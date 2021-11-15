@@ -3,9 +3,11 @@
 
 // libs for debug
 #ifdef DEBUG
+#ifndef TEST
 #include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#endif
 #endif
 
 #define ASSETS_FOLDER "assets"
@@ -20,7 +22,6 @@ unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
 // Enjoy playing with fonts, they are rather crap
 #define TEXT_X 20
-#define FONT_FAMILY "Montserrat-Black"
 
 /**
  * The image is copied before it is modified so that it can be saved to the death
@@ -106,8 +107,6 @@ static std::string getFileName(TitoAttendee attendee)
     return "id_card_" + std::to_string(attendee.getTicket().getTicketID()) + ".png";
 }
 
-IdCard::IdCard() {}
-
 IdCard::IdCard(TitoAttendee attendee)
 {
     std::string fileName = getFileName(attendee);
@@ -123,12 +122,12 @@ IdCard::IdCard(TitoAttendee attendee)
                           TEXT_COLOUR,
                           0,
                           TEXT_OPACITY,
-                          TEXT_SIZE,
-                          FONT_FAMILY);
+                          TEXT_SIZE);
     
     this->image.save(fileName.c_str());
     
-#if DEBUG    
+#ifdef DEBUG
+#ifndef TEST
     // Ignore this war crime
     int pid = fork();
     if (pid != 0) {
@@ -140,6 +139,7 @@ IdCard::IdCard(TitoAttendee attendee)
         
         kill(pid, SIGSEGV);
     }
+#endif
 #endif
 }
 

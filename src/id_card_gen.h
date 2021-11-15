@@ -9,7 +9,7 @@ using namespace cimg_library;
 class IdCard {
 public:
     IdCard(TitoAttendee);
-    IdCard(); // Please do not use me
+    IdCard() {}; // Please do not use me
     int print();
 private:
     CImg<unsigned char> image;

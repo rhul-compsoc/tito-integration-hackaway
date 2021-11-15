@@ -42,8 +42,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
     set(CMAKE_C_COMPILER gcc)
     set(CMAKE_CXX_COMPILER g++)
     
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG} -DTEST")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} -DTEST")
     
     append_coverage_compiler_flags()
     setup_target_for_coverage_gcovr_xml(NAME coverage
@@ -92,6 +92,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
         ${SRC_FILES}
         tests/runner.cpp
         tests/testTito.cpp
+        tests/testIdCardGen.cpp
         #tests/testNcursesUtils.cpp
         )
     add_executable(tito-integration-hackaway-tests ${TEST_FILES})
