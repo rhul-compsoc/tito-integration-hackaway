@@ -73,7 +73,7 @@ private:
      * @param std::string string to strip
      * @return the stripped string
      */
-    std::string stripQueryStr(std::string str);
+    std::string stripQueryStr(std::string);
     // Don't tell Dave Cohen of my primitive obsession
     // Alexa git-blame-someone-else
     std::string name, email, phoneNumber;

@@ -233,3 +233,40 @@ void TestTito::testTitoAttendee()
     CPPUNIT_ASSERT(attendee.getEmail() == email);
     CPPUNIT_ASSERT(attendee.getPhoneNumber() == phone);
 }
+
+void TestTito::testSearch()
+{
+    std::string name = "Dave Cohen",
+                email = "davecohen@cohendave.davecohen",
+                phone = "primitive obsession",
+                slug = "slug",
+                release = "ticket";
+    int id = 69;
+    TitoTicket ticket = TitoTicket(id, slug, release);
+    TitoAttendee dave = TitoAttendee(name, email, phone, ticket);
+    
+    CPPUNIT_ASSERT(!dave.matches("Gutin"));
+    CPPUNIT_ASSERT(!dave.matches("Gutin " + release));
+    CPPUNIT_ASSERT(!dave.matches("Gutin " + name));
+    CPPUNIT_ASSERT(!dave.matches("Gutin " + email));
+    CPPUNIT_ASSERT(!dave.matches("Gutin " + phone));
+    
+    CPPUNIT_ASSERT(dave.matches(""));
+    CPPUNIT_ASSERT(dave.matches(" "));
+    CPPUNIT_ASSERT(dave.matches(name));
+    CPPUNIT_ASSERT(dave.matches("Dave"));
+    
+    CPPUNIT_ASSERT(dave.matches(email));
+    CPPUNIT_ASSERT(dave.matches(phone));
+    CPPUNIT_ASSERT(dave.matches(release));
+        
+    CPPUNIT_ASSERT(dave.matches(name + " " + email + " " 
+                  + phone + " " + release));
+    
+    std::string strs[] = {name, email, phone, release};
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            CPPUNIT_ASSERT(dave.matches(strs[i] + " " + strs[j]));
+        }
+    }
+}

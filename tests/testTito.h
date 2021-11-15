@@ -14,6 +14,7 @@ class TestTito : public CppUnit::TestCase {
     CPPUNIT_TEST(testTitoCheckin);
     CPPUNIT_TEST(testTitoTicket);
     CPPUNIT_TEST(testTitoAttendee);
+    CPPUNIT_TEST(testSearch);
     CPPUNIT_TEST_SUITE_END();
 public:
     TestTito(void);
@@ -28,4 +29,5 @@ public:
     void testTitoCheckin();
     void testTitoTicket();
     void testTitoAttendee();
+    void testSearch();
 };

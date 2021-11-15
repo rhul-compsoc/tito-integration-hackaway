@@ -63,17 +63,22 @@ TitoTicket *TitoAttendee::getTicketRef() { return &this->ticket; }
 
 bool TitoAttendee::matches(std::string queryIn)
 {
-    bool ret = false;
+    bool ret = true;
     std::string query;
     std::stringstream streamData(queryIn);
     while (std::getline(streamData, query, ' ')) {
         query = stripQueryStr(query);
-        ret |= stripQueryStr(this->name).find(query) != std::string::npos;
-        ret |= stripQueryStr(this->email).find(query) != std::string::npos;
-        ret |= stripQueryStr(this->phoneNumber).find(query) != std::string::npos;
-        ret |= stripQueryStr(this->ticket.getTicketRelease()).find(query) != std::string::npos;
+        bool subPattern = false;
+        
+        subPattern |= stripQueryStr(this->name).find(query) != std::string::npos;
+        subPattern |= stripQueryStr(this->email).find(query) != std::string::npos;
+        subPattern |= stripQueryStr(this->phoneNumber).find(query) != std::string::npos;
+        subPattern |= stripQueryStr(this->ticket.getTicketRelease()).find(query) 
+            != std::string::npos;
+            
+        ret &= subPattern;
     }
-    return ret || queryIn == "";
+    return ret;
 }
 
 bool operator <(TitoAttendee &b, TitoAttendee &a)
@@ -103,7 +108,8 @@ bool operator <(TitoAttendee &b, TitoAttendee &a)
     return a.getTicket().getTicketID() < b.getTicket().getTicketID();
 }
 
-bool TitoAttendee::operator==(TitoAttendee other) {
+bool TitoAttendee::operator==(TitoAttendee other)
+{
     return this->name == other.name
         && this->email == other.email
         && this->phoneNumber == other.phoneNumber;
