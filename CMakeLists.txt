@@ -69,15 +69,15 @@ set(SRC_FILES
     src/id_card_gen.cpp
     )
 
-set(LIBS curl ncurses pthread)
+set(LIBS curl ncurses pthread X11)
 
 add_executable(tito-integration-hackaway ${SRC_FILES} ${MAIN})
 
 # Copy static content (images, favicon, etc.)
-file(GLOB ASSETS
+file(GLOB STATIC_IMG
   "assets/**"
 )
-file(COPY ${ASSETS} DESTINATION "${CMAKE_BINARY_DIR}/assets/")
+file(COPY ${STATIC_IMG} DESTINATION "${CMAKE_BINARY_DIR}/assets/")
 
 target_link_libraries(tito-integration-hackaway ${LIBS})
 target_include_directories(tito-integration-hackaway PUBLIC

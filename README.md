@@ -5,15 +5,6 @@ This is the [ti.to](ti.to) checkin and identity card system.
 
 Enjoy the psuedo-javadoc comments.
 
-## Dependencies
- - Install the font "Montserrat-Black.ttf" (a copy is in the assets folder)
- - pthread
- - libcurl
- - (unistd.h - rip windows users) 
- - lp (a printer utility, this also needs to be setup)
-
-## Setting up Ticket Images
-
 ## Setup
 This program is designed to run on linux, because the Hackaway setup has a bunch
 of think centre computers that run Ubuntu.
