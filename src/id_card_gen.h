@@ -1,5 +1,4 @@
 #pragma once
-#include "CImg.h"
 #include "tito_classes.h"
 
 using namespace cimg_library;
@@ -12,7 +11,10 @@ public:
     IdCard() {}; // Please do not use me
     void print();
 private:
-    void printName();    
+    /**
+     * Puts the name into the file in the correct place
+     */
+    std::string printName();    
     /**
      * Generates the file name for the image for the id card to be saved as.
      * 
@@ -35,7 +37,7 @@ private:
      * @return the return code, 0 is failure and, 1 is success.
      */
     int copyTemplateImage();
-    std::string stripAttendeeName(std::string);
-    CImg<unsigned char> image;
+    std::string stripStr(std::string);
+    std::string htmlFile;
     TitoAttendee attendee;
 };

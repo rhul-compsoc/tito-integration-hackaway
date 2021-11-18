@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <dirent.h>
 
 #ifdef DEBUG
 #ifndef TEST
@@ -31,40 +32,41 @@ IdCard::IdCard(TitoAttendee attendee)
     std::string fileName = getFileName();
     if (!this->copyTemplateImage()) {
         throw ID_CARD_READ_ERROR;
-    }
-    this->image = CImg<unsigned char> (fileName.c_str());
-    this->printName();
-    
-    this->image.save(fileName.c_str());
-    
-#ifdef DEBUG
-#ifndef TEST
-    // Ignore this war crime
-    int pid = fork();
-    if (pid != 0) {
-        CImgDisplay main_disp(this->image, "Preview of the id card");
-        
-        while (!main_disp.is_closed()) {
-            main_disp.wait();
-        }
-        
-        kill(pid, SIGSEGV);
-    }
-#endif
-#endif
+    }    
 }
 
 int IdCard::copyTemplateImage()
 {
     std::string newFileName = this->getFileName();
-    std::string ticketRelease = this->attendee.getTicket().getTicketRelease();    
-    std::string releaseTag = "hacker.png";   
-    if (ticketRelease == "Mentor") releaseTag = "mentor.png";
-    else if (ticketRelease == "Staff") releaseTag = "staff.png";
-    else if (ticketRelease == "Committee") releaseTag = "staff.png";
-    //TODO: create a comittee ticket template?
+    std::string ticketRelease = stripStr(this->attendee.getTicket().getTicketRelease());
+    std::string sourceFileName = "default.html";
+    this->htmlFile = "";
+        
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir(ASSETS_FOLDER))) {
+        while ((ent = readdir (dir)) != NULL) {
+            std::string dir = std::string(ent->d_name);
+            size_t index = dir.find_last_of(".html");
+            
+            if (index != std::string::npos) {
+                std::string strippedDir = stripStr(dir.substr(0, index - 1));
+                if (strippedDir == ticketRelease) {
+                    sourceFileName = dir;
+                    break;
+                }
+            }
+        }
+        closedir(dir);
+    } else {
+        std::cerr << "Error IdCard::copyTemplateImage() : Error cannot open ./"
+                     ASSETS_FOLDER
+                     "/ folder to query image templates."
+                  << std::endl;
+        return 0;
+    }
     
-    std::string source = ASSETS_FOLDER "/" + releaseTag;
+    std::string source = ASSETS_FOLDER "/" + sourceFileName;
     
     FILE *src = fopen(source.c_str(), "r"),
     *dest = fopen(newFileName.c_str(), "wb");
@@ -88,13 +90,14 @@ int IdCard::copyTemplateImage()
     
     for (int c; c = fgetc(src), c != EOF;) {
         int t = fputc(c, dest);
+        this->htmlFile += c;
         
         // Handle IO errors
         if (t == EOF) {            
             std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
-            << source << " to " 
-            << newFileName << ". A write error occurred."
-            << std::endl;
+                      << source << " to "
+                      << newFileName << ". A write error occurred."
+                      << std::endl;
             
             fclose(src);
             fclose(dest);
@@ -102,11 +105,11 @@ int IdCard::copyTemplateImage()
         }
     }
     
-    #ifdef DEBUG
+#ifdef DEBUG
     std::cerr << "Debug IdCard::copyTemplateImage() : Copied "
-    << source << " to " 
-    << newFileName << std::endl;
-    #endif
+              << source << " to " 
+              << newFileName << std::endl;
+#endif
     
     fclose(src);
     fclose(dest);
@@ -115,24 +118,45 @@ int IdCard::copyTemplateImage()
 
 std::string IdCard::getFileName()
 {
-    return "id_card_" + std::to_string(this->attendee.getTicket().getTicketID()) + ".png";
+    return "id_card_" + std::to_string(this->attendee.getTicket().getTicketID()) + ".html";
 }
 
-void IdCard::printName()
+std::string IdCard::printName()
 {
-    std::string name = stripAttendeeName(this->attendee.getName());
+    std::string fname, sname;    
+    size_t nameIndex = this->attendee.getName().find(" ");
+    if (nameIndex != std::string::npos) {        
+        fname = stripStr(this->attendee.getName()).substr(0, nameIndex - 1);
+        sname = stripStr(this->attendee.getName().substr(nameIndex + 1,
+                                                         this->attendee.getName().size() - 1));
+    } else {
+        fname = stripStr(this->attendee.getName());        
+    }
     
-    // Draw text - I hate text centreing so I gave up
-    this->image.draw_text(TEXT_X,
-                          TEXT_Y,
-                          name.c_str(),
-                          TEXT_COLOUR,
-                          0,
-                          TEXT_OPACITY,
-                          TEXT_SIZE_HEIGHT);
+    std::string templateTag = "{fname}";
+    size_t templateIndex = this->htmlFile.find(templateTag);
+    if (templateIndex == std::string::npos) {
+        return this->htmlFile;
+    }
+    
+    std::string htmlOut = this->htmlFile.substr(0, templateIndex - 1);
+    htmlOut += fname;
+    htmlOut += this->htmlFile.substr(templateIndex + templateTag.size(),
+                                     this->htmlFile.size() - 1);
+    
+    templateTag = "{sname}";
+    templateIndex = htmlOut.find(templateTag);
+    if (templateIndex != std::string::npos) {    
+        htmlOut = htmlOut.substr(0, templateIndex - 1);
+        htmlOut += sname;
+        htmlOut += htmlOut.substr(templateIndex + templateTag.size(),
+                                         htmlOut.size() - 1);
+    }    
+    
+    return htmlOut;
 }
 
-std::string IdCard::stripAttendeeName(std::string str)
+std::string IdCard::stripStr(std::string str)
 {
     transform(str.begin(), str.end(), str.begin(), ::toupper);
     std::string ret = "";
