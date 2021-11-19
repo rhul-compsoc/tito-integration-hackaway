@@ -62,6 +62,10 @@ void TitoApi::readIDCache()
 {
     this->idsGiven = std::list<std::string>();
     if (access(ID_CACHE_FILE, F_OK) == -1) {
+#ifdef DEBUG
+        std::cerr << "Debug TitoApi::readIDCache() : Made cache file "
+                  << std::endl;
+#endif
         std::cerr << "Error TitoApi::readIDCache() : ID cache file does note "
                       "exist." 
                   << std::endl;
@@ -74,24 +78,30 @@ void TitoApi::readIDCache()
         }
         fclose(f);
     } else {
-        std::ifstream file;
+#ifdef DEBUG
+        std::cerr << "Debug TitoApi::readIDCache() : Read cache file "
+                  << std::endl;
+#endif
+
+        std::fstream file;
         file.open(ID_CACHE_FILE, std::ios::in);
-        if (!file.good()) {
+        if (!file.is_open()) {
             std::cerr << "Error TitoApi::readIDCache() : Cannot read the id "
                          "cache file." 
                       << std::endl;
             throw TITO_ID_CACHE_ERROR;
         }
         
-        std::string str;
-        file >> str;
-        
         std::string line;
-        std::stringstream streamData(str);
-        while (std::getline(streamData, line, '\n')) {
-            if (line != "") {
+        while (std::getline(file, line)) {
+            //if (line != "") {
                 this->idsGiven.push_back(line);
-            }
+#ifdef DEBUG
+                std::cerr << "Debug TitoApi::readIDCache() : Id for "
+                          << line
+                          << std::endl;
+#endif
+            //}
         }
         
         file.close();
@@ -295,8 +305,8 @@ std::string TitoApi::getRequest(std::string url)
 
 std::list<TitoAttendee> TitoApi::getAttendees()
 {
-    std::string url = "https://api.tito.io/v3/" + this->accountSlug + "/" +
-        this->eventSlug + "/tickets";
+    std::string url = "https://api.tito.io/v3/" + this->accountSlug
+                    + "/" + this->eventSlug + "/tickets";
     std::string resp = getRequest(url);
     nlohmann::json rootJson = nlohmann::json::parse(resp);
     
