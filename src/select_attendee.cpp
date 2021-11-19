@@ -197,7 +197,7 @@ struct AttendeeSelection select_attendee(TitoApi api,
 
         // Print attendees
         int i = 0;
-        int yOfSelected = 0;
+        int yOfSelected = -1;
         TitoAttendee currentlySelectedAttendee;
 
         for (TitoAttendee attendee : attendees) {
@@ -276,6 +276,7 @@ struct AttendeeSelection select_attendee(TitoApi api,
             // Make selection
             case '\n':
             case KEY_ENTER:
+                if (yOfSelected == -1) break;
                 if (confirmationRequired) {
                     if (confirm_attendee(currentlySelectedAttendee)) {
                         running = 0;
