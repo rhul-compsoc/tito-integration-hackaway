@@ -112,14 +112,18 @@ static void checkinoutAttendee(std::list<TitoAttendee> &list,
                         "Select an attendee to check in/out.",
                         true);
     
-    bool checkin = selection.attendee.getTicket().getCheckin().isCheckedin();    
+    bool checkedin = selection.attendee.getTicket().getCheckin().isCheckedin();
     std::string name = selection.attendee.getName();
     if (selection.attendeeSelected) {
-        bool flag = true;
+        bool flag = true,
+             success = false,
+             print_id = !api.hasIDBeenGiven(selection.attendee);
+
+        print_id &= !checkedin;
         while (flag) {
             try {
                 clear();
-                if (!checkin) {
+                if (!checkedin) {
                     print_centre(0,
                                  getmaxy(stdscr) / 2,
                                  "Checking " + name + " in...");
@@ -131,6 +135,7 @@ static void checkinoutAttendee(std::list<TitoAttendee> &list,
                                  "Checking " + name + " out...");
                     refresh();
                     flag = api.checkoutAttendee(selection.attendee);
+                    success = true;
                 }
             } catch (int e) {                
                 struct ErrorAction act;
@@ -140,6 +145,29 @@ static void checkinoutAttendee(std::list<TitoAttendee> &list,
                 
                 if (act.action == ERROR_ACTION_IGNORE) {
                     flag = false;
+                }
+            }
+        }
+
+        // if the operation aws cancelled printing should not occur
+        while (print_id && success) {
+            try {
+                clear();
+                print_centre(0,
+                             getmaxy(stdscr) / 2,
+                             "Printing ticket for " + name + ".");
+                refresh();
+
+                IdCard idCard = IdCard(selection.attendee);
+                idCard.print();
+                print_id = false;
+            } catch (int e) {
+                struct ErrorAction act;
+                act = showErrorMessage("An error occurred during printing.",
+                                       e);
+
+                if (act.action == ERROR_ACTION_IGNORE) {
+                    print_id = false;
                 }
             }
         }
