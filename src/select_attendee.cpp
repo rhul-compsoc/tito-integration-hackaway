@@ -5,6 +5,7 @@
 #include "view_attendee.h"
 #include "select_attendee.h"
 #include "error_screen.h"
+#include "confirm_select.h"
 
 #define BACKSPACE 127
 
@@ -171,7 +172,8 @@ for (errorFlag = true; errorFlag;) {\
 
 struct AttendeeSelection select_attendee(TitoApi api,
                                          std::list<TitoAttendee> attendeesRaw,
-                                         std::string message)
+                                         std::string message,
+                                         bool confirmationRequired)
 {
     struct AttendeeSelection ret = {
         /*.attendeeSelected=*/0,
@@ -252,6 +254,7 @@ struct AttendeeSelection select_attendee(TitoApi api,
             }
         }
 
+        bool cacheUpdateNeeded = false;
         switch (input) {
             // Navigation
             case KEY_UP:
@@ -273,9 +276,13 @@ struct AttendeeSelection select_attendee(TitoApi api,
             // Make selection
             case '\n':
             case KEY_ENTER:
-                running = 0;
-                ret.attendeeSelected = true;
-                ret.attendee = currentlySelectedAttendee;
+                if (confirmationRequired) {
+                    if (confirm_attendee(currentlySelectedAttendee)) {
+                        running = 0;
+                        ret.attendeeSelected = true;
+                        ret.attendee = currentlySelectedAttendee;
+                    }
+                }
                 break;
             // Cancel
             case KEY_EXIT:
@@ -298,18 +305,12 @@ struct AttendeeSelection select_attendee(TitoApi api,
                 break;
             // View attendee information
             case KEY_F(9):
-                i = 0;
-                for (TitoAttendee att : attendees) {
-                    if (i == currentlySelected) {
-                        bool cacheUpdateNeeded = view_attendee(api, att);
+                cacheUpdateNeeded = view_attendee(api,
+                                                  currentlySelectedAttendee);
 
-                        // Update cache
-                        if (cacheUpdateNeeded) {
-                            UPDATE_CACHE();
-                        }
-                        break;
-                    }
-                    i++;
+                // Update cache
+                if (cacheUpdateNeeded) {
+                    UPDATE_CACHE();
                 }
                 break;
             // Clear search

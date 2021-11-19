@@ -51,7 +51,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
         EXCLUDE "build/*" "tests/*" "src/main.cpp" "src/json.hpp"
                 "src/ncurses_utils.cpp" "src/select_attendee.cpp"
                 "src/error_screen.cpp" "src/view_attendee.cpp"
-                "src/CImg.h")
+                "src/CImg.h" "src/confirm_select.cpp")
 
 endif()
 
@@ -67,6 +67,7 @@ set(SRC_FILES
     src/error_screen.cpp
     src/view_attendee.cpp
     src/id_card_gen.cpp
+    src/confirm_select.cpp
     )
 
 set(LIBS curl ncurses pthread X11)
