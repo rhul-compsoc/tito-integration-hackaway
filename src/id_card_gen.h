@@ -13,6 +13,7 @@ public:
     void print();
 private:
     void printName();    
+    void printQr();
     /**
      * Generates the file name for the image for the id card to be saved as.
      * 

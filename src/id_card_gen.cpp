@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "qrcodegen.hpp"
 
 #ifdef DEBUG
 #ifndef TEST
@@ -18,12 +19,17 @@
 // Enjoy tuning the text size, turn on DEBUG mode to make it easier for you
 #define TEXT_OPACITY 1
 #define TEXT_SIZE_HEIGHT 300
-#define TEXT_Y 2600
+#define TEXT_Y 2000
+#define QR_Y 2700
+#define QR_BLOCK_WIDTH 15
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
 // Enjoy playing with fonts, they are rather crap
 #define TEXT_X 80
 #define MAX_NAME_LEN 11
+
+using qrcodegen::QrCode;
+using qrcodegen::QrSegment;
 
 IdCard::IdCard(TitoAttendee attendee)
 {
@@ -34,6 +40,7 @@ IdCard::IdCard(TitoAttendee attendee)
     }
     this->image = CImg<unsigned char> (fileName.c_str());
     this->printName();
+    this->printQr();
     
     this->image.save(fileName.c_str());
     
@@ -72,17 +79,17 @@ int IdCard::copyTemplateImage()
     // Handle IO errors
     if (src == NULL) {
         std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
-        << source << " to " 
-        << newFileName << ". Source file could not be opened."
+                  << source << " to "
+                  << newFileName << ". Source file could not be opened."
         << std::endl;
         return 0;
     }
     
     if (dest == NULL) {
         std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
-        << source << " to " 
-        << newFileName << ". Destination file could not be opened."
-        << std::endl;
+                  << source << " to "
+                  << newFileName << ". Destination file could not be opened."
+                  << std::endl;
         return 0;
     }
     
@@ -92,9 +99,9 @@ int IdCard::copyTemplateImage()
         // Handle IO errors
         if (t == EOF) {            
             std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
-            << source << " to " 
-            << newFileName << ". A write error occurred."
-            << std::endl;
+                      << source << " to "
+                      << newFileName << ". A write error occurred."
+                      << std::endl;
             
             fclose(src);
             fclose(dest);
@@ -104,8 +111,8 @@ int IdCard::copyTemplateImage()
     
     #ifdef DEBUG
     std::cerr << "Debug IdCard::copyTemplateImage() : Copied "
-    << source << " to " 
-    << newFileName << std::endl;
+              << source << " to "
+              << newFileName << std::endl;
     #endif
     
     fclose(src);
@@ -130,6 +137,34 @@ void IdCard::printName()
                           0,
                           TEXT_OPACITY,
                           TEXT_SIZE_HEIGHT);
+}
+
+void IdCard::printQr()
+{
+    const QrCode qr = QrCode::encodeText(this->attendee.getTicket().getTicketSlug().c_str(),
+                                         QrCode::Ecc::HIGH);
+    int border = 2;
+    int xOffset = (ID_CARD_WIDTH - ((qr.getSize() + border) * QR_BLOCK_WIDTH)) / 2;
+    for (int y = -border; y < qr.getSize() + border; y++) {
+        for (int x = -border; x < qr.getSize() + border; x++) {
+            unsigned char colour[] = {0xFF, 0xFF, 0xFF};
+            if (qr.getModule(x, y)) {
+                colour[0] = colour[1] = colour[2] = 0;
+            }
+
+            int printX = xOffset + (x * QR_BLOCK_WIDTH);
+            int printY = QR_Y + (y * QR_BLOCK_WIDTH);
+
+            //CImg< T > & 	draw_rectangle (const int x0, const int y0, const int x1, const int y1, const tc *const color, const float opacity=1)
+
+            this->image.draw_rectangle(printX,
+                                       printY,
+                                       printX + QR_BLOCK_WIDTH,
+                                       printY + QR_BLOCK_WIDTH,
+                                       colour,
+                                       1);
+        }
+    }
 }
 
 std::string IdCard::stripAttendeeName(std::string str)
