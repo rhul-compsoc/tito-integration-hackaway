@@ -51,6 +51,8 @@ public:
                  TitoTicket /*ticket*/);
     TitoAttendee();
     std::string getName();
+    std::string getForename();
+    std::string getSurname();
     std::string getEmail();
     std::string getPhoneNumber();
     TitoTicket getTicket();

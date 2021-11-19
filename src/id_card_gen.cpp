@@ -14,12 +14,12 @@
 
 #define ASSETS_FOLDER "assets"
 // NOTE: Dear users, please make your templates the same size and change these numbers
-#define ID_CARD_WIDTH 2000 
+#define ID_CARD_WIDTH 2000
 #define ID_CARD_HEIGHT 3173
 // Enjoy tuning the text size, turn on DEBUG mode to make it easier for you
 #define TEXT_OPACITY 1
 #define TEXT_SIZE_HEIGHT 300
-#define TEXT_Y 2000
+#define TEXT_Y 1800
 #define QR_Y 2700
 #define QR_BLOCK_WIDTH 15
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
@@ -127,12 +127,21 @@ std::string IdCard::getFileName()
 
 void IdCard::printName()
 {
-    std::string name = stripAttendeeName(this->attendee.getName());
+    std::string fname = stripAttendeeName(this->attendee.getForename()),
+                sname = stripAttendeeName(this->attendee.getSurname());
     
     // Draw text - I hate text centreing so I gave up
     this->image.draw_text(TEXT_X,
                           TEXT_Y,
-                          name.c_str(),
+                          fname.c_str(),
+                          TEXT_COLOUR,
+                          0,
+                          TEXT_OPACITY,
+                          TEXT_SIZE_HEIGHT);
+
+    this->image.draw_text(TEXT_X,
+                          TEXT_Y + 100 + TEXT_SIZE_HEIGHT,
+                          sname.c_str(),
                           TEXT_COLOUR,
                           0,
                           TEXT_OPACITY,
