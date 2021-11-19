@@ -155,8 +155,6 @@ void IdCard::printQr()
             int printX = xOffset + (x * QR_BLOCK_WIDTH);
             int printY = QR_Y + (y * QR_BLOCK_WIDTH);
 
-            //CImg< T > & 	draw_rectangle (const int x0, const int y0, const int x1, const int y1, const tc *const color, const float opacity=1)
-
             this->image.draw_rectangle(printX,
                                        printY,
                                        printX + QR_BLOCK_WIDTH,
