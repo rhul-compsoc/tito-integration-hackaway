@@ -94,14 +94,12 @@ void TitoApi::readIDCache()
         
         std::string line;
         while (std::getline(file, line)) {
-            //if (line != "") {
                 this->idsGiven.push_back(line);
 #ifdef DEBUG
                 std::cerr << "Debug TitoApi::readIDCache() : Id for "
                           << line
                           << std::endl;
 #endif
-            //}
         }
         
         file.close();
