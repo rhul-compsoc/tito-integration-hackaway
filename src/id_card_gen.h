@@ -1,4 +1,5 @@
 #pragma once
+#include "CImg.h"
 #include "tito_classes.h"
 
 using namespace cimg_library;
@@ -14,7 +15,11 @@ private:
     /**
      * Puts the name into the file in the correct place
      */
-    std::string printName();    
+    std::string printName();
+    /**
+     * Generates the qr code for the ticket
+     */
+    void printQr();
     /**
      * Generates the file name for the image for the id card to be saved as.
      * 
@@ -22,17 +27,14 @@ private:
      * duplicate ticket ids. The name of the file is derived from the ticket id to
      * make sure that there are no bad characters in the filename.
      * 
-     * @param TitoAttendee the attendee to generate the ticket for.
+     * @param std::string the file extension
      * @return the filename for the generated id card to be saved as.
      */
-    std::string getFileName();    
+    std::string getFileName(std::string /*extension*/);    
     /**
      * The image is copied before it is modified so that it can be saved to the death
      * NOTE: If you @ me on discord or something I will make the tickets not hard
      * coded.
-     * 
-     * @param TitoAttendee the attendee to create the id card for.
-     * @param std::string the filename for the new id card to be saved as.
      * 
      * @return the return code, 0 is failure and, 1 is success.
      */

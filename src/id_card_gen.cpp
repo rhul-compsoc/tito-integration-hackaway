@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <dirent.h>
+#include "qrcodegen.hpp"
 
 #ifdef DEBUG
 #ifndef TEST
@@ -14,30 +14,44 @@
 
 #define ASSETS_FOLDER "assets"
 // NOTE: Dear users, please make your templates the same size and change these numbers
-#define ID_CARD_WIDTH 2000 
+#define ID_CARD_WIDTH 2000
 #define ID_CARD_HEIGHT 3173
 // Enjoy tuning the text size, turn on DEBUG mode to make it easier for you
 #define TEXT_OPACITY 1
 #define TEXT_SIZE_HEIGHT 300
-#define TEXT_Y 2600
+#define TEXT_Y 1800
+#define QR_BLOCK_WIDTH 5
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
 // Enjoy playing with fonts, they are rather crap
 #define TEXT_X 80
 #define MAX_NAME_LEN 11
 
+using qrcodegen::QrCode;
+using qrcodegen::QrSegment;
+
 IdCard::IdCard(TitoAttendee attendee)
 {
     this->attendee = attendee;
-    std::string fileName = getFileName();
+    std::string fileName = this->getFileName(".html");
     if (!this->copyTemplateImage()) {
         throw ID_CARD_READ_ERROR;
-    }    
+    }
+    
+    this->htmlFile = this->printName();
+    this->printQr();
+    
+    FILE *f = fopen(fileName.c_str(), "w");
+    if (f == NULL) {
+        throw ID_CARD_READ_ERROR;
+    }
+    
+    fprintf(f, "%s", this->htmlFile.c_str());
+    fclose(f);
 }
 
 int IdCard::copyTemplateImage()
 {
-    std::string newFileName = this->getFileName();
     std::string ticketRelease = stripStr(this->attendee.getTicket().getTicketRelease());
     std::string sourceFileName = "default.html";
     this->htmlFile = "";
@@ -50,7 +64,7 @@ int IdCard::copyTemplateImage()
             size_t index = dir.find_last_of(".html");
             
             if (index != std::string::npos) {
-                std::string strippedDir = stripStr(dir.substr(0, index - 1));
+                std::string strippedDir = stripStr(dir.substr(0, index));
                 if (strippedDir == ticketRelease) {
                     sourceFileName = dir;
                     break;
@@ -68,57 +82,63 @@ int IdCard::copyTemplateImage()
     
     std::string source = ASSETS_FOLDER "/" + sourceFileName;
     
-    FILE *src = fopen(source.c_str(), "r"),
-    *dest = fopen(newFileName.c_str(), "wb");
+    FILE *src = fopen(source.c_str(), "r");
     
     // Handle IO errors
     if (src == NULL) {
         std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
-        << source << " to " 
-        << newFileName << ". Source file could not be opened."
+                  << source << " to ram. Source file could not be opened."
         << std::endl;
         return 0;
-    }
-    
-    if (dest == NULL) {
-        std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
-        << source << " to " 
-        << newFileName << ". Destination file could not be opened."
-        << std::endl;
-        return 0;
-    }
+    }    
     
     for (int c; c = fgetc(src), c != EOF;) {
-        int t = fputc(c, dest);
         this->htmlFile += c;
-        
-        // Handle IO errors
-        if (t == EOF) {            
-            std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
-                      << source << " to "
-                      << newFileName << ". A write error occurred."
-                      << std::endl;
-            
-            fclose(src);
-            fclose(dest);
-            return 0;
-        }
     }
     
 #ifdef DEBUG
     std::cerr << "Debug IdCard::copyTemplateImage() : Copied "
-              << source << " to " 
-              << newFileName << std::endl;
+              << source << " to ram." << std::endl;
 #endif
     
     fclose(src);
-    fclose(dest);
     return 1;
 }
 
-std::string IdCard::getFileName()
+std::string IdCard::getFileName(std::string extension)
 {
-    return "id_card_" + std::to_string(this->attendee.getTicket().getTicketID()) + ".html";
+    return "id_card_" + std::to_string(this->attendee.getTicket().getTicketID()) 
+           + "." + extension;
+}
+
+void IdCard::printQr()
+{
+    const QrCode qr = QrCode::encodeText(this->attendee.getTicket().getTicketSlug().c_str(),
+                                         QrCode::Ecc::HIGH);
+    std::string filename = this->getFileName(".png");    
+    int qrSize = qr.getSize() * QR_BLOCK_WIDTH;
+    CImg<unsigned char> image = CImg<unsigned char> (qrSize, qrSize);
+    
+    for (int y = 0; y < qr.getSize(); y++) {
+        for (int x = 0; x < qr.getSize(); x++) {
+            unsigned char colour[] = {0x2E, 0x34, 0x40};
+            if (qr.getModule(x, y)) {
+                colour[0] = colour[1] = colour[2] = 0xFF;
+            }
+            
+            int printX = x * QR_BLOCK_WIDTH;
+            int printY = y * QR_BLOCK_WIDTH;
+
+            image.draw_rectangle(printX,
+                                 printY,
+                                 printX + QR_BLOCK_WIDTH,
+                                 printY + QR_BLOCK_WIDTH,
+                                 colour,
+                                 1);
+        }
+    }
+    
+    image.save(filename.c_str());
 }
 
 std::string IdCard::printName()
@@ -139,19 +159,31 @@ std::string IdCard::printName()
         return this->htmlFile;
     }
     
-    std::string htmlOut = this->htmlFile.substr(0, templateIndex - 1);
+    std::string htmlOut = this->htmlFile.substr(0, templateIndex);
     htmlOut += fname;
     htmlOut += this->htmlFile.substr(templateIndex + templateTag.size(),
                                      this->htmlFile.size() - 1);
     
     templateTag = "{sname}";
     templateIndex = htmlOut.find(templateTag);
+    std::string tmp = htmlOut;
     if (templateIndex != std::string::npos) {    
-        htmlOut = htmlOut.substr(0, templateIndex - 1);
+        htmlOut = tmp.substr(0, templateIndex);
         htmlOut += sname;
-        htmlOut += htmlOut.substr(templateIndex + templateTag.size(),
+        htmlOut += tmp.substr(templateIndex + templateTag.size(),
                                          htmlOut.size() - 1);
-    }    
+    }
+    
+    templateTag = "{qr}";
+    templateIndex = htmlOut.find(templateTag);
+    tmp = htmlOut;
+    if (templateIndex != std::string::npos) {    
+        htmlOut = tmp.substr(0, templateIndex);
+        htmlOut += "<image src=\"" + getFileName(".png")
+                + "\" alt=\"qr code\" />";
+        htmlOut += tmp.substr(templateIndex + templateTag.size(),
+                                         htmlOut.size() - 1);
+    } 
     
     return htmlOut;
 }
@@ -216,7 +248,7 @@ static void *print_image_thread(void *name)
 
 void IdCard::print()
 {
-    std::string *name = new std::string(this->getFileName());
+    std::string *name = new std::string(this->getFileName(".html"));
     pthread_t thread;
     pthread_attr_t *attr = NULL;
     int r = pthread_create(&thread, attr, &print_image_thread, (void *) name);
