@@ -135,15 +135,8 @@ void IdCard::printQr()
 
 std::string IdCard::printName()
 {
-    std::string fname, sname;    
-    size_t nameIndex = this->attendee.getName().find(" ");
-    if (nameIndex != std::string::npos) {        
-        fname = stripStr(this->attendee.getName()).substr(0, nameIndex - 1);
-        sname = stripStr(this->attendee.getName().substr(nameIndex + 1,
-                                                         this->attendee.getName().size() - 1));
-    } else {
-        fname = stripStr(this->attendee.getName());        
-    }
+    std::string fname = this->attendee.getForename(),
+                sname = this->attendee.getSurname();
     
     std::string templateTag = "{fname}";
     size_t templateIndex = this->htmlFile.find(templateTag);
