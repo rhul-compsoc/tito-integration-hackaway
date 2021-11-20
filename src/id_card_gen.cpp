@@ -16,7 +16,6 @@
 #define QR_BLOCK_WIDTH 5
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
-// Enjoy playing with fonts, they are rather crap
 #define MAX_NAME_LEN 11
 
 using qrcodegen::QrCode;
@@ -156,7 +155,7 @@ std::string IdCard::printName()
         htmlOut = tmp.substr(0, templateIndex);
         htmlOut += sname;
         htmlOut += tmp.substr(templateIndex + templateTag.size(),
-                                         htmlOut.size() - 1);
+                              htmlOut.size() - 1);
     }
     
     templateTag = "{qr}";
@@ -164,10 +163,10 @@ std::string IdCard::printName()
     tmp = htmlOut;
     if (templateIndex != std::string::npos) {    
         htmlOut = tmp.substr(0, templateIndex);
-        htmlOut += "<image src=\"" + getFileName(".png")
+        htmlOut += "<img src=\"" + getFileName(".png")
                 + "\" alt=\"qr code\" />";
         htmlOut += tmp.substr(templateIndex + templateTag.size(),
-                                         htmlOut.size() - 1);
+                              htmlOut.size() - 1);
     } 
     
     return htmlOut;
