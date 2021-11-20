@@ -2,11 +2,11 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "qrcodegen.hpp"
 
 #ifdef DEBUG
 #ifndef TEST
-#include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
 #endif
@@ -24,7 +24,7 @@ using qrcodegen::QrSegment;
 IdCard::IdCard(TitoAttendee attendee)
 {
     this->attendee = attendee;
-    std::string fileName = this->getFileName(".html");
+    std::string htmlFilename = this->getFileName("html");
     if (!this->copyTemplateImage()) {
         throw ID_CARD_READ_ERROR;
     }
@@ -32,13 +32,29 @@ IdCard::IdCard(TitoAttendee attendee)
     this->htmlFile = this->printName();
     this->printQr();
     
-    FILE *f = fopen(fileName.c_str(), "w");
+    FILE *f = fopen(htmlFilename.c_str(), "w");
     if (f == NULL) {
         throw ID_CARD_READ_ERROR;
     }
     
     fprintf(f, "%s", this->htmlFile.c_str());
     fclose(f);
+    
+    std::string pdfFileName = this->getFileName("pdf");
+    int status = this->convertToPdf(htmlFilename, pdfFileName);
+    
+    // Delete the old files as they are not needed
+    std::string imageFilename = this->getFileName("png");
+    remove(imageFilename.c_str());
+    remove(htmlFilename.c_str());
+    
+    if (status != 0) {
+        std::cerr << "Error IdCard::IdCard : wkhtmltopdf returned " 
+                  << std::to_string(status)
+                  << " instead of 0."
+                  << std::endl;
+        throw wkhtmltopdf_ERROR;
+    }
 }
 
 int IdCard::copyTemplateImage()
@@ -52,7 +68,7 @@ int IdCard::copyTemplateImage()
     if ((dir = opendir(ASSETS_FOLDER))) {
         while ((ent = readdir (dir)) != NULL) {
             std::string dir = std::string(ent->d_name);
-            size_t index = dir.find_last_of(".html");
+            size_t index = dir.find_last_of("html");
             
             if (index != std::string::npos) {
                 std::string strippedDir = stripStr(dir.substr(0, index));
@@ -98,7 +114,8 @@ int IdCard::copyTemplateImage()
 
 std::string IdCard::getFileName(std::string extension)
 {
-    return "id_card_" + std::to_string(this->attendee.getTicket().getTicketID()) 
+    return "id_card_" 
+           + std::to_string(this->attendee.getTicket().getTicketID()) 
            + "." + extension;
 }
 
@@ -106,7 +123,7 @@ void IdCard::printQr()
 {
     const QrCode qr = QrCode::encodeText(this->attendee.getTicket().getTicketSlug().c_str(),
                                          QrCode::Ecc::HIGH);
-    std::string filename = this->getFileName(".png");    
+    std::string filename = this->getFileName("png");    
     int qrSize = qr.getSize() * QR_BLOCK_WIDTH;
     CImg<unsigned char> image = CImg<unsigned char> (qrSize, qrSize);
     
@@ -163,7 +180,7 @@ std::string IdCard::printName()
     tmp = htmlOut;
     if (templateIndex != std::string::npos) {    
         htmlOut = tmp.substr(0, templateIndex);
-        htmlOut += "<img src=\"" + getFileName(".png")
+        htmlOut += "<img src=\"" + getFileName("png")
                 + "\" alt=\"qr code\" />";
         htmlOut += tmp.substr(templateIndex + templateTag.size(),
                               htmlOut.size() - 1);
@@ -230,9 +247,35 @@ static void *print_image_thread(void *name)
     pthread_exit(0);    
 }
 
+int IdCard::convertToPdf(std::string htmlFile, std::string pdfFile)
+{
+    char cwd[1024];
+    char *status = getcwd(cwd, 1024);
+    if (status == NULL) {
+        std::cerr << "Error IdCard::convertToPdf : Unable to get the cwd."
+                  << std::endl;
+        return 256;
+    }
+    
+    std::string args = "--page-size A6";
+    std::string command = "wkhtmltopdf " + args 
+                        + " " + cwd + "/" 
+                        + htmlFile + " " + pdfFile;
+#ifdef DEBUG
+    std::cerr << "Debug IdCard::convertToPdf : Converting "
+              << htmlFile
+              << " to "
+              << pdfFile
+              << ". With "
+              << command
+              << std::endl;
+#endif
+    return system(command.c_str());
+}
+
 void IdCard::print()
 {
-    std::string *name = new std::string(this->getFileName(".html"));
+    std::string *name = new std::string(this->getFileName("pdf"));
     pthread_t thread;
     pthread_attr_t *attr = NULL;
     int r = pthread_create(&thread, attr, &print_image_thread, (void *) name);
