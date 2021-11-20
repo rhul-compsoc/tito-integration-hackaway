@@ -75,6 +75,7 @@ bool TitoAttendee::matches(std::string queryIn)
         subPattern |= stripQueryStr(this->phoneNumber).find(query) != std::string::npos;
         subPattern |= stripQueryStr(this->ticket.getTicketRelease()).find(query) 
             != std::string::npos;
+        subPattern |= query == stripQueryStr(this->ticket.getTicketSlug());
             
         ret &= subPattern;
     }

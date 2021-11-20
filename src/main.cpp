@@ -68,7 +68,8 @@ static void viewAttendees(std::list<TitoAttendee> &list,
     updateAttendees(list, api);
     struct AttendeeSelection selection = select_attendee(api,
                                                          list,
-                                                         "Showing all attendees.");
+                                                         "Showing all attendees.",
+                                                         true);
 }
 
 static void printAttendeeIdCard(std::list<TitoAttendee> &list,
@@ -78,7 +79,8 @@ static void printAttendeeIdCard(std::list<TitoAttendee> &list,
     struct AttendeeSelection selection = 
         select_attendee(api,
                         list,
-                        "Select an attendee to print an id card for.");
+                        "Select an attendee to print an id card for.",
+                        true);
     
     if (selection.attendeeSelected) {
         std::string name = selection.attendee.getName();
@@ -107,7 +109,8 @@ static void checkinoutAttendee(std::list<TitoAttendee> &list,
     struct AttendeeSelection selection = 
         select_attendee(api,
                         list,
-                        "Select an attendee to check in/out.");
+                        "Select an attendee to check in/out.",
+                        true);
     
     bool checkin = selection.attendee.getTicket().getCheckin().isCheckedin();    
     std::string name = selection.attendee.getName();
