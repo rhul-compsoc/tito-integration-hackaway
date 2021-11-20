@@ -1,0 +1,281 @@
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com/" />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mentor</title>
+    <style>
+      html {
+        --background-hex: #b4c899;
+        --background-main: #a3be8c;
+        --upper-border: #d0dea6;
+        --lower-border: #9eb47f;
+        --hackaway-orange: #eb6824;
+      }
+      html,
+      body {
+        background-color: var(--background-main);
+        height: 100%;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+      }
+      .background-hex {
+        display: grid;
+        grid-template-columns: repeat(9, min-content);
+        grid-auto-rows: 96px;
+        gap: 15px;
+        position: fixed;
+        left: -52px;
+      }
+      .hexagon {
+        display: inline-block;
+        position: relative;
+        text-align: center;
+      }
+      .hexagon,
+      .hexagon::after,
+      .hexagon::before {
+        height: 67px;
+        width: 116px;
+        border-radius: 5%/35%;
+        background-color: var(--background-hex);
+      }
+      .hexagon::after,
+      .hexagon::before {
+        content: "";
+        position: absolute;
+        left: 0;
+      }
+      .hexagon::after {
+        transform: rotate(60deg);
+      }
+      .hexagon::before {
+        transform: rotate(-60deg);
+      }
+      .hexagon:nth-of-type(18n + 1),
+      .hexagon:nth-of-type(18n + 2),
+      .hexagon:nth-of-type(18n + 3),
+      .hexagon:nth-of-type(18n + 4),
+      .hexagon:nth-of-type(18n + 5),
+      .hexagon:nth-of-type(18n + 6),
+      .hexagon:nth-of-type(18n + 7),
+      .hexagon:nth-of-type(18n + 8),
+      .hexagon:nth-of-type(18n + 9) {
+        left: 60px;
+      }
+
+      .qr {
+        height: 20%;
+        bottom: 0;
+      }
+
+      header,
+      .qr,
+      .name {
+        position: fixed;
+        background-color: #2e3440;
+        width: 100%;
+        z-index: 999;
+      }
+      header {
+        height: 27%;
+        display: flex;
+        align-items: center;
+        clip-path: url(#my-clip-path);
+      }
+      header > img {
+        height: 50%;
+      }
+      header > h1 {
+        color: var(--hackaway-orange);
+        margin-left: 5%;
+      }
+      header > * {
+        margin-top: -50px;
+        margin-left: 15%;
+      }
+      header + svg {
+        width: 100%;
+        z-index: 99;
+        position: relative;
+      }
+      .name {
+        height: 135px;
+        top: 38%;
+        border-bottom: 10px solid var(--upper-border);
+        box-shadow: 0 15px 0 var(--lower-border);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .name > h1 {
+        color: white;
+        text-align: center;
+      }
+      .svg {
+        position: absolute;
+        width: 0;
+        height: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <svg class="svg">
+      <clipPath id="my-clip-path" clipPathUnits="objectBoundingBox">
+        <path d="m0,0 v0.685 c0.61,0.418,0.89,0.328,1,0.242 v-0.928"></path>
+      </clipPath>
+    </svg>
+    <h1
+      style="
+        position: fixed;
+        z-index: 9999;
+        top: 60%;
+        width: 100%;
+        text-align: center;
+        font-size: 3em;
+        color: white;
+      "
+    >
+      Muhammad Ali Bukhari Bukhari
+    </h1>
+    <header>
+      <img src="./logo.svg" alt="hackaway" />
+      <h1>ROYAL<br />HACKAWAY</h1>
+    </header>
+    <header
+      style="
+        background: var(--upper-border);
+        position: fixed;
+        z-index: 99;
+        top: 10px;
+      "
+    ></header>
+    <header
+      style="
+        background: var(--lower-border);
+        position: fixed;
+        z-index: 8;
+        top: 25px;
+      "
+    ></header>
+    <div class="name"><h1 style="font-size: 100">MENTOR</h1></div>
+    <div class="qr"></div>
+    <div class="background-hex">
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+      <div class="hexagon"></div>
+    </div>
+  </body>
+</html>
