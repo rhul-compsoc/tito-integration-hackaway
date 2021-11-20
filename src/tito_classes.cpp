@@ -56,6 +56,17 @@ TitoAttendee::TitoAttendee(std::string name,
 }
 TitoAttendee::TitoAttendee() {}; // Do not use this constructor please
 std::string TitoAttendee::getName() { return this->name; }
+std::string TitoAttendee::getForename(){
+    size_t index = this->name.find(" ");
+    if (index == std::string::npos) return this->getName();
+    return this->name.substr(0, index);
+}
+std::string TitoAttendee::getSurname()
+{
+    size_t index = this->name.find(" ");
+    if (index == std::string::npos) return "";
+    return this->name.substr(index + 1, this->name.size() - 1);
+}
 std::string TitoAttendee::getEmail() { return this->email; }
 std::string TitoAttendee::getPhoneNumber() { return this->phoneNumber; }
 TitoTicket TitoAttendee::getTicket() { return this->ticket; }
