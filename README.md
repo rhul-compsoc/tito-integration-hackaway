@@ -11,7 +11,6 @@ Enjoy the psuedo-javadoc comments.
  - libcurl
  - (unistd.h - rip windows users) 
  - lp (a printer utility, this also needs to be setup)
- - wkhtmltopdf (an html to pdf converter)
 
 ## Setting up Ticket Images
 

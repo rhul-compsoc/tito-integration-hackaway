@@ -628,8 +628,6 @@ std::string getTitoErrorMessage(int e)
             return "Check-ins could not be found, TiTo returned an error message.";
         case ID_CARD_READ_ERROR:
             return "The ID card template could not be read. See stderr for more details";
-        case wkhtmltopdf_ERROR:
-            return "There was an error invoking wkhtmltopdf";
         default:
             return "An unknown error has occurred.";
     }

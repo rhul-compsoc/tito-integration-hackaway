@@ -39,22 +39,6 @@ IdCard::IdCard(TitoAttendee attendee)
     
     fprintf(f, "%s", this->htmlFile.c_str());
     fclose(f);
-    
-    std::string pdfFileName = this->getFileName("pdf");
-    int status = this->convertToPdf(htmlFilename, pdfFileName);
-    
-    // Delete the old files as they are not needed
-    std::string imageFilename = this->getFileName("png");
-    remove(imageFilename.c_str());
-    remove(htmlFilename.c_str());
-    
-    if (status != 0) {
-        std::cerr << "Error IdCard::IdCard : wkhtmltopdf returned " 
-                  << std::to_string(status)
-                  << " instead of 0."
-                  << std::endl;
-        throw wkhtmltopdf_ERROR;
-    }
 }
 
 int IdCard::copyTemplateImage()
@@ -236,7 +220,7 @@ std::string IdCard::stripStr(std::string str)
 static void *print_image_thread(void *name)
 {    
     std::string *fileName = (std::string *) name;
-    std::string command = "lp \"" + *fileName + "\"";
+    std::string command = "lp -o document-format=text/html \"" + *fileName + "\"";
     int status = system(command.c_str());
     if (!status) {
         std::cerr << "Error IdCard::print_image_thread : lp returned non-zero value "
@@ -247,35 +231,9 @@ static void *print_image_thread(void *name)
     pthread_exit(0);    
 }
 
-int IdCard::convertToPdf(std::string htmlFile, std::string pdfFile)
-{
-    char cwd[1024];
-    char *status = getcwd(cwd, 1024);
-    if (status == NULL) {
-        std::cerr << "Error IdCard::convertToPdf : Unable to get the cwd."
-                  << std::endl;
-        return 256;
-    }
-    
-    std::string args = "--page-size A6";
-    std::string command = "wkhtmltopdf " + args 
-                        + " " + cwd + "/" 
-                        + htmlFile + " " + pdfFile;
-#ifdef DEBUG
-    std::cerr << "Debug IdCard::convertToPdf : Converting "
-              << htmlFile
-              << " to "
-              << pdfFile
-              << ". With "
-              << command
-              << std::endl;
-#endif
-    return system(command.c_str());
-}
-
 void IdCard::print()
 {
-    std::string *name = new std::string(this->getFileName("pdf"));
+    std::string *name = new std::string(this->getFileName("html"));
     pthread_t thread;
     pthread_attr_t *attr = NULL;
     int r = pthread_create(&thread, attr, &print_image_thread, (void *) name);

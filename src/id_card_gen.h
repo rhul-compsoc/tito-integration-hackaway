@@ -5,7 +5,6 @@
 using namespace cimg_library;
 
 #define ID_CARD_READ_ERROR 0x05001
-#define wkhtmltopdf_ERROR 0x05002
 
 class IdCard {
 public:
@@ -13,14 +12,6 @@ public:
     IdCard() {}; // Please do not use me
     void print();
 private:
-    /**
-     * Converts the html file to a pdf file which can then be sent to the printer.
-     *
-     * @param htmlFile the html file to convert
-     * @param pdfFile the output file name
-     * @return the return code of wkhtmltopdf
-     */
-    int convertToPdf(std::string /*htmlFile*/, std::string /*pdfFile*/);
     /**
      * Puts the name into the file in the correct place
      */
