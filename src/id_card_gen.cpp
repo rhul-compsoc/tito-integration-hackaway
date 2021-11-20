@@ -13,18 +13,10 @@
 #endif
 
 #define ASSETS_FOLDER "assets"
-// NOTE: Dear users, please make your templates the same size and change these numbers
-#define ID_CARD_WIDTH 2000
-#define ID_CARD_HEIGHT 3173
-// Enjoy tuning the text size, turn on DEBUG mode to make it easier for you
-#define TEXT_OPACITY 1
-#define TEXT_SIZE_HEIGHT 300
-#define TEXT_Y 1800
 #define QR_BLOCK_WIDTH 5
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
 // Enjoy playing with fonts, they are rather crap
-#define TEXT_X 80
 #define MAX_NAME_LEN 11
 
 using qrcodegen::QrCode;
