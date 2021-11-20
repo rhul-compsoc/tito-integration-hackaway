@@ -204,6 +204,9 @@ std::string TitoApi::sendRequest(std::string url,
         std::string resp;
         if (getSuccess) {
             resp = std::string(response.ptr);
+            if (resp == "5xx json") {
+                getSuccess = false;
+            }
         }
         
         curl_easy_cleanup(curl);
@@ -274,6 +277,9 @@ std::string TitoApi::getRequest(std::string url)
         std::string resp;
         if (getSuccess) {
             resp = std::string(response.ptr);
+            if (resp == "5xx json") {
+                getSuccess = false;
+            }
         }
         
         curl_easy_cleanup(curl);
