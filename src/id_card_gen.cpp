@@ -2,27 +2,24 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "qrcodegen.hpp"
 
 #ifdef DEBUG
 #ifndef TEST
-#include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
 #endif
 #endif
 
-#define ASSETS_FOLDER "./assets"
+#define ASSETS_FOLDER "assets"
 #define FONT_FILE ASSETS_FOLDER "/font.png"
 #define GLYPHS_IN_FILE 27
-// NOTE: Dear users, please make your templates the same size and change these numbers
-#define ID_CARD_WIDTH 2000
-#define ID_CARD_HEIGHT 3173
 #define TEXT_OPACITY 1
 #define TEXT_SIZE_HEIGHT 300
 #define TEXT_SIZE_WIDTH TEXT_SIZE_HEIGHT / 2
 #define TEXT_Y 1800
-#define QR_Y 2700
+#define QR_Y 2650
 #define QR_BLOCK_WIDTH 15
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
@@ -69,38 +66,59 @@ IdCard::IdCard(TitoAttendee attendee)
     this->printQr();
     
     this->image.save(fileName.c_str());
-    
-#ifdef DEBUG
-#ifndef TEST
-    // Ignore this war crime
-    int pid = fork();
-    if (pid != 0) {
-        CImgDisplay main_disp(this->image, "Preview of the id card");
-        
-        while (!main_disp.is_closed()) {
-            main_disp.wait();
-        }
-        
-        kill(pid, SIGSEGV);
-    }
-#endif
-#endif
 }
 
 int IdCard::copyTemplateImage()
 {
     std::string newFileName = this->getFileName();
-    std::string ticketRelease = this->attendee.getTicket().getTicketRelease();    
-    std::string releaseTag = "hacker.png";   
-    if (ticketRelease == "Mentor") releaseTag = "mentor.png";
-    else if (ticketRelease == "Staff") releaseTag = "staff.png";
-    else if (ticketRelease == "Committee") releaseTag = "staff.png";
-    //TODO: create a comittee ticket template?
+    std::string ticketRelease = this->attendee.getTicket().getTicketRelease();
+    transform(ticketRelease.begin(),
+              ticketRelease.end(),
+              ticketRelease.begin(), ::tolower);
+    std::string releaseTag = "staff.png";
+    
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir(ASSETS_FOLDER))) {
+        while ((ent = readdir (dir)) != NULL) {
+            std::string dir = std::string(ent->d_name);
+            std::cerr << "Info IdCard::copyTemplateImage() : Found ./"
+                         ASSETS_FOLDER "/"
+                      << dir
+                      << std::endl;
+            size_t index = dir.find(".png");
+            
+            if (index != std::string::npos) {
+                std::string strippedDir = dir.substr(0, index);                
+                transform(strippedDir.begin(),
+                          strippedDir.end(),
+                          strippedDir.begin(), ::tolower);
+                
+                if (strippedDir.find(ticketRelease) != std::string::npos) {
+                    releaseTag = dir;
+                    
+                    
+                    std::cerr << "Info IdCard::copyTemplateImage() : Chose ./"
+                                 ASSETS_FOLDER "/"
+                              << dir
+                              << std::endl;
+                    break;
+                }
+            }
+        }
+        closedir(dir);
+    } else {
+        std::cerr << "Error IdCard::copyTemplateImage() : Error cannot open ./"
+                     ASSETS_FOLDER
+                     "/ folder to query image templates."
+                  << std::endl;
+        return 0;
+    }
     
     std::string source = ASSETS_FOLDER "/" + releaseTag;
     
     FILE *src = fopen(source.c_str(), "r"),
-    *dest = fopen(newFileName.c_str(), "wb");
+         *dest = fopen(newFileName.c_str(), "wb");
     
     // Handle IO errors
     if (src == NULL) {
@@ -161,7 +179,7 @@ void IdCard::printName()
 
 void IdCard::printText(std::string text, int yOffset)
 {
-    int xOffset = (ID_CARD_WIDTH - (TEXT_SIZE_WIDTH * text.size())) / 2;
+    int xOffset = (this->image.width() - (TEXT_SIZE_WIDTH * text.size())) / 2;
     
     for (size_t i = 0; i < text.size(); i ++) {
         char c = text.c_str()[i];
@@ -186,7 +204,7 @@ void IdCard::printQr()
     std::string slugStr = this->attendee.getTicket().getTicketSlug();
     QrCode qr = QrCode::encodeText(slugStr.c_str(),
                                    QrCode::Ecc::HIGH);
-    int xOffset = (ID_CARD_WIDTH - (qr.getSize() * QR_BLOCK_WIDTH)) / 2;
+    int xOffset = (this->image.width() - (qr.getSize() * QR_BLOCK_WIDTH)) / 2;
     for (int y = 0; y < qr.getSize(); y++) {
         for (int x = 0; x < qr.getSize(); x++) {
             unsigned char colour[] = {0x2E, 0X34, 0X40};

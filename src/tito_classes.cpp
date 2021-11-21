@@ -81,12 +81,16 @@ bool TitoAttendee::matches(std::string queryIn)
         query = stripQueryStr(query);
         bool subPattern = false;
         
-        subPattern |= stripQueryStr(this->name).find(query) != std::string::npos;
-        subPattern |= stripQueryStr(this->email).find(query) != std::string::npos;
-        subPattern |= stripQueryStr(this->phoneNumber).find(query) != std::string::npos;
+        subPattern |= stripQueryStr(this->name).find(query)
+            != std::string::npos;
+        subPattern |= stripQueryStr(this->email).find(query)
+            != std::string::npos;
+        subPattern |= stripQueryStr(this->phoneNumber).find(query)
+            != std::string::npos;
         subPattern |= stripQueryStr(this->ticket.getTicketRelease()).find(query) 
             != std::string::npos;
-        subPattern |= query == stripQueryStr(this->ticket.getTicketSlug());
+        subPattern |= stripQueryStr(this->ticket.getTicketSlug()).find(query)
+            != std::string::npos;
             
         ret &= subPattern;
     }
@@ -132,7 +136,7 @@ std::string TitoAttendee::stripQueryStr(std::string str)
     transform(str.begin(), str.end(), str.begin(), ::tolower);
     std::string ret = "";
     for (char c : str) {
-        if ((c >= '0' && c <'9') || (c >= 'a' || c <= 'z')) {
+        if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z')) {
             ret += c;
         }
     }
