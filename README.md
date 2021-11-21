@@ -52,8 +52,8 @@ than ANSI C so I took their advice and ++'ed my C.
 | | |
 |---|---|
 | OS | Linux. The system is made, tested and, designed for the use on linux systems. |
-| Libraries | build-essentials, cmake, gcovr, ncurses, libcurl, |
-| Runtime | tito tokens in environment variables, a terminal that supports ncurses |
+| Libraries | build-essentials, cmake, gcovr, ncurses, libcurl, phtreadm X11, |
+| Runtime | tito tokens in environment variables, a terminal that supports ncurses and, (optional) a printer |
 
  Windows can be used, however is untested and may have a number of faults to do
  with input/output. 
