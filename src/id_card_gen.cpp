@@ -18,8 +18,8 @@
 #define TEXT_OPACITY 1
 #define TEXT_SIZE_HEIGHT 300
 #define TEXT_SIZE_WIDTH TEXT_SIZE_HEIGHT / 2
-#define TEXT_Y 1800
-#define QR_Y 2650
+#define TEXT_Y 1600
+#define QR_Y 2300
 #define QR_BLOCK_WIDTH 15
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
@@ -174,7 +174,7 @@ void IdCard::printName()
     std::string fname = stripAttendeeName(this->attendee.getForename()),
                 sname = stripAttendeeName(this->attendee.getSurname());
     this->printText(fname, TEXT_Y);
-    this->printText(sname, TEXT_Y + TEXT_SIZE_HEIGHT + 30);
+    this->printText(sname, TEXT_Y + TEXT_SIZE_HEIGHT);
 }
 
 void IdCard::printText(std::string text, int yOffset)
