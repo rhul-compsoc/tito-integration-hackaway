@@ -254,7 +254,7 @@ std::string IdCard::stripAttendeeName(std::string str)
 static void *print_image_thread(void *name)
 {    
     std::string *fileName = (std::string *) name;
-    std::string command = "lp \"" + *fileName + "\"";
+    std::string command = "lp -o media=a6 \"" + *fileName + "\"";
     int status = system(command.c_str());
     if (!status) {
         std::cerr << "Error IdCard::print_image_thread : lp returned non-zero value "
