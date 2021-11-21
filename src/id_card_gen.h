@@ -6,6 +6,10 @@ using namespace cimg_library;
 
 #define ID_CARD_READ_ERROR 0x05001
 
+extern CImgList<unsigned char> font;
+void loadFont();
+CImg<unsigned char> getGlyph(char c);
+
 class IdCard {
 public:
     IdCard(TitoAttendee);
@@ -14,6 +18,13 @@ public:
 private:
     void printName();    
     void printQr();
+    /**
+     * Prints text to the image at position y.
+     *
+     * @param text the text to print
+     * @param y the y position to print at
+     */
+    void printText(std::string /*text*/, int /*y*/);
     /**
      * Generates the file name for the image for the id card to be saved as.
      * 

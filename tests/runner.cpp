@@ -9,6 +9,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
+#include "../src/id_card_gen.h"
 
 #include "testIdCardGen.h"
 #include "testTito.h"
@@ -29,6 +30,8 @@ CppUnit::Test *suite() {
 }
 
 int main(int argc, char* argv[]) {
+    loadFont();
+    
     std::string testPath = (argc > 1) ? std::string(argv[1]) : "";
     // Create the event manager and test controller
     CppUnit::TestResult controller;

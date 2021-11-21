@@ -193,6 +193,18 @@ int main(int argc, char **argv)
     start_color();
     setup_colours();
     
+    // Setup cimg some more
+    cimg::exception_mode(0);
+    
+    try {
+        loadFont();
+    } catch (CImgException e) {
+        std::string msg = "Error loading font: " 
+                        + std::string(e.what());
+        print_centre(0, getmaxy(stdscr) / 2, msg);
+        warn_exit();
+    }
+    
     // Initialise the attendee cache and the api, disallow for failure
     int y;
     TitoApi api;
@@ -287,7 +299,25 @@ int main(int argc, char **argv)
             attroff(COLOUR_PAIR_RED_AND_BLACK);
             refresh();            
             getch();
-        }        
+        } catch (CImgException e) {            
+            clear();
+            attron(COLOUR_PAIR_RED_AND_BLACK);
+            y = getmaxy(stdscr) / 2;
+            y -= 3;
+            if (y < 0) y = 0;
+            
+            y += print_centre(0,
+                              y,
+                              "An unexpected and, uncaught error with cimg.eu "
+                              "has occurred.");
+            y += print_centre(0, y, "Error information:");
+            y += print_centre(0, y, std::string(e.what()));
+            y += 2;
+            y += print_centre(0, y, "Press any key to return to the main menu.");
+            attroff(COLOUR_PAIR_RED_AND_BLACK);
+            refresh();            
+            getch();
+        }
         
         refresh();
     }

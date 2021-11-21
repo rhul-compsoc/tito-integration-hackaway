@@ -12,24 +12,50 @@
 #endif
 #endif
 
-#define ASSETS_FOLDER "assets"
+#define ASSETS_FOLDER "./assets"
+#define FONT_FILE ASSETS_FOLDER "/font.png"
+#define GLYPHS_IN_FILE 27
 // NOTE: Dear users, please make your templates the same size and change these numbers
 #define ID_CARD_WIDTH 2000
 #define ID_CARD_HEIGHT 3173
-// Enjoy tuning the text size, turn on DEBUG mode to make it easier for you
 #define TEXT_OPACITY 1
 #define TEXT_SIZE_HEIGHT 300
+#define TEXT_SIZE_WIDTH TEXT_SIZE_HEIGHT / 2
 #define TEXT_Y 1800
 #define QR_Y 2700
 #define QR_BLOCK_WIDTH 15
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
-// Enjoy playing with fonts, they are rather crap
-#define TEXT_X 80
 #define MAX_NAME_LEN 11
 
 using qrcodegen::QrCode;
 using qrcodegen::QrSegment;
+
+CImgList<unsigned char> font;
+
+void loadFont()
+{
+    CImg<unsigned char> fontRaw = CImg<unsigned char> (FONT_FILE);
+    font = fontRaw.get_split('x', GLYPHS_IN_FILE);
+}
+
+CImg<unsigned char> getGlyph(char c)
+{
+    int index = -1;
+    if (c >= 'A' || c <= 'Z') {
+        index = c - 'A';
+    } else if (c >= 'a' || c <= 'z') {
+        index = c - 'a';
+    } else if (c == '-') {
+        index = 26;
+    }
+    
+    if (index < 0 || index >= (int) font.size()) {
+        return CImg<unsigned char>(TEXT_SIZE_WIDTH, TEXT_SIZE_HEIGHT);
+    } else {
+        return font.at(index);
+    }
+}
 
 IdCard::IdCard(TitoAttendee attendee)
 {
@@ -129,36 +155,43 @@ void IdCard::printName()
 {
     std::string fname = stripAttendeeName(this->attendee.getForename()),
                 sname = stripAttendeeName(this->attendee.getSurname());
-    
-    // Draw text - I hate text centreing so I gave up
-    this->image.draw_text(TEXT_X,
-                          TEXT_Y,
-                          fname.c_str(),
-                          TEXT_COLOUR,
-                          0,
-                          TEXT_OPACITY,
-                          TEXT_SIZE_HEIGHT);
+    this->printText(fname, TEXT_Y);
+    this->printText(sname, TEXT_Y + TEXT_SIZE_HEIGHT + 30);
+}
 
-    this->image.draw_text(TEXT_X,
-                          TEXT_Y + 100 + TEXT_SIZE_HEIGHT,
-                          sname.c_str(),
-                          TEXT_COLOUR,
-                          0,
-                          TEXT_OPACITY,
-                          TEXT_SIZE_HEIGHT);
+void IdCard::printText(std::string text, int yOffset)
+{
+    int xOffset = (ID_CARD_WIDTH - (TEXT_SIZE_WIDTH * text.size())) / 2;
+    
+    for (size_t i = 0; i < text.size(); i ++) {
+        char c = text.c_str()[i];
+        if ((c >= 'A' && c <= 'Z') || c == ' ') {
+            CImg<unsigned char> glyph = getGlyph(c);
+            int printX = (i * TEXT_SIZE_WIDTH) + xOffset;
+            for (int x = 0; x < TEXT_SIZE_WIDTH; x++) {
+                for (int y = 0; y < TEXT_SIZE_HEIGHT; y++) {
+                    if (glyph.atXY(x, y) == 0xFF) {
+                        this->image.draw_rectangle(printX + x, y + yOffset,
+                                                   printX + x, y + yOffset,
+                                                   TEXT_COLOUR);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void IdCard::printQr()
 {
-    const QrCode qr = QrCode::encodeText(this->attendee.getTicket().getTicketSlug().c_str(),
-                                         QrCode::Ecc::HIGH);
-    int border = 2;
-    int xOffset = (ID_CARD_WIDTH - ((qr.getSize() + border) * QR_BLOCK_WIDTH)) / 2;
-    for (int y = -border; y < qr.getSize() + border; y++) {
-        for (int x = -border; x < qr.getSize() + border; x++) {
-            unsigned char colour[] = {0xFF, 0xFF, 0xFF};
+    std::string slugStr = this->attendee.getTicket().getTicketSlug();
+    QrCode qr = QrCode::encodeText(slugStr.c_str(),
+                                   QrCode::Ecc::HIGH);
+    int xOffset = (ID_CARD_WIDTH - (qr.getSize() * QR_BLOCK_WIDTH)) / 2;
+    for (int y = 0; y < qr.getSize(); y++) {
+        for (int x = 0; x < qr.getSize(); x++) {
+            unsigned char colour[] = {0x2E, 0X34, 0X40};
             if (qr.getModule(x, y)) {
-                colour[0] = colour[1] = colour[2] = 0;
+                colour[0] = colour[1] = colour[2] = 0xFF;
             }
 
             int printX = xOffset + (x * QR_BLOCK_WIDTH);
