@@ -19,7 +19,7 @@
 #define TEXT_SIZE_HEIGHT 300
 #define TEXT_SIZE_WIDTH TEXT_SIZE_HEIGHT / 2
 #define TEXT_Y 1600
-#define QR_Y 2300
+#define QR_Y 2170
 #define QR_BLOCK_WIDTH 15
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
 #define TEXT_COLOUR __TEXT_COLOUR__
@@ -205,6 +205,8 @@ void IdCard::printQr()
     QrCode qr = QrCode::encodeText(slugStr.c_str(),
                                    QrCode::Ecc::HIGH);
     int xOffset = (this->image.width() - (qr.getSize() * QR_BLOCK_WIDTH)) / 2;
+    int yOffset = (this->image.height() - QR_Y - (qr.getSize() * QR_BLOCK_WIDTH)) / 2;
+    yOffset += QR_Y;
     for (int y = 0; y < qr.getSize(); y++) {
         for (int x = 0; x < qr.getSize(); x++) {
             unsigned char colour[] = {0x2E, 0X34, 0X40};
@@ -213,7 +215,7 @@ void IdCard::printQr()
             }
 
             int printX = xOffset + (x * QR_BLOCK_WIDTH);
-            int printY = QR_Y + (y * QR_BLOCK_WIDTH);
+            int printY = yOffset + (y * QR_BLOCK_WIDTH);
 
             this->image.draw_rectangle(printX,
                                        printY,
