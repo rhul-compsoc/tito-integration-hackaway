@@ -44,6 +44,7 @@ bool TitoApi::hasIDBeenGiven(TitoAttendee attendee)
 void TitoApi::addIDToCache(TitoAttendee attendee)
 {
     std::string name = attendee.getName();
+    this->idsGiven.push_back(name);
     
     FILE *f = fopen(ID_CACHE_FILE, "a");
     if (f == NULL) {
@@ -54,8 +55,6 @@ void TitoApi::addIDToCache(TitoAttendee attendee)
     }
     fprintf(f, "%s\n", name.c_str());
     fclose(f);
-    
-    this->idsGiven.push_back(name);
 }
 
 void TitoApi::readIDCache()
@@ -445,10 +444,6 @@ std::list<TitoAttendee> TitoApi::getAttendees()
 
 bool TitoApi::checkinAttendee(TitoAttendee attendee)
 {
-    if (!this->hasIDBeenGiven(attendee)) {
-        this->addIDToCache(attendee);
-    }
-
     if (attendee.getTicket().getCheckin().isCheckedin()) {
         std::cerr << "Error TitoApi::checkinAttendee() : The user "
                   << attendee.getName() << " has already checked in."
@@ -473,6 +468,10 @@ bool TitoApi::checkinAttendee(TitoAttendee attendee)
                      "incorrect or an internal TiTo error occurred." 
                   << std::endl;
         throw TITO_INTERNAL_ERROR;
+    }
+
+    if (!this->hasIDBeenGiven(attendee)) {
+        this->addIDToCache(attendee);
     }
     
     return ret;

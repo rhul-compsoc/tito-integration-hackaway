@@ -8,7 +8,7 @@
 #include "id_card_gen.h"
 
 static void warn_exit()
-{    
+{
     attron(COLOUR_PAIR_YELLOW_AND_BLACK);
     print_centre(0, getmaxy(stdscr) - 2, "Press any key to exit...");
     refresh();
@@ -20,14 +20,14 @@ static void warn_exit()
 }
 
 static void print_logo(int *y)
-{    
+{
     attron(COLOUR_PAIR_ORANGE_AND_BLACK);
     *y += print_logo_centre(0, *y, 0);
     attroff(COLOUR_PAIR_ORANGE_AND_BLACK);
 }
 
 static bool updateAttendees(std::list<TitoAttendee> &list,
-                            TitoApi api)
+                            TitoApi &api)
 {
     std::list<TitoAttendee> attendees;
     bool flag = true;
@@ -63,7 +63,7 @@ static bool updateAttendees(std::list<TitoAttendee> &list,
 }
 
 static void viewAttendees(std::list<TitoAttendee> &list,
-                          TitoApi api)
+                          TitoApi &api)
 {
     updateAttendees(list, api);
     struct AttendeeSelection selection = select_attendee(api,
@@ -73,8 +73,8 @@ static void viewAttendees(std::list<TitoAttendee> &list,
 }
 
 static void printAttendeeIdCard(std::list<TitoAttendee> &list,
-                                TitoApi api)
-{    
+                                TitoApi &api)
+{
     updateAttendees(list, api);
     struct AttendeeSelection selection = 
         select_attendee(api,
@@ -103,7 +103,7 @@ static void printAttendeeIdCard(std::list<TitoAttendee> &list,
 }
 
 static void checkinoutAttendee(std::list<TitoAttendee> &list,
-                               TitoApi api)
+                               TitoApi &api)
 {
     updateAttendees(list, api);
     struct AttendeeSelection selection = 
@@ -129,13 +129,13 @@ static void checkinoutAttendee(std::list<TitoAttendee> &list,
                                  "Checking " + name + " in...");
                     refresh();
                     flag = api.checkinAttendee(selection.attendee);
+                    success = true;
                 } else {                    
                     print_centre(0,
                                  getmaxy(stdscr) / 2,
                                  "Checking " + name + " out...");
                     refresh();
                     flag = api.checkoutAttendee(selection.attendee);
-                    success = true;
                 }
             } catch (int e) {                
                 struct ErrorAction act;
@@ -149,7 +149,7 @@ static void checkinoutAttendee(std::list<TitoAttendee> &list,
             }
         }
 
-        // if the operation aws cancelled printing should not occur
+        // if the operation was cancelled printing should not occur
         while (print_id && success) {
             try {
                 clear();

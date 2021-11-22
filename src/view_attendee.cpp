@@ -5,7 +5,8 @@
 #include "error_screen.h"
 #include "view_attendee.h"
 
-bool view_attendee(TitoApi api, TitoAttendee attendee) {
+bool view_attendee(TitoApi &api,
+                   TitoAttendee attendee) {
     bool flag = true,
          cacheChanged = false;
     while(flag) {

@@ -11,4 +11,4 @@
  * @param TitoAttendee the attendee to show information about
  * @return whether the attendee cache needs to be updated
  */
-bool view_attendee(TitoApi /*api*/, TitoAttendee /*attendee*/);
+bool view_attendee(TitoApi &/*api*/, TitoAttendee /*attendee*/);

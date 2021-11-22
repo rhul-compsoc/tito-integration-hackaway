@@ -21,7 +21,7 @@ struct AttendeeSelection {
  * @param std::string the message to show the users when they are selecting an attendee
  * @param bool whether or not confirmation is required before the attendee is selected
  */
-struct AttendeeSelection select_attendee(TitoApi /*api*/,
+struct AttendeeSelection select_attendee(TitoApi &/*api*/,
                                          std::list<TitoAttendee> /*attendees*/,
                                          std::string /*message*/,
                                          bool /*confirmationRequired*/);

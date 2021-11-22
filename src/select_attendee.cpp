@@ -170,7 +170,7 @@ for (errorFlag = true; errorFlag;) {\
     }\
 }
 
-struct AttendeeSelection select_attendee(TitoApi api,
+struct AttendeeSelection select_attendee(TitoApi &api,
                                          std::list<TitoAttendee> attendeesRaw,
                                          std::string message,
                                          bool confirmationRequired)
