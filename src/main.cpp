@@ -129,13 +129,13 @@ static void checkinoutAttendee(std::list<TitoAttendee> &list,
                                  "Checking " + name + " in...");
                     refresh();
                     flag = api.checkinAttendee(selection.attendee);
+                    success = true;
                 } else {                    
                     print_centre(0,
                                  getmaxy(stdscr) / 2,
                                  "Checking " + name + " out...");
                     refresh();
                     flag = api.checkoutAttendee(selection.attendee);
-                    success = true;
                 }
             } catch (int e) {                
                 struct ErrorAction act;
