@@ -19,6 +19,7 @@
 #define TEXT_SIZE_HEIGHT 300
 #define TEXT_SIZE_WIDTH TEXT_SIZE_HEIGHT / 2
 #define TEXT_Y 1600
+#define TEXT_Y_MAX 2170
 #define QR_Y 2170
 #define QR_BLOCK_WIDTH 15
 unsigned char __TEXT_COLOUR__[] = {0xFF, 0xFF, 0xFF};
@@ -173,8 +174,14 @@ void IdCard::printName()
 {
     std::string fname = stripAttendeeName(this->attendee.getForename()),
                 sname = stripAttendeeName(this->attendee.getSurname());
-    this->printText(fname, TEXT_Y);
-    this->printText(sname, TEXT_Y + TEXT_SIZE_HEIGHT);
+    int startY = (TEXT_Y_MAX - TEXT_Y - (TEXT_SIZE_HEIGHT * 2)) / 2;
+    if (sname == "") {
+        startY += TEXT_SIZE_HEIGHT / 2;
+    }
+    startY += TEXT_Y;
+    
+    this->printText(fname, startY);
+    this->printText(sname, startY + TEXT_SIZE_HEIGHT);
 }
 
 void IdCard::printText(std::string text, int yOffset)
@@ -265,7 +272,6 @@ std::string IdCard::stripAttendeeName(std::string str)
     // Bruh - just cut the name off here you know
     if (retOut.size() > MAX_NAME_LEN) {
         retOut = ret.substr(0, MAX_NAME_LEN - 3);
-        retOut += "...";
     }
     
     return retOut;
