@@ -583,7 +583,7 @@ std::string getEventSlug()
 }
 
 std::string getCheckinSlug()
-{    
+{
     char* token;
     token = getenv(TITO_CHECKIN_SLUG_ENV_VAR);
     
@@ -597,7 +597,7 @@ std::string getCheckinSlug()
 }
 
 std::string getTitoErrorMessage(int e)
-{    
+{
     switch(e) {
         // Environment variable errors
         case TITO_TOKEN_NOT_FOUND:

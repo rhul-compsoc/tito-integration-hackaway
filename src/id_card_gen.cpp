@@ -90,7 +90,7 @@ int IdCard::copyTemplateImage()
             size_t index = dir.find(".png");
             
             if (index != std::string::npos) {
-                std::string strippedDir = dir.substr(0, index);                
+                std::string strippedDir = dir.substr(0, index);
                 transform(strippedDir.begin(),
                           strippedDir.end(),
                           strippedDir.begin(), ::tolower);
@@ -142,7 +142,7 @@ int IdCard::copyTemplateImage()
         int t = fputc(c, dest);
         
         // Handle IO errors
-        if (t == EOF) {            
+        if (t == EOF) {
             std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
                       << source << " to "
                       << newFileName << ". A write error occurred."
@@ -278,7 +278,7 @@ std::string IdCard::stripAttendeeName(std::string str)
 }
 
 static void *print_image_thread(void *name)
-{    
+{
     std::string *fileName = (std::string *) name;
     std::string command = "lp -o media=a6 \"" + *fileName + "\"";
     int status = system(command.c_str());
@@ -288,7 +288,7 @@ static void *print_image_thread(void *name)
                   << std::endl;
     }
     delete fileName;
-    pthread_exit(0);    
+    pthread_exit(0);
 }
 
 void IdCard::print()
