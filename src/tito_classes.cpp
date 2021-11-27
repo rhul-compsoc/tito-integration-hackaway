@@ -49,6 +49,16 @@ TitoAttendee::TitoAttendee(std::string name,
                            std::string phoneNumber,
                            TitoTicket ticket)
 {
+    // Replace the un printable o in Bjorn
+    std::string unprintable_o = "ø";    
+    size_t index = 0;
+    while (true) {
+        index = name.find(unprintable_o, index);
+        if (index == std::string::npos) break;        
+        name.replace(index, unprintable_o.size(), "o");        
+        index += unprintable_o.size();
+    }
+    
     this->name = name;
     this->email = email;
     this->phoneNumber = phoneNumber;
