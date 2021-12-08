@@ -244,14 +244,14 @@ struct AttendeeSelection select_attendee(TitoApi &api,
         std::string searchOld = std::string(search);
 
         // Fix screen reszing and other strange things
-        if (yOfSelected == 0) {
+        if (yOfSelected == 0 || yOfSelected == -1) {
             scrollOffset = currentlySelected;
         } else {
             int offset = 0;
-            while (yOfSelected + offset>= getmaxy(stdscr) - SELECTION_Y_PADDING
-                || yOfSelected == -1) {
+            int maxY = getmaxy(stdscr);
+            while (yOfSelected + offset >= maxY - SELECTION_Y_PADDING) {
                 scrollOffset++;
-                offset++;
+                offset--;
             }
         }
 
