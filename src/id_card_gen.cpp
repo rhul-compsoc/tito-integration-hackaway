@@ -306,3 +306,4 @@ void IdCard::print()
         exit(13);
     }
 }
+
