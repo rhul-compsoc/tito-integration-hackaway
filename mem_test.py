@@ -5,7 +5,7 @@ import sys
 NO_LEAKS = "All heap blocks were freed -- no leaks are possible"
 TEST_EXEC_NAME = "tito-integration-hackaway-tests"
 
-VALGRIND_OPTS = "--leak-check=full --show-leak-kinds=all --track-fds=all"
+VALGRIND_OPTS = "--leak-check=full --show-leak-kinds=all --track-fds=yes"
 
 def tests():
     print(f"Running memcheck for {TEST_EXEC_NAME}", )
