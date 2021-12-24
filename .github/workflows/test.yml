@@ -51,7 +51,9 @@ jobs:
         cmake .. -DCMAKE_BUILD_TYPE=TEST
         cmake --build . -j
         ctest --rerun-failed --output-on-failure
-    
+        sleep 5
+        make coverage
+        
     - uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
