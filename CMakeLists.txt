@@ -37,14 +37,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake)
 
 if (CMAKE_BUILD_TYPE STREQUAL "TEST")
     include(CodeCoverage)
-    
+
     # Setup coverage (using gcovr so needs gcc/g++)
     set(CMAKE_C_COMPILER gcc)
     set(CMAKE_CXX_COMPILER g++)
-    
+
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG} -DTEST")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} -DTEST")
-    
+
     append_coverage_compiler_flags()
     setup_target_for_coverage_gcovr_xml(NAME coverage
         EXECUTABLE tito-integration-hackaway-tests
@@ -100,9 +100,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
     add_executable(tito-integration-hackaway-tests ${TEST_FILES})
     target_link_libraries(tito-integration-hackaway-tests
         cppunit ${LIBS})
-    target_include_directories(tito-integration-hackaway-tests PUBLIC 
+    target_include_directories(tito-integration-hackaway-tests PUBLIC
         ${CMAKE_CURRENT_BINARY_DIR})
-    
+
     enable_testing ()
     add_test(NAME tito-integration-hackaway-tests COMMAND tito-integration-hackaway-tests)
+		add_test(NAME mem_checks COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/mem_test.py)
 endif()

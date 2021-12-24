@@ -11,10 +11,10 @@ of think centre computers that run Ubuntu.
 
 | Environmental Variable | Usage |
 |---|---|
-| TITO_TOKEN | The live API token for the TiTo event. |
-| TITO_ACCOUNT_SLUG | The account slug for the TiTo event, i.e: `royal-hackaway` |
-| TITO_EVENT_SLUG | The event slug for the TiTo event, i.e: `v5` |
-| TITO_CHECKIN_SLUG | The checkin slug (generated for web applications) |
+| TITO\_TOKEN | The live API token for the TiTo event. |
+| TITO\_ACCOUNT\_SLUG | The account slug for the TiTo event, i.e: `royal-hackaway` |
+| TITO\_EVENT\_SLUG | The event slug for the TiTo event, i.e: `v5` |
+| TITO\_CHECKIN\_SLUG | The checkin slug (generated for web applications) |
 
 You should redirect `stderr` to a log file so that you do not get random (caught)
 error messages in the middle of the GUI.
@@ -42,7 +42,8 @@ cd .. # Reset the directory for scripts that get bolted on to this
 
 ## Tests
 To run the tests it is recommended to not use the live tokens, and in fact use
-another event which has no consequences if things go wrong.
+another event which has no consequences if things go wrong. Tests can be run with 
+`ctest` in the build folder.
 
 ## Future Maintainers
 I am not sorry for using C++, I was told by someone that it is far more readable
@@ -52,8 +53,9 @@ than ANSI C so I took their advice and ++'ed my C.
 | | |
 |---|---|
 | OS | Linux. The system is made, tested and, designed for the use on linux systems. |
-| Libraries | build-essentials, cmake, gcovr, ncurses, libcurl, phtreadm X11, |
+| Libraries | build-essentials, cmake, gcovr, ncurses, libcurl, phtreadm X11 |
 | Runtime | tito tokens in environment variables, a terminal that supports ncurses and, (optional) a printer |
+| Software for Tests | valgrind, python3 |
 
  Windows can be used, however is untested and may have a number of faults to do
  with input/output. 

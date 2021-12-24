@@ -36,7 +36,7 @@ jobs:
         
     - name: Check libraries are up to date
       shell: bash
-      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential cmake libcppunit-dev curl libcurl4-openssl-dev gcovr libncurses5-dev
+      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential cmake libcppunit-dev curl libcurl4-openssl-dev gcovr libncurses5-dev valgrind python3
         
     - name: Make Release
       shell: bash
@@ -58,7 +58,7 @@ jobs:
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=TEST
         cmake --build . -j
-        make coverage
+        ctest
     
     - uses: codecov/codecov-action@v1
       with:
