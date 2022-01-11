@@ -115,8 +115,8 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
     PAD_STR(ret,
             sizeof(CHECKED_IN_HEADER TABLE_PADDING) - sizeof(" [   ] "));
 
-    // Tick type
-    unsigned int maxTicketTypeLength = sizeof(TICKET_TYPE_HEADER TABLE_PADDING);
+    // Ticket type
+    unsigned int maxTicketTypeLength = sizeof(TICKET_TYPE_HEADER TABLE_PADDING) - 2;
     std::string ticketType = ticket.getTicketRelease();
     while (ticketType.size() > maxTicketTypeLength) ticketType.pop_back();
 
