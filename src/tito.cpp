@@ -321,7 +321,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
     }
     if (!rootJson.contains("tickets")) {
         std::cerr << "Error : TitoApi::getAttendees() : internal errors, maybe "
-                     "the slugs are wrong "
+                  << "the slugs are wrong "
                   << std::endl;
         throw TITO_INTERNAL_ERROR;
     }
@@ -362,7 +362,7 @@ std::list<TitoAttendee> TitoApi::getAttendees()
         }
     }
     
-    // Parse the checkins
+    // Get the checkins
     url = "https://checkin.tito.io/checkin_lists/" 
         + this->checkinSlug + "/checkins";
         resp = getRequest(url);
@@ -583,7 +583,7 @@ std::string getEventSlug()
 }
 
 std::string getCheckinSlug()
-{    
+{
     char* token;
     token = getenv(TITO_CHECKIN_SLUG_ENV_VAR);
     
@@ -597,7 +597,7 @@ std::string getCheckinSlug()
 }
 
 std::string getTitoErrorMessage(int e)
-{    
+{
     switch(e) {
         // Environment variable errors
         case TITO_TOKEN_NOT_FOUND:

@@ -1,4 +1,4 @@
-name: "Release"
+name: "Tests"
 
 on:
   push:
@@ -38,13 +38,30 @@ jobs:
       shell: bash
       run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential cmake libcppunit-dev curl libcurl4-openssl-dev gcovr libncurses5-dev valgrind python3
         
-    - name: Make Release
+    - name: Run Tests and Coverage
       shell: bash
-      run : |
+      env:
+        TITO_TOKEN: ${{ secrets.TITO_TOKEN }}
+        TITO_EVENT_SLUG: ${{ secrets.TITO_EVENT_SLUG }}
+        TITO_ACCOUNT_SLUG: ${{ secrets.TITO_ACCOUNT_SLUG }}
+        TITO_CHECKIN_SLUG: ${{ secrets.TITO_CHECKIN_SLUG }}
+      run: |        
         mkdir -p build
         cd build
-        cmake ..
+        cmake .. -DCMAKE_BUILD_TYPE=TEST
         cmake --build . -j
+        ctest --rerun-failed --output-on-failure
+        sleep 5
+        make coverage
         
+    - uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+        files: build/coverage.xml # optional
+        flags: unittests # optional
+        name: codecov-umbrella # optional
+        fail_ci_if_error: false # optional (default = false)
+        verbose: true # optional (default = false)
+
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
