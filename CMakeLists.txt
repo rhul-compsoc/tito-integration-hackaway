@@ -105,5 +105,5 @@ if (CMAKE_BUILD_TYPE STREQUAL "TEST")
 
     enable_testing ()
     add_test(NAME tito-integration-hackaway-tests COMMAND tito-integration-hackaway-tests)
-		add_test(NAME mem_checks COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/mem_test.py)
+    #add_test(NAME mem_checks COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/mem_test.py)
 endif()
