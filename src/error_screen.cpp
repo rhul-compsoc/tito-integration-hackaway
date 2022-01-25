@@ -38,17 +38,17 @@ struct ErrorAction showErrorMessage(std::string message,
 
         int c = getch();
         switch (c) {
-            case '\n':
-            case KEY_ENTER:
-                ret.action = ERROR_ACTION_IGNORE;
+        case '\n':
+        case KEY_ENTER:
+            ret.action = ERROR_ACTION_IGNORE;
+            flag = false;
+            break;
+        default:
+            if (c == 'R' || c == 'r') {
+                ret.action = ERROR_ACTION_RETRY;
                 flag = false;
-                break;
-            default:
-                if (c == 'R' || c == 'r') {
-                    ret.action = ERROR_ACTION_RETRY;
-                    flag = false;
-                }
-                break;
+            }
+            break;
         }
     }
 

@@ -23,12 +23,30 @@ TitoCheckin::TitoCheckin(std::string UUID,
     this->deletedTime = deletedTime;
     this->lastUpdateTime = lastUpdateTime;
 }
-std::string TitoCheckin::getUUID() { return this->UUID; }
-bool TitoCheckin::isCheckedin() { return this->checkedin; }
-bool TitoCheckin::isDeleted() { return this->deleted && this->deletedTime.tm_year != 0; }
-struct tm TitoCheckin::getCheckInTime() { return this->checkinTime; }
-struct tm TitoCheckin::getDeletedTime() { return this->deletedTime; }
-struct tm TitoCheckin::getLastUpdateTime() { return this->lastUpdateTime; }
+std::string TitoCheckin::getUUID()
+{
+    return this->UUID;
+}
+bool TitoCheckin::isCheckedin()
+{
+    return this->checkedin;
+}
+bool TitoCheckin::isDeleted()
+{
+    return this->deleted && this->deletedTime.tm_year != 0;
+}
+struct tm TitoCheckin::getCheckInTime()
+{
+    return this->checkinTime;
+}
+struct tm TitoCheckin::getDeletedTime()
+{
+    return this->deletedTime;
+}
+struct tm TitoCheckin::getLastUpdateTime()
+{
+    return this->lastUpdateTime;
+}
 
 TitoTicket::TitoTicket(int ticketID,
                        std::string ticketSlug,
@@ -39,34 +57,53 @@ TitoTicket::TitoTicket(int ticketID,
     this->ticketRelease = ticketRelease;
 }
 TitoTicket::TitoTicket() {} // Do not use this constructor please
-int TitoTicket::getTicketID() { return this->ticketID; }
-std::string TitoTicket::getTicketSlug() { return this->ticketSlug; }
-std::string TitoTicket::getTicketRelease() { return this->ticketRelease; }
-TitoCheckin TitoTicket::getCheckin() { return this->checkin; }
-void TitoTicket::setCheckin(TitoCheckin checkin) { this->checkin = checkin; }
+int TitoTicket::getTicketID()
+{
+    return this->ticketID;
+}
+std::string TitoTicket::getTicketSlug()
+{
+    return this->ticketSlug;
+}
+std::string TitoTicket::getTicketRelease()
+{
+    return this->ticketRelease;
+}
+TitoCheckin TitoTicket::getCheckin()
+{
+    return this->checkin;
+}
+void TitoTicket::setCheckin(TitoCheckin checkin)
+{
+    this->checkin = checkin;
+}
 TitoAttendee::TitoAttendee(std::string name,
                            std::string email,
                            std::string phoneNumber,
                            TitoTicket ticket)
 {
     // Replace the un printable o in Bjorn
-    std::string unprintable_o = "ø";    
+    std::string unprintable_o = "ø";
     size_t index = 0;
     while (true) {
         index = name.find(unprintable_o, index);
-        if (index == std::string::npos) break;        
-        name.replace(index, unprintable_o.size(), "o");        
+        if (index == std::string::npos) break;
+        name.replace(index, unprintable_o.size(), "o");
         index += unprintable_o.size();
     }
-    
+
     this->name = name;
     this->email = email;
     this->phoneNumber = phoneNumber;
     this->ticket = ticket;
 }
 TitoAttendee::TitoAttendee() {}; // Do not use this constructor please
-std::string TitoAttendee::getName() { return this->name; }
-std::string TitoAttendee::getForename(){
+std::string TitoAttendee::getName()
+{
+    return this->name;
+}
+std::string TitoAttendee::getForename()
+{
     size_t index = this->name.find(" ");
     if (index == std::string::npos) return this->getName();
     return this->name.substr(0, index);
@@ -77,10 +114,22 @@ std::string TitoAttendee::getSurname()
     if (index == std::string::npos) return "";
     return this->name.substr(index + 1, this->name.size() - 1);
 }
-std::string TitoAttendee::getEmail() { return this->email; }
-std::string TitoAttendee::getPhoneNumber() { return this->phoneNumber; }
-TitoTicket TitoAttendee::getTicket() { return this->ticket; }
-TitoTicket *TitoAttendee::getTicketRef() { return &this->ticket; }
+std::string TitoAttendee::getEmail()
+{
+    return this->email;
+}
+std::string TitoAttendee::getPhoneNumber()
+{
+    return this->phoneNumber;
+}
+TitoTicket TitoAttendee::getTicket()
+{
+    return this->ticket;
+}
+TitoTicket *TitoAttendee::getTicketRef()
+{
+    return &this->ticket;
+}
 
 bool TitoAttendee::matches(std::string queryIn)
 {
@@ -90,18 +139,18 @@ bool TitoAttendee::matches(std::string queryIn)
     while (std::getline(streamData, query, ' ')) {
         query = stripQueryStr(query);
         bool subPattern = false;
-        
+
         subPattern |= stripQueryStr(this->name).find(query)
-            != std::string::npos;
+                      != std::string::npos;
         subPattern |= stripQueryStr(this->email).find(query)
-            != std::string::npos;
+                      != std::string::npos;
         subPattern |= stripQueryStr(this->phoneNumber).find(query)
-            != std::string::npos;
-        subPattern |= stripQueryStr(this->ticket.getTicketRelease()).find(query) 
-            != std::string::npos;
+                      != std::string::npos;
+        subPattern |= stripQueryStr(this->ticket.getTicketRelease()).find(query)
+                      != std::string::npos;
         subPattern |= stripQueryStr(this->ticket.getTicketSlug()).find(query)
-            != std::string::npos;
-            
+                      != std::string::npos;
+
         ret &= subPattern;
     }
     return ret;
@@ -111,7 +160,7 @@ bool operator <(TitoAttendee &b, TitoAttendee &a)
 {
     // Checkedin
     if (a.getTicket().getCheckin().isCheckedin()
-        && !b.getTicket().getCheckin().isCheckedin()) {
+            && !b.getTicket().getCheckin().isCheckedin()) {
         return true;
     }
 
@@ -137,8 +186,8 @@ bool operator <(TitoAttendee &b, TitoAttendee &a)
 bool TitoAttendee::operator==(TitoAttendee other)
 {
     return this->name == other.name
-        && this->email == other.email
-        && this->phoneNumber == other.phoneNumber;
+           && this->email == other.email
+           && this->phoneNumber == other.phoneNumber;
 }
 
 std::string TitoAttendee::stripQueryStr(std::string str)

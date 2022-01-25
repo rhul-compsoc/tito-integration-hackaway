@@ -5,7 +5,8 @@
 #include <iostream>
 #include <algorithm>
 
-class TitoCheckin {
+class TitoCheckin
+{
 public:
     TitoCheckin() ;
     TitoCheckin(std::string /*UUID*/,
@@ -25,7 +26,8 @@ private:
     struct tm checkinTime, deletedTime, lastUpdateTime;
 };
 
-class TitoTicket {
+class TitoTicket
+{
 public:
     TitoTicket(int /*ticketID*/,
                std::string /*ticketSlug*/,
@@ -39,11 +41,12 @@ public:
 private:
     int ticketID;
     std::string ticketSlug,
-                ticketRelease;
+        ticketRelease;
     TitoCheckin checkin;
 };
 
-class TitoAttendee {
+class TitoAttendee
+{
 public:
     TitoAttendee(std::string /*name*/,
                  std::string /*email*/,

@@ -6,7 +6,8 @@
 #include "view_attendee.h"
 
 bool view_attendee(TitoApi &api,
-                   TitoAttendee attendee) {
+                   TitoAttendee attendee)
+{
     bool flag = true,
          cacheChanged = false;
     while(flag) {
@@ -55,7 +56,7 @@ bool view_attendee(TitoApi &api,
         } else {
             y += print_centre(0, y, "Press <C> to checkout");
         }
-        
+
         y += print_centre(0, y, "Press <P> to print a new id card");
         y += print_centre(0, y, "Press <ENTER> to continue");
 
@@ -67,55 +68,55 @@ bool view_attendee(TitoApi &api,
         struct ErrorAction act;
         IdCard idCard;
         switch (c) {
-            case '\n':
-            case KEY_ENTER:
-                flag = false;
-                break;
-            case 'P':
-            case 'p':
+        case '\n':
+        case KEY_ENTER:
+            flag = false;
+            break;
+        case 'P':
+        case 'p':
+            clear();
+            print_centre(0,
+                         getmaxy(stdscr) / 2,
+                         "Printing id card for " + attendee.getName() + "...");
+            refresh();
+            idCard = IdCard(attendee);
+            idCard.print();
+            break;
+        case 'C':
+        case 'c':
+            while (errorFlag) {
                 clear();
                 print_centre(0,
                              getmaxy(stdscr) / 2,
-                             "Printing id card for " + attendee.getName() + "...");
-                refresh();
-                idCard = IdCard(attendee);
-                idCard.print();
-                break;
-            case 'C':
-            case 'c':
-                while (errorFlag) {
-                    clear();
-                    print_centre(0,
-                                 getmaxy(stdscr) / 2,
-                                 "Checking user " + inOut + "...");
-                    try {
-                        refresh();
-                        if (ticket.getCheckin().isCheckedin()) {
-                            api.checkoutAttendee(attendee);
-                            inOut = "out";
-                        } else {
-                            api.checkinAttendee(attendee);
-                        }
-                        errorFlag = false;
-                        flag = false;
-                        cacheChanged = true;
-                    } catch (int e) {
-                        act = showErrorMessage("An error occurred whilst checking "
-                                               + inOut
-                                               + attendee.getName(),
-                                               e);
+                             "Checking user " + inOut + "...");
+                try {
+                    refresh();
+                    if (ticket.getCheckin().isCheckedin()) {
+                        api.checkoutAttendee(attendee);
+                        inOut = "out";
+                    } else {
+                        api.checkinAttendee(attendee);
+                    }
+                    errorFlag = false;
+                    flag = false;
+                    cacheChanged = true;
+                } catch (int e) {
+                    act = showErrorMessage("An error occurred whilst checking "
+                                           + inOut
+                                           + attendee.getName(),
+                                           e);
 
-                        if (act.action == ERROR_ACTION_IGNORE) {
-                            errorFlag = false;
-                        }
+                    if (act.action == ERROR_ACTION_IGNORE) {
+                        errorFlag = false;
                     }
                 }
-                break;
+            }
+            break;
         }
     }
 
     clear();
     refresh();
-    
+
     return cacheChanged;
 }

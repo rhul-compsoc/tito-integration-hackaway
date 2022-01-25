@@ -84,9 +84,9 @@ static int selection_screen_heading(std::string message,
 
     // Pad the headers field
     std::string headers = "  "  CHECKED_IN_HEADER  TABLE_PADDING
-                        TICKET_TYPE_HEADER  TABLE_PADDING
-                        NAME_HEADER  TABLE_PADDING  TABLE_PADDING TABLE_PADDING
-                        EMAIL_ADDRESS_HEADER;
+                          TICKET_TYPE_HEADER  TABLE_PADDING
+                          NAME_HEADER  TABLE_PADDING  TABLE_PADDING TABLE_PADDING
+                          EMAIL_ADDRESS_HEADER;
 
     PAD_STR_TO_TABLE(headers);
     y += print_left(SELECTION_X_PADDING, y, headers);
@@ -103,7 +103,7 @@ static int selection_screen_heading(std::string message,
  * @param TitoTicket the ticket to get the row for
  */
 static std::string getAttendeeTableEntry(TitoAttendee attendee,
-                                         TitoTicket ticket)
+        TitoTicket ticket)
 {
     // Checked in status
     std::string ret = "  ";
@@ -126,14 +126,14 @@ static std::string getAttendeeTableEntry(TitoAttendee attendee,
 
     // Name
     unsigned int maxNameLength = sizeof(NAME_HEADER TABLE_PADDING TABLE_PADDING
-                               TABLE_PADDING) - 2;
+                                        TABLE_PADDING) - 2;
     std::string ticketName = attendee.getName();
     while (ticketName.size() > maxNameLength) ticketName.pop_back();
 
     ret += ticketName;
     PAD_STR(ret,
             sizeof(NAME_HEADER TABLE_PADDING  TABLE_PADDING TABLE_PADDING)
-                  - ticketName.size() - 1);
+            - ticketName.size() - 1);
 
     // Email address
     unsigned int maxEmailLength = getmaxx(stdscr) - ret.size() - SELECTION_X_PADDING - 7;
@@ -171,9 +171,9 @@ for (errorFlag = true; errorFlag;) {\
 }
 
 struct AttendeeSelection select_attendee(TitoApi &api,
-                                         std::list<TitoAttendee> attendeesRaw,
-                                         std::string message,
-                                         bool confirmationRequired)
+        std::list<TitoAttendee> attendeesRaw,
+        std::string message,
+        bool confirmationRequired)
 {
     struct AttendeeSelection ret = {
         /*.attendeeSelected=*/0,
@@ -209,7 +209,7 @@ struct AttendeeSelection select_attendee(TitoApi &api,
             }
 
             if (i - scrollOffset >= 0
-                && y < getmaxy(stdscr) - SELECTION_Y_PADDING) {
+                    && y < getmaxy(stdscr) - SELECTION_Y_PADDING) {
                 if (i == currentlySelected) {
                     currentlySelectedAttendee = attendee;
                     yOfSelected = y;
@@ -218,7 +218,7 @@ struct AttendeeSelection select_attendee(TitoApi &api,
 
                 // Print the selected attendee and their tickets
                 std::string attendeeRow = getAttendeeTableEntry(attendee,
-                                                                attendee.getTicket());
+                                          attendee.getTicket());
                 PAD_STR_TO_TABLE(attendeeRow);
                 y += print_left(SELECTION_X_PADDING, y, attendeeRow);
 
@@ -227,13 +227,13 @@ struct AttendeeSelection select_attendee(TitoApi &api,
                 }
             } else
 
-            // Draw overflow indicator
-            if (y == getmaxy(stdscr) - SELECTION_Y_PADDING) {
-                print_left(2 + SELECTION_X_PADDING,
-                           y,
-                           "v");
-                break;
-            }
+                // Draw overflow indicator
+                if (y == getmaxy(stdscr) - SELECTION_Y_PADDING) {
+                    print_left(2 + SELECTION_X_PADDING,
+                               y,
+                               "v");
+                    break;
+                }
 
             i++;
         }
@@ -257,79 +257,79 @@ struct AttendeeSelection select_attendee(TitoApi &api,
 
         bool cacheUpdateNeeded = false;
         switch (input) {
-            // Navigation
-            case KEY_UP:
-                if (currentlySelected > 0) {
-                    currentlySelected--;
-                    if (currentlySelected - scrollOffset < 0) {
-                        scrollOffset--;
-                    }
+        // Navigation
+        case KEY_UP:
+            if (currentlySelected > 0) {
+                currentlySelected--;
+                if (currentlySelected - scrollOffset < 0) {
+                    scrollOffset--;
                 }
-                break;
-            case KEY_DOWN:
-                if (currentlySelected < ((int) attendees.size()) - 1) {
-                    currentlySelected++;
-                    if (yOfSelected + 1 >= getmaxy(stdscr) - SELECTION_Y_PADDING) {
-                        scrollOffset++;
-                    }
+            }
+            break;
+        case KEY_DOWN:
+            if (currentlySelected < ((int) attendees.size()) - 1) {
+                currentlySelected++;
+                if (yOfSelected + 1 >= getmaxy(stdscr) - SELECTION_Y_PADDING) {
+                    scrollOffset++;
                 }
-                break;
-            // Make selection
-            case '\n':
-            case KEY_ENTER:
-                if (yOfSelected == -1) break;
-                if (confirmationRequired) {
-                    if (confirm_attendee(currentlySelectedAttendee)) {
-                        running = 0;
-                        ret.attendeeSelected = true;
-                        ret.attendee = currentlySelectedAttendee;
-                    }
+            }
+            break;
+        // Make selection
+        case '\n':
+        case KEY_ENTER:
+            if (yOfSelected == -1) break;
+            if (confirmationRequired) {
+                if (confirm_attendee(currentlySelectedAttendee)) {
+                    running = 0;
+                    ret.attendeeSelected = true;
+                    ret.attendee = currentlySelectedAttendee;
                 }
-                break;
-            // Cancel
-            case KEY_EXIT:
-            case ESCAPE:
-                running = 0;
-                break;
-            // Backspace
-            case KEY_BACKSPACE:
-            case KEY_DL:
-            case KEY_DC:
-            case BACKSPACE:
-            case '\b':
-                if (search.size() > 0) {
-                    search.pop_back();
-                }
-                break;
-            // Refresh cache
-            case KEY_F(8):
-                UPDATE_CACHE();
-                break;
-            // View attendee information
-            case KEY_F(9):
-                cacheUpdateNeeded = view_attendee(api,
-                                                  currentlySelectedAttendee);
+            }
+            break;
+        // Cancel
+        case KEY_EXIT:
+        case ESCAPE:
+            running = 0;
+            break;
+        // Backspace
+        case KEY_BACKSPACE:
+        case KEY_DL:
+        case KEY_DC:
+        case BACKSPACE:
+        case '\b':
+            if (search.size() > 0) {
+                search.pop_back();
+            }
+            break;
+        // Refresh cache
+        case KEY_F(8):
+            UPDATE_CACHE();
+            break;
+        // View attendee information
+        case KEY_F(9):
+            cacheUpdateNeeded = view_attendee(api,
+                                              currentlySelectedAttendee);
 
-                // Update cache
-                if (cacheUpdateNeeded) {
-                    UPDATE_CACHE();
-                }
-                break;
-            // Clear search
-            case KEY_F(10):
-                search = "";
-                break;
-            // Add chars to search
-            default:
-                // if the input is text then add it to the search field
-                if (input == ' ' || input == '@' || input == '.'
+            // Update cache
+            if (cacheUpdateNeeded) {
+                UPDATE_CACHE();
+            }
+            break;
+        // Clear search
+        case KEY_F(10):
+            search = "";
+            break;
+        // Add chars to search
+        default:
+            // if the input is text then add it to the search field
+            if (input == ' ' || input == '@' || input == '.'
                     || input == '-' || input == '\''
                     || (input >= 'a' && input <= 'z')
                     || (input >= 'A' && input <= 'Z')
                     || (input >= '0' && input <= '9')) {
-                    search.push_back(input);
-                }
-                break;
+                search.push_back(input);
+            }
+            break;
         }
 
         // Search if query was changed
@@ -346,9 +346,9 @@ struct AttendeeSelection select_attendee(TitoApi &api,
                     if (attendee == currentlySelectedAttendee) {
                         currentlySelected = j;
                         scrollOffset = j - getmaxy(stdscr)
-                                     + headersY 
-                                     + SELECTION_Y_PADDING
-                                     + SELECTION_Y_PADDING;
+                                       + headersY
+                                       + SELECTION_Y_PADDING
+                                       + SELECTION_Y_PADDING;
                     }
                     j++;
                 }

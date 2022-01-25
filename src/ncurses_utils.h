@@ -31,18 +31,18 @@ int print_left(int /*x_offset*/, int /*y_offset*/, std::string /*str*/);
 int print_centre(int /*x_offset*/, int /*y_offset*/, std::string /*str*/);
 void setup_colours();
 /**
- * Opens the select screen for a tito attendee where users can search for an 
+ * Opens the select screen for a tito attendee where users can search for an
  * attendee from a list then select it. This is to be used for the manual check
  * in process and for querying users.
- * 
+ *
  * The list of attendees will have a search feature for unique identifiers for
  * the attendees (name, email and, phone number) as well as showing if they are
  * checked in and their ticket type.
- * 
+ *
  * In this menu the user can press <v> to open a more verbose information page
- * for the user and they can also press <esc> to cancel the operation. The 
+ * for the user and they can also press <esc> to cancel the operation. The
  * <enter> button will be used for selection of the attendee.
- * 
+ *
  * @param std::list<TitoAttendee> the list of attendees to choose from
  * @param std::string A string message to show to the user so that they know
  * what they are selecting
@@ -50,14 +50,14 @@ void setup_colours();
  * selected, and a boolean flag to see if a selection was made.
  */
 struct AttendeeSelection select_attendee(std::list<TitoAttendee>,
-                                         std::string /*message*/);
+        std::string /*message*/);
 /**
  * Prints an attendee column on the screen, this is used for the
  * select_attendees method and is defined here because I felt like it.
- * 
+ *
  * @param int y_offset how far from the top of the page the attendee should be
  * printed.
  * @param TitoAttendee the attendee to print the information about
  * @see select_attendee for the print format
- */ 
+ */
 void print_attendee(int /*y_offset*/ TitoAttendee);

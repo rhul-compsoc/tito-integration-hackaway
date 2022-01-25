@@ -47,7 +47,7 @@ CImg<unsigned char> getGlyph(char c)
     } else if (c == '-') {
         index = 26;
     }
-    
+
     if (index < 0 || index >= (int) font.size()) {
         return CImg<unsigned char>(TEXT_SIZE_WIDTH, TEXT_SIZE_HEIGHT);
     } else {
@@ -65,7 +65,7 @@ IdCard::IdCard(TitoAttendee attendee)
     this->image = CImg<unsigned char> (fileName.c_str());
     this->printName();
     this->printQr();
-    
+
     this->image.save(fileName.c_str());
 }
 
@@ -77,30 +77,30 @@ int IdCard::copyTemplateImage()
               ticketRelease.end(),
               ticketRelease.begin(), ::tolower);
     std::string releaseTag = "staff.png";
-    
+
     DIR *dir;
     struct dirent *ent;
     if ((dir = opendir(ASSETS_FOLDER))) {
         while ((ent = readdir (dir)) != NULL) {
             std::string dir = std::string(ent->d_name);
             std::cerr << "Info IdCard::copyTemplateImage() : Found ./"
-                         ASSETS_FOLDER "/"
+                      ASSETS_FOLDER "/"
                       << dir
                       << std::endl;
             size_t index = dir.find(".png");
-            
+
             if (index != std::string::npos) {
                 std::string strippedDir = dir.substr(0, index);
                 transform(strippedDir.begin(),
                           strippedDir.end(),
                           strippedDir.begin(), ::tolower);
-                
+
                 if (strippedDir.find(ticketRelease) != std::string::npos) {
                     releaseTag = dir;
-                    
-                    
+
+
                     std::cerr << "Info IdCard::copyTemplateImage() : Chose ./"
-                                 ASSETS_FOLDER "/"
+                              ASSETS_FOLDER "/"
                               << dir
                               << std::endl;
                     break;
@@ -110,26 +110,26 @@ int IdCard::copyTemplateImage()
         closedir(dir);
     } else {
         std::cerr << "Error IdCard::copyTemplateImage() : Error cannot open ./"
-                     ASSETS_FOLDER
-                     "/ folder to query image templates."
+                  ASSETS_FOLDER
+                  "/ folder to query image templates."
                   << std::endl;
         return 0;
     }
-    
+
     std::string source = ASSETS_FOLDER "/" + releaseTag;
-    
+
     FILE *src = fopen(source.c_str(), "r"),
-         *dest = fopen(newFileName.c_str(), "wb");
-    
+          *dest = fopen(newFileName.c_str(), "wb");
+
     // Handle IO errors
     if (src == NULL) {
         std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
                   << source << " to "
                   << newFileName << ". Source file could not be opened."
-        << std::endl;
+                  << std::endl;
         return 0;
     }
-    
+
     if (dest == NULL) {
         std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
                   << source << " to "
@@ -137,29 +137,29 @@ int IdCard::copyTemplateImage()
                   << std::endl;
         return 0;
     }
-    
+
     for (int c; c = fgetc(src), c != EOF;) {
         int t = fputc(c, dest);
-        
+
         // Handle IO errors
         if (t == EOF) {
             std::cerr << "Error IdCard::copyTemplateImage() : Error copying "
                       << source << " to "
                       << newFileName << ". A write error occurred."
                       << std::endl;
-            
+
             fclose(src);
             fclose(dest);
             return 0;
         }
     }
-    
-    #ifdef DEBUG
+
+#ifdef DEBUG
     std::cerr << "Debug IdCard::copyTemplateImage() : Copied "
               << source << " to "
               << newFileName << std::endl;
-    #endif
-    
+#endif
+
     fclose(src);
     fclose(dest);
     return 1;
@@ -179,7 +179,7 @@ void IdCard::printName()
         startY += TEXT_SIZE_HEIGHT / 2;
     }
     startY += TEXT_Y;
-    
+
     this->printText(fname, startY);
     this->printText(sname, startY + TEXT_SIZE_HEIGHT);
 }
@@ -187,7 +187,7 @@ void IdCard::printName()
 void IdCard::printText(std::string text, int yOffset)
 {
     int xOffset = (this->image.width() - (TEXT_SIZE_WIDTH * text.size())) / 2;
-    
+
     for (size_t i = 0; i < text.size(); i ++) {
         char c = text.c_str()[i];
         if ((c >= 'A' && c <= 'Z') || c == ' ') {
@@ -238,15 +238,15 @@ std::string IdCard::stripAttendeeName(std::string str)
 {
     transform(str.begin(), str.end(), str.begin(), ::toupper);
     std::string ret = "";
-    
+
     for (char c : str) {
         if ((c >= '0' && c <'9') || (c >= 'A' || c <= 'Z') || c == ' ') {
             ret += c;
         }
     }
-    
+
     std::string retOut = ret;
-    
+
     /*
      * Truncate big names after their first name then add a '.' after the first
      * letter of their surname.
@@ -258,7 +258,7 @@ std::string IdCard::stripAttendeeName(std::string str)
             retOut += ".";
         }
     }
-    
+
     /*
      * Truncates big names after the end of their first name
      */
@@ -268,12 +268,12 @@ std::string IdCard::stripAttendeeName(std::string str)
             retOut = ret.substr(0, index - 1);
         }
     }
-    
+
     // Bruh - just cut the name off here you know
     if (retOut.size() > MAX_NAME_LEN) {
         retOut = ret.substr(0, MAX_NAME_LEN - 3);
     }
-    
+
     return retOut;
 }
 
@@ -297,7 +297,7 @@ void IdCard::print()
     pthread_t thread;
     pthread_attr_t *attr = NULL;
     int r = pthread_create(&thread, attr, &print_image_thread, (void *) name);
-    
+
     if (r != 0) {
         delete name;
         std::cerr << "Critical Failure: ";
