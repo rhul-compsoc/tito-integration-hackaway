@@ -346,7 +346,6 @@ std::list<TitoAttendee> TitoApi::getAttendeesRecursive(int page)
             attendee.at("email").get_to(email);
         }
 
-        attendee.at("email").get_to(email);
         if (!attendee.at("phone_number").is_null()) {
             attendee.at("phone_number").get_to(phoneNumber);
         }

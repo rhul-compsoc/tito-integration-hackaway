@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include <string>
+#include <unistd.h>
+#include <sys/wait.h>
 #include "ncurses_utils.h"
 #include "select_attendee.h"
 #include "error_screen.h"
@@ -238,6 +240,42 @@ int main(int argc, char **argv)
         }
     }
 
+    if (argc == 2) {
+        std::string arg2 = std::string(argv[1]);
+        int threads = 16;
+        int threadnum;
+
+        endwin();
+        for (threadnum = 0; threadnum < threads; threadnum++) {
+            if (fork() != 0) {
+                break;
+            }
+        }
+        
+        if (threadnum == threads) {
+            for (int i = 0; i < threads; i++) {
+                wait(NULL);
+            }
+        } else { 
+            if (arg2 == "all") {
+                int i = 0;
+                for (TitoAttendee attendee : attendees) {
+                    if ((i % threads) == threadnum) {
+                        printf("Printing %s\n", attendee.getName().c_str());
+                        IdCard idCard = IdCard(attendee);
+                        idCard.print();
+                    }
+
+                    i++;
+                }
+
+                exit(0);
+            }          
+        }
+
+        return 0;
+    }
+    
     y += print_centre(0, y, "Loaded ID cache, attendees and, checkins.");
 
     // Splash screen
