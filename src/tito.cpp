@@ -308,8 +308,14 @@ std::string TitoApi::getRequest(std::string url)
 
 std::list<TitoAttendee> TitoApi::getAttendees()
 {
+    return this->getAttendeesRecursive(1);
+}
+
+std::list<TitoAttendee> TitoApi::getAttendeesRecursive(int page)
+{
     std::string url = "https://api.tito.io/v3/" + this->accountSlug
-                      + "/" + this->eventSlug + "/tickets";
+                      + "/" + this->eventSlug + "/tickets?page="
+                      + std::to_string(page);
     std::string resp = getRequest(url);
     nlohmann::json rootJson = nlohmann::json::parse(resp);
 
@@ -437,6 +443,22 @@ std::list<TitoAttendee> TitoApi::getAttendees()
     for (TitoAttendee *attendee : tmp) {
         output.push_back(TitoAttendee(*attendee));
         delete attendee;
+    }
+
+    // If this is not the last page ask for more pages
+    bool more = rootJson.contains("total_ticket_pages");
+    if (more) {
+        int pages;
+        rootJson.at("total_ticket_pages").get_to(pages);
+
+        more = page < pages;
+    }
+    
+    if (more) {        
+        std::list<TitoAttendee> more = this->getAttendeesRecursive(page + 1);
+        for (TitoAttendee attendee : more) {
+            output.push_back(attendee);
+        }
     }
 
     return output;

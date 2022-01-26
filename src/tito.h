@@ -134,6 +134,13 @@ private:
         checkinSlug,
         accessToken; // This slug is obtained on authentication.
     std::list<std::string> idsGiven;
+    /**
+     * THe recursive method for getting all pages of tickets.
+     *
+     * @param pageNo the page number
+     * @return a list of all attendees it has found.
+     */
+    std::list<TitoAttendee> getAttendeesRecursive(int pageNo);
     void readIDCache();
 };
 
