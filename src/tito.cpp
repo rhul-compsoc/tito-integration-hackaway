@@ -313,19 +313,20 @@ std::list<TitoAttendee> TitoApi::getAttendees()
 
 std::list<TitoAttendee> TitoApi::getAttendeesRecursive(int page)
 {
+    std::cerr << "Getting page " << page << std::endl;
     std::string url = "https://api.tito.io/v3/" + this->accountSlug
                       + "/" + this->eventSlug + "/tickets?page="
                       + std::to_string(page);
     std::string resp = getRequest(url);
-    nlohmann::json rootJson = nlohmann::json::parse(resp);
+    nlohmann::json rootJson, rootJsonTickets = nlohmann::json::parse(resp);
 
     // Check for errors
-    if (rootJson.contains("errors")) {
+    if (rootJsonTickets.contains("errors")) {
         std::cerr << "Error : TitoApi::getAttendees() : (probably) authentication "
                   << "or errors " << std::endl;
         throw TITO_AUTH_ERROR; // Probably an auth error lmao
     }
-    if (!rootJson.contains("tickets")) {
+    if (!rootJsonTickets.contains("tickets")) {
         std::cerr << "Error : TitoApi::getAttendees() : internal errors, maybe "
                   << "the slugs are wrong "
                   << std::endl;
@@ -334,7 +335,7 @@ std::list<TitoAttendee> TitoApi::getAttendeesRecursive(int page)
 
     // Parse the registrations
     std::list<TitoAttendee *> tmp;
-    nlohmann::json registrationJson = rootJson.at("tickets");
+    nlohmann::json registrationJson = rootJsonTickets.at("tickets");
     for (nlohmann::json::iterator it = registrationJson.begin()
                                        ; it != registrationJson.end(); ++it) {
         nlohmann::json attendee = it.value();
@@ -342,9 +343,11 @@ std::list<TitoAttendee> TitoApi::getAttendeesRecursive(int page)
         attendee.at("name").get_to(name);
 
         std::string email, phoneNumber;
-        if (!attendee.at("email").is_null()) {
-            attendee.at("email").get_to(email);
-        }
+        if (attendee.at("email").is_null()) {
+            continue;
+				}
+        
+        attendee.at("email").get_to(email);
 
         if (!attendee.at("phone_number").is_null()) {
             attendee.at("phone_number").get_to(phoneNumber);
@@ -445,19 +448,19 @@ std::list<TitoAttendee> TitoApi::getAttendeesRecursive(int page)
     }
 
     // If this is not the last page ask for more pages
-    bool more = rootJson.contains("total_ticket_pages");
-    if (more) {
-        int pages;
-        rootJson.at("total_ticket_pages").get_to(pages);
+    if (rootJsonTickets.contains("meta")) {
+        std::cerr << "Debug: There are more pages" << std::endl;
+				int pages = 0;
+				nlohmann::json meta;
+				rootJsonTickets.at("meta").get_to(meta);
+        meta.at("total_pages").get_to(pages);
 
-        more = page < pages;
-    }
-    
-    if (more) {        
-        std::list<TitoAttendee> more = this->getAttendeesRecursive(page + 1);
-        for (TitoAttendee attendee : more) {
-            output.push_back(attendee);
-        }
+        if (page < pages) {    
+				    std::list<TitoAttendee> moreatt = this->getAttendeesRecursive(page + 1);
+            for (TitoAttendee attendee : moreatt) {
+                output.push_back(attendee);
+            }
+				}
     }
 
     return output;

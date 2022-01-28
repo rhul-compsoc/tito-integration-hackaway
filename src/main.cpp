@@ -242,10 +242,12 @@ int main(int argc, char **argv)
 
     if (argc == 2) {
         std::string arg2 = std::string(argv[1]);
+        
         int threads = 16;
         int threadnum;
-
+				
         endwin();
+        
         for (threadnum = 0; threadnum < threads; threadnum++) {
             if (fork() != 0) {
                 break;
@@ -256,12 +258,12 @@ int main(int argc, char **argv)
             for (int i = 0; i < threads; i++) {
                 wait(NULL);
             }
-        } else { 
+        } else {
             if (arg2 == "all") {
                 int i = 0;
                 for (TitoAttendee attendee : attendees) {
                     if ((i % threads) == threadnum) {
-                        printf("Printing %s\n", attendee.getName().c_str());
+                        printf("Printing %3d/%3ld %s\n", i, attendees.size(), attendee.getName().c_str());
                         IdCard idCard = IdCard(attendee);
                         idCard.print();
                     }
