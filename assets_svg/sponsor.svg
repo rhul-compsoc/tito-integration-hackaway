@@ -7,9 +7,9 @@
    width="105mm"
    height="148mm"
    viewBox="0 0 396.85038 559.37005"
-   sodipodi:docname="hackaway id mentor a6.svg"
+   sodipodi:docname="hackaway id sponsor a6.svg"
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
-   inkscape:export-filename="C:\Users\shiqi\OneDrive\Documents\Drawings\Exported\Hackaway\hackaway id staff a6.png"
+   inkscape:export-filename="C:\Users\shiqi\OneDrive\Documents\Drawings\Exported\Hackaway\hackaway id mentor a6.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -63,11 +63,11 @@
   <g
      inkscape:groupmode="layer"
      id="g11461"
-     inkscape:label="staff background"
+     inkscape:label="mentor background"
      style="display:inline"
      sodipodi:insensitive="true">
     <rect
-       style="display:inline;mix-blend-mode:normal;fill:#5e81ac;fill-opacity:1;stroke-width:1.84166"
+       style="display:inline;mix-blend-mode:normal;fill:#a3be8c;fill-opacity:1;stroke-width:1.84166"
        id="rect11459"
        width="397.97495"
        height="562.41656"
@@ -4958,11 +4958,11 @@
   <g
      inkscape:groupmode="layer"
      id="g72323"
-     inkscape:label="dark blue box"
+     inkscape:label="dark green box"
      style="display:inline;opacity:0.3;mix-blend-mode:multiply"
      sodipodi:insensitive="true">
     <rect
-       style="display:inline;fill:#5e81ac;fill-opacity:1;fill-rule:nonzero;stroke-width:2.11783"
+       style="display:inline;fill:#9caa71;fill-opacity:1;fill-rule:nonzero;stroke-width:2.11783"
        id="rect72321"
        width="418.36777"
        height="101.6963"
@@ -4972,11 +4972,11 @@
   <g
      inkscape:groupmode="layer"
      id="g72318"
-     inkscape:label="light blue box"
-     style="display:inline"
+     inkscape:label="light green box"
+     style="display:inline;opacity:1"
      sodipodi:insensitive="true">
     <rect
-       style="fill:#88c0d0;fill-opacity:1;fill-rule:nonzero;stroke-width:1.90781"
+       style="fill:#d0dea6;fill-opacity:1;fill-rule:nonzero;stroke-width:1.90781"
        id="rect72316"
        width="418.36777"
        height="82.526367"
@@ -4986,23 +4986,23 @@
   <g
      inkscape:groupmode="layer"
      id="g23032"
-     inkscape:label="dark blue curve"
+     inkscape:label="dark green curve"
      style="display:inline;opacity:0.3;mix-blend-mode:multiply"
      sodipodi:insensitive="true">
     <path
        id="path23030"
-       style="fill:#5e81ac;fill-opacity:1;stroke-width:1.89562"
+       style="fill:#9caa71;fill-opacity:1;stroke-width:1.89562"
        d="M -4.094728,16.254796 V 146.00881 l -13.849355,-1.76776 c 4.673833,1.61003 9.2390549,3.08326 13.849355,4.61414 v 2.47187 H 3.3167254 C 256.44669,233.70855 411.03219,197.92389 399.31165,197.38981 a 9.3587992,6.6982473 0 0 0 0.91499,-0.44942 h 19.36861 V 131.84054 H 402.71544 V 16.254796 Z" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="g16903"
-     inkscape:label="light blue curve"
-     style="display:inline"
+     inkscape:label="light green curve"
+     style="display:inline;opacity:1"
      sodipodi:insensitive="true">
     <path
        id="path16901"
-       style="fill:#88c0d0;fill-opacity:1;stroke-width:1.90103"
+       style="fill:#d0dea6;fill-opacity:1;stroke-width:1.90103"
        d="M -5.2701604,2.0831077 V 131.83711 l -13.9285756,-1.76776 c 4.70057,1.61004 9.2919029,3.08328 13.9285756,4.61414 v 2.47187 H 2.1836872 C 256.76157,219.53689 412.23132,183.75222 400.44373,183.21814 a 9.4123328,6.6982473 0 0 0 0.92024,-0.44944 h 19.4794 V 117.66885 H 403.86701 V 2.0831077 Z" />
   </g>
   <g
@@ -5151,47 +5151,47 @@
   <g
      inkscape:groupmode="layer"
      id="layer12"
-     inkscape:label="staff text"
+     inkscape:label="sponsor text"
      style="display:inline">
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none"
-       x="30.51915"
-       y="292.36823"
+       x="34.51915"
+       y="288.36823"
        id="text67251"><tspan
          sodipodi:role="line"
          id="tspan67249"
-         x="30.51915"
-         y="292.36823"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:74.6667px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff">MENTOR</tspan></text>
+         x="34.51915"
+         y="288.36823"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff">SPONSOR</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer13"
      inkscape:label="example name"
-     sodipodi:insensitive="true"
-     style="display:none">
+     style="display:none"
+     sodipodi:insensitive="true">
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:33.3333px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#ffffff;fill-opacity:1;stroke:none"
-       x="35.657154"
-       y="214.93227"
+       x="131.50681"
+       y="372.64853"
        id="text10242"><tspan
          sodipodi:role="line"
          id="tspan10240"
-         x="35.657154"
-         y="214.93227"
+         x="131.50681"
+         y="372.64853"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:33.3333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1">JOSHUA</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#ffffff;fill-opacity:1;stroke:none"
-       x="61.132801"
-       y="238.44823"
+       x="160.4679"
+       y="395.29312"
        id="text16372"><tspan
          sodipodi:role="line"
          id="tspan16370"
-         x="61.132801"
-         y="238.44823"
+         x="160.4679"
+         y="395.29312"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1">YEWMAN</tspan></text>
   </g>
   <g
@@ -5203,7 +5203,7 @@
     <g
        fill="#ffffff"
        id="g23805"
-       transform="matrix(0.05119018,0,0,0.05154657,77.310118,266.57395)">
+       transform="matrix(0.10230639,0,0,0.10364073,148.49879,450.62487)">
       <g
          transform="matrix(4.12,0,0,4.12,264,48)"
          id="g21239">
